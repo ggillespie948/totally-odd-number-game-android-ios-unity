@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1990386488418734}
+  m_IsPrefabParent: 1
+--- !u!1 &1990386488418734
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4056345577443574}
+  - component: {fileID: 114099337718805684}
+  m_Layer: 0
+  m_Name: DaySkyTheme
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4056345577443574
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1990386488418734}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.4258293, y: 0.20025319, z: 325.90234}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114099337718805684
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1990386488418734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 626a27f84ffb1204bbee11bd2672daf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: Light Sky
+  themeID: 2
+  GridCell: {fileID: 2100000, guid: ae7186488f4fb3c47ae3bd9bd5f7fb4c, type: 2}
+  GirdCellAlt: {fileID: 0}
+  Timer: {fileID: 2100000, guid: 8fb5fec292aea2648ae9d9d16449b782, type: 2}
+  Buttons: {fileID: 2100000, guid: 09885b6621074554f9f48efcebca9c52, type: 2}
+  Tile1: {fileID: 114096494813537242, guid: c5c86b209271980488d979d2efe8f03d, type: 2}
+  Tile2: {fileID: 114945184768755342, guid: 464ef36c91e9c0d4fb906c79986950c6, type: 2}
+  Tile3: {fileID: 114644614233911480, guid: 00e9bf0acdd8a68438e41041b00cf84b, type: 2}
+  Tile4: {fileID: 0}
+  Tile5: {fileID: 0}
+  Tile6: {fileID: 0}
+  Tile7: {fileID: 0}
+  Tile1MM: {fileID: 0}
+  Tile2MM: {fileID: 0}
+  Tile3MM: {fileID: 0}
+  Skybox: {fileID: 2100000, guid: 0b846be1b116429409a7669cacf2a62e, type: 2}
+  SunLightIntensity: 0.45
+  TileLightIntensity: 1.25
+  Tile1FX: {fileID: 1418080689089496, guid: 6a7a3e6fca4fd8c479f1dd03cae096f9, type: 2}
+  Tile2FX: {fileID: 1268414511968048, guid: d8f3ae9408dc96a44b8f2bfba77ed1b3, type: 2}
+  Tile3FX: {fileID: 1573900531671728, guid: 20def368a805cd049859db24741530ef, type: 2}
+  Tile4FX: {fileID: 0}
+  Tile5FX: {fileID: 0}
+  Tile6FX: {fileID: 0}
+  Tile7FX: {fileID: 0}
+  Background: {fileID: 0}

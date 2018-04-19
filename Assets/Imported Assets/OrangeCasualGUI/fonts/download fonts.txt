@@ -1,0 +1,4 @@
+TROIKA font by JOEL CARROUCHE - http://www.fontsquirrel.com/fonts/troika
+BOOMBOOM font by Anna Vasilieva - http://shriftkrasivo.ru/font/shrift-boomboom/
+
+Then set fonts to button prefabs
