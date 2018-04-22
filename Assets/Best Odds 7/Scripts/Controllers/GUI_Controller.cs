@@ -73,7 +73,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public TextMeshProUGUI remainingTurnText;
     public TextMeshProUGUI remainingTilesText;
     public TextMeshProUGUI targetScoreText;
-    public GameObject SoloTargetBar;
+    public GameObject SoloTargetCard;
     public GameObject SoloScoreCard;
 
     [Header("GUI Dialogues")]
@@ -262,6 +262,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
             yield return null;
         }
 
+        DestroyAllTiles();
+
     }
 
     public IEnumerator UpdatePlayerScore(int startScore, int newScore, int player)
@@ -403,9 +405,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
         if(ActionButtons != null)
             ActionButtons.SetActive(true);
 
-        PauseMenu.Close();
-        PlayerLives_Stone.gameObject.SetActive(!PlayerLives_Stone.gameObject.activeSelf);
-        PlayerCoins_Stone.gameObject.SetActive(!PlayerCoins_Stone.gameObject.activeSelf);
         if(GameMaster.instance.vsAi || ApplicationModel.VS_LOCAL_MP)
         {
             ToggleAllVsAiUI();
@@ -445,7 +444,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         if(PlayerCard3 != null){Destroy(PlayerCard3.gameObject);}
         if(PlayerCard4 != null){Destroy(PlayerCard4.gameObject);}
         if(statusBar.gameObject!=null){Destroy(statusBar.gameObject);}
-        if(SoloTargetBar.gameObject!=null){Destroy(SoloTargetBar.gameObject);}
+        if(SoloTargetCard.gameObject!=null){Destroy(SoloTargetCard.gameObject);}
         Destroy(TimerUI);
         PlayerCoins_Stone.gameObject.SetActive(true);
     }

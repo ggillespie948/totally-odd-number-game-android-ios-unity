@@ -182,15 +182,12 @@ public class GameMaster : MonoBehaviour, Observable {
         if(soloPlay)        //Refactor solo play as child of game master temp
         {
             GUI_Controller.instance.PlayerCard2.gameObject.SetActive(false);
-            //GUI_Controller.instance.Timer.gameObject.SetActive(false);
-            GUI_Controller.instance.statusBar.gameObject.SetActive(false);
             GUI_Controller.instance.RemainingTurns_Stone.gameObject.SetActive(true);
-            GUI_Controller.instance.TargetScore_Stone.gameObject.SetActive(true);
             Destroy(GUI_Controller.instance.TimerUI.gameObject);
         } else {
             GUI_Controller.instance.RemainingTurns_Stone.gameObject.SetActive(false);
             //GUI_Controller.instance.TargetScore_Stone.gameObject.SetActive(false);
-            GUI_Controller.instance.SoloTargetBar.gameObject.SetActive(false);
+            GUI_Controller.instance.SoloTargetCard.gameObject.SetActive(false);
             GUI_Controller.instance.SoloScoreCard.gameObject.SetActive(false);
         }
 

@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 4302065702070278}
   - component: {fileID: 198981267379923344}
   - component: {fileID: 199453553994420896}
-  - component: {fileID: 114478281495531796}
   m_Layer: 0
   m_Name: Particle attractor
   m_TagString: Untagged
@@ -269,7 +268,6 @@ MonoBehaviour:
   Location: {x: 0, y: 0, z: 0}
   PointLightStrength: 0
   PointLight: {fileID: 108163913728817116}
-  ScoreEffect: {fileID: 198981267379923344}
   Activated: 0
   isFlashing: 0
 --- !u!114 &114379816344089638
@@ -368,21 +366,6 @@ MonoBehaviour:
   introAnim: 0
   isMenu: 0
   startSize: {x: 0, y: 0, z: 0}
---- !u!114 &114478281495531796
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1114260220171994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d41c288e575eb84aac00fc3b880a5d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ps: {fileID: 0}
-  target: {fileID: 0}
-  speed: 1.75
-  numParticlesAlive: 0
 --- !u!114 &114946134841873398
 MonoBehaviour:
   m_ObjectHideFlags: 1

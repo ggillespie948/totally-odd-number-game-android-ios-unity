@@ -42,7 +42,6 @@ public class TileSpawner : MonoBehaviour {
 		tile.GetComponent<NoGravity>().ZForce =2;
 		tile.GetComponent<BoxCollider2D>().enabled = false;
 		StartCoroutine(AddToPoolDelay(tile,3.5f));
-		//Destroy(tile, 3f); 									//TEMP - fix the object pool
 		
 	}
 

@@ -1,12 +1,14 @@
 ﻿public class ApplicationModel {
 
+	public static bool MUSIC_ENABLED = true;
+
+	public static bool FX_ENABLED = true;
+
 	public static int LEVEL_NO = 0;
 	public static int WORLD_NO = 0;
 	public static string LEVEL_CODE = "";
 
-	public static int GAME_DIFFICULTY = 3; // 1 = easy
-									  // 2 = medium
-									  // 3 = hard
+	public static int GAME_DIFFICULTY = 20;  // /100
 
 	public static int THEME = 0;
 

@@ -23,15 +23,17 @@ public class TurnTimer : MonoBehaviour {
 
     public float timeLeft;
 
-    public int startTime = 30;
+    public int startTime;
 
     public TextMeshProUGUI timerText;
 
     void Awake()
     {
         instance = this;
-        startTime=30; //default
         startTime = ApplicationModel.TURN_TIME;
+        if(startTime == null || startTime ==0)
+            startTime=30;
+
         timeLeft = startTime;
     }
 
@@ -69,10 +71,7 @@ public class TurnTimer : MonoBehaviour {
     public void StartTurn()
     {
         _currentSize = 2f;
-        //int time = Mathf.RoundToInt(ApplicationModel.gameDifficulty * 10 + (ApplicationModel.gameDifficulty * 5));
-        //StartCoroutine(BeginTimer(90f));
-        int time = 30;
-        timeLeft = time;
+        timeLeft = ApplicationModel.TURN_TIME;
     }
 
 

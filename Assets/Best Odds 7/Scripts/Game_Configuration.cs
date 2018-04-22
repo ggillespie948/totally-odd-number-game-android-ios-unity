@@ -26,7 +26,7 @@ public class Game_Configuration : MonoBehaviour {
 	public int gridSize;
 	public int ai_opponents;
 	public int ai_difficulty;
-	public int human_players;
+	public int human_players =1;
 	public int turnTime;
 	public int maxTile;
 	public int oneTiles;
@@ -64,13 +64,16 @@ public class Game_Configuration : MonoBehaviour {
 
 		if(AccountInfo.playfabId != null)
 		{
-			if(starFx != null)
+			if(challengeMode)
 			{
-				Debug.Log("wordl no  " + worldNo);
-				Debug.Log("level no  " + levelNo);
-				Debug.Log("wordlstars level,world:  " + AccountInfo.worldStars[worldNo,levelNo]);
-				starFx.ea=AccountInfo.worldStars[worldNo,levelNo];
-				starFx.enabled=true;
+				if(starFx != null && worldNo >= 0)
+				{
+					Debug.Log("wordl no  " + worldNo);
+					Debug.Log("level no  " + levelNo);
+					Debug.Log("wordlstars level,world:  " + AccountInfo.worldStars[worldNo,levelNo]);
+					starFx.ea=AccountInfo.worldStars[worldNo,levelNo];
+					starFx.enabled=true;
+				}
 			}
 		}
 	}
@@ -82,8 +85,9 @@ public class Game_Configuration : MonoBehaviour {
 
 		if(challengeMode)
 			if(humanPlayersTxt != null ){humanPlayersTxt.gameObject.SetActive(false);}
-		else 
-			if(humanPlayersTxt != null ){humanPlayersTxt.text="Players: " + human_players;}
+		
+
+		if(humanPlayersTxt != null ){humanPlayersTxt.text="Players: " + human_players;}
 
 		if(targetScore == 0)
 		{
@@ -131,11 +135,11 @@ public class Game_Configuration : MonoBehaviour {
 		else
 			tile7.SetActive(true);
 
-		Debug.Log("Final check: " + AccountInfo.worldStars[worldNo,levelNo]);
-
-		starFx.Reset();
-		starFx.ea=AccountInfo.worldStars[worldNo,levelNo];
-		//starFx.isEnd=false;
+		if(challengeMode && worldNo >= 0)
+		{
+			starFx.Reset();
+			starFx.ea=AccountInfo.worldStars[worldNo,levelNo];
+		}
 		
 	}
 

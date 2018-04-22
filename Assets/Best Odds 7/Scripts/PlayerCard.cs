@@ -72,6 +72,8 @@ public class PlayerCard : MonoBehaviour {
 	public void CardScoreAnim(List<GridTile> tiles)
 	{
 		tiles = tiles.Distinct().ToList();
+
+		
 		int spawnIndex = 0;
 		float delay = 0f;
 		foreach(GridTile tile in tiles)

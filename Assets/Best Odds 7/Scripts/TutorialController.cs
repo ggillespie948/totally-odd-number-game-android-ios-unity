@@ -30,6 +30,7 @@ public class TutorialController : MonoBehaviour {
 
 	public void StartTutorial()
 	{
+		GUI_Controller.instance.ActionButtons.SetActive(false);
 		OpeningDialogue.SetActive(true);
 		GameMaster.instance.Player1Hand.Add(tile1);
 		GameMaster.instance.Player1Hand.Add(tile2);
@@ -84,6 +85,7 @@ public class TutorialController : MonoBehaviour {
 	public void Clear6()
 	{
 		EndTurnDialogue.SetActive(true);
+		GUI_Controller.instance.ActionButtons.SetActive(true);
 	}
 
 	public void Clear7()

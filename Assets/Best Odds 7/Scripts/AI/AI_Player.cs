@@ -116,25 +116,11 @@ public class AI_Player : MonoBehaviour {
 
         if (noValidMoves == false)
         {
-            //Debug.Log("Moves found.");
-            int RandSelect = Mathf.RoundToInt(BoardEvaluator.validMove.Count / ApplicationModel.GAME_DIFFICULTY);
-            Debug.Log("Rand Select: " + RandSelect);
-            Debug.Log("Valid Move Count: " + BoardEvaluator.validMove.Count);
+            Debug.Log("Moves found:" + BoardEvaluator.validMove.Count);
+            int RandSelect = Mathf.RoundToInt(BoardEvaluator.validMove.Count * (ApplicationModel.GAME_DIFFICULTY/100));
 
             if(RandSelect<=0)
                 RandSelect = 1;
-
-            // foreach(AI_Move move in BoardEvaluator.ValidMove)
-            // {
-            //     if(move.Correction != null && (move.Correction.correctionDir == 'L' ||  move.Correction.correctionDir == 'R'))
-            //     {
-            //         Debug.Log("Correciton Move found");
-            //         MakeMove(move);
-            //         break;
-            //     }
-            // }
-
-
 
             MakeMove(BoardEvaluator.validMove[RandSelect-1]);
         }

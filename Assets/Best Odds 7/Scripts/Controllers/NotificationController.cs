@@ -62,22 +62,29 @@ public class NotificationController : MonoBehaviour, Observer {
 		{
 			int randPhrase = Random.Range(0, Tier0_Score_Phrase.Length);
 			GUI_Controller.instance.SpawnTextPopup(Tier0_Score_Phrase[randPhrase], Color.gray, GUI_Controller.instance.transform, 23);
+			AudioManager.instance.Play("ScoreT0");
 
 		} else if(score > 30 && score < 40)
 		{
 			int randPhrase = Random.Range(0, Tier1_Score_Phrase.Length);
 			GUI_Controller.instance.SpawnTextPopup(Tier1_Score_Phrase[randPhrase], Color.cyan, GUI_Controller.instance.transform, 18);
+			AudioManager.instance.Play("ScoreT2");
 			
-		} else if (score > 40 && score < 60)
+		} else if (score >= 40 && score <= 60)
 		{
 			int randPhrase = Random.Range(0, Tier2_Score_Phrase.Length);
 			GUI_Controller.instance.SpawnTextPopup(Tier2_Score_Phrase[randPhrase], Color.yellow, GameMaster.instance.playedTiles[0].transform, 23);
+			AudioManager.instance.Play("ScoreT3");
 
 		} else if (score > 60)
 		{
 			int randPhrase = Random.Range(0, Tier3_Score_Phrase.Length);
 			GUI_Controller.instance.SpawnTextPopup(Tier3_Score_Phrase[randPhrase], Color.white, GameMaster.instance.playedTiles[0].transform,27);
-
+			AudioManager.instance.Play("ScoreT4");
+		}
+		else 
+		{
+			AudioManager.instance.Play("ScoreT1");
 		}
 
 	}

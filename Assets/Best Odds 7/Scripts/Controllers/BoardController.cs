@@ -423,7 +423,7 @@ public class BoardController : MonoBehaviour, Observable {
             foreach (GridCell Cell in GameMaster.instance.playedTiles)
             {
 
-                if (CheckTileValidity(Cell) == false)
+                if (CheckTileValidity(Cell, false) == false)
                 {
                     valFlag = false;
 
@@ -831,7 +831,7 @@ public class BoardController : MonoBehaviour, Observable {
         foreach (GridCell Cell in GameMaster.instance.playedTiles)
         {
 
-            if (CheckTileValidity(Cell) == false)
+            if (CheckTileValidity(Cell, endTurn) == false)
             {
                 Debug.Log("CELL ADDED TO INVALID TILES LIST!! X:" + Cell.x + " Y:" + Cell.y);
                 InvalidTiles.Add(Cell);
@@ -1053,7 +1053,7 @@ public class BoardController : MonoBehaviour, Observable {
 
     }
 
-    public bool CheckTileValidity(GridCell cell)
+    public bool CheckTileValidity(GridCell cell, bool endTurn)
     {
                
         //Set Validity Flags All to TRUE
@@ -1285,19 +1285,11 @@ public class BoardController : MonoBehaviour, Observable {
 
             if(rowValidity == true && colValidity == true)
             {
-                Debug.Log("CATCHING THE BUG????:" + cell.x + cell.y);
                 Debug.Log("ROW VALDITIY: " + rowValidity);
                 Debug.Log("COL VALDITIY: " + colValidity);
-                Debug.Log("Neeb found?: " + neighbourFound);
-
-                //temp test
-                // if(GameMaster.instance.vsAi && GameMaster.instance.turnCounter == 2) //temp
-                //     GUI_Controller.instance.ActivateCell(cell.cellTile);
-
             } else
             {
                 // GUI_Controller.instance.SpawnTextPopup("Not Odd!", Color.red, cell.cellTile.transform);
-                // GameMaster.instance.errorsMade++;
                 GUI_Controller.instance.DeactivateTileSkin(cell.cellTile);
             }
 
@@ -1305,7 +1297,9 @@ public class BoardController : MonoBehaviour, Observable {
 
         }
         
-        //TEMP - PLAY SOUND FX BASED ON VALIDITY OF MOVE
+        //PLAY SOUND FX BASED ON VALIDITY OF MOVE
+        if(!endTurn)
+        {
             switch(GameMaster.instance.turnIndicator)
             {
                 case 1:
@@ -1315,8 +1309,8 @@ public class BoardController : MonoBehaviour, Observable {
                     if (playstr == 0 && GameMaster.instance.invalidTilesInplay == true)
                         break;
 
-
-                    AudioManager.instance.Play("play" + playstr.ToString());
+                    if(playstr != 3)
+                        AudioManager.instance.Play("play" + playstr.ToString());
                     break;
 
                 case 2:
@@ -1326,7 +1320,8 @@ public class BoardController : MonoBehaviour, Observable {
                     if (playstr1 == 0 && GameMaster.instance.invalidTilesInplay == true)
                         break;
 
-                    AudioManager.instance.Play("play" + playstr1.ToString());
+                    if(playstr1 != 3)
+                        AudioManager.instance.Play("play" + playstr1.ToString());
                     break;
 
 
@@ -1337,7 +1332,8 @@ public class BoardController : MonoBehaviour, Observable {
                     if (playstr2 == 0 && GameMaster.instance.invalidTilesInplay == true)
                         break;
 
-                    AudioManager.instance.Play("play" + playstr2.ToString());
+                    if(playstr2 != 3)
+                        AudioManager.instance.Play("play" + playstr2.ToString());
                     break;
 
 
@@ -1347,10 +1343,12 @@ public class BoardController : MonoBehaviour, Observable {
 
                     if (playstr3 == 0 && GameMaster.instance.invalidTilesInplay == true)
                         break;
-
-                    AudioManager.instance.Play("play" + playstr3.ToString());
+                    
+                    if(playstr3 != 3)
+                        AudioManager.instance.Play("play" + playstr3.ToString());
                     break;
             }
+        }
 
         return validity;
     }

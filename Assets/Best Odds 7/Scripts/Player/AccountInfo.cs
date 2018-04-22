@@ -4,6 +4,7 @@ using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class AccountInfo : MonoBehaviour {
 
@@ -63,7 +64,6 @@ public class AccountInfo : MonoBehaviour {
 	public static void Login()
 	{
 		 PlayFabSettings.TitleId = "FCE"; // Title ID of the Playfab BAAS
-
 		if (Application.platform == RuntimePlatform.Android)
 		{
 			var request = new LoginWithAndroidDeviceIDRequest 
@@ -76,8 +76,7 @@ public class AccountInfo : MonoBehaviour {
 		}
 		else if(Application.platform == RuntimePlatform.IPhonePlayer)
 		{
-			print("Ifone");
-
+			print("iOS Login");
 		}
 		else
 		{
@@ -89,11 +88,6 @@ public class AccountInfo : MonoBehaviour {
 	private static void OnLoginSuccess(LoginResult result)
 	{
 		Debug.LogWarning("Login Successful");
-		if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-		{
-			//Debug.Log("Mobile device detected");
-		}
-
 		if(result.NewlyCreated)
 		{
 			SetUpAccount();
@@ -101,7 +95,6 @@ public class AccountInfo : MonoBehaviour {
 		{
 			GetPlayerData(result.PlayFabId);
 		}
-		
 		GetAccountInfo(result.PlayFabId);
 		playfabId = result.PlayFabId;
 	}
@@ -150,8 +143,11 @@ public class AccountInfo : MonoBehaviour {
 	static void OnAccountInfoSuccess(GetPlayerCombinedInfoResult result)
 	{
 		Debug.Log("Player Info Retrieved");
-		Instance.info = result.InfoResultPayload;
-		UpdateUIContent(result.InfoResultPayload);
+		if(Instance != null)
+		{
+			Instance.info = result.InfoResultPayload;
+			UpdateUIContent(result.InfoResultPayload);
+		}
 
 	}
 
@@ -177,44 +173,6 @@ public class AccountInfo : MonoBehaviour {
 		
 	}
 
-	// public static void SetUpAccount()
-	// {
-	// 	Debug.Log("Setting Up Account..");
-	// 	Dictionary<string, string> data = new Dictionary<string, string>();
-
-	// 	//Initalise a star count for each of the single player levels
-	// 	data.Add("B1", "0");
-	// 	data.Add("B2", "0");
-	// 	data.Add("B3", "0");
-	// 	data.Add("B4", "0");
-	// 	data.Add("B5", "0");
-
-	// 	data.Add("I1", "0");
-	// 	data.Add("I2", "0");
-	// 	data.Add("I3", "0");
-	// 	data.Add("I4", "0");
-	// 	data.Add("I5", "0");
-
-	// 	data.Add("A1", "0");
-	// 	data.Add("A2", "0");
-	// 	data.Add("A3", "0");
-	// 	data.Add("A4", "0");
-	// 	data.Add("A5", "0");
-
-	// 	data.Add("M1", "0");
-	// 	data.Add("M2", "0");
-	// 	data.Add("M3", "0");
-	// 	data.Add("M4", "0");
-	// 	data.Add("M5", "0");
-
-	// 	UpdateUserDataRequest request = new UpdateUserDataRequest()
-	// 	{
-	// 		Data = data,
-	// 	};
-
-	// 	PlayFabClientAPI.UpdateUserData(request, UpdateDataInfo, OnAPIError);
-
-	// }
 	public static void SetUpAccount() {
 		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
 			Data = new Dictionary<string, string>() {
@@ -302,29 +260,35 @@ public class AccountInfo : MonoBehaviour {
 					SetUpAccount();
 				}
 
-				int beginnerCounter = 0;
-				for(int i=0; i<5; i++)
+				 Scene scene = SceneManager.GetActiveScene();
+				if(scene.name != "Main")
 				{
-					worldStars[0,i] = int.Parse(result.Data["B"+(i+1).ToString()].Value);
-					beginnerCounter += int.Parse(result.Data["B"+(i+1).ToString()].Value);
-				}
-				beginnerStars = beginnerCounter;
+					int beginnerCounter = 0;
+					for(int i=0; i<5; i++)
+					{
+						worldStars[0,i] = int.Parse(result.Data["B"+(i+1).ToString()].Value);
+						beginnerCounter += int.Parse(result.Data["B"+(i+1).ToString()].Value);
+					}
+					beginnerStars = beginnerCounter;
 
-				int interCounter = 0;
-				for(int i=0; i<5; i++)
-				{
-					worldStars[1,i] = int.Parse(result.Data["I"+(i+1).ToString()].Value);
-					interCounter += int.Parse(result.Data["I"+(i+1).ToString()].Value);
-				}
-				intermediateStars = interCounter;
+					int interCounter = 0;
+					for(int i=0; i<5; i++)
+					{
+						worldStars[1,i] = int.Parse(result.Data["I"+(i+1).ToString()].Value);
+						interCounter += int.Parse(result.Data["I"+(i+1).ToString()].Value);
+					}
+					intermediateStars = interCounter;
 
-				int advCounter = 0;
-				for(int i=0; i<5; i++)
-				{
-					worldStars[2,i] = int.Parse(result.Data["A"+(i+1).ToString()].Value);
-					advCounter += int.Parse(result.Data["A"+(i+1).ToString()].Value);
+					int advCounter = 0;
+					for(int i=0; i<5; i++)
+					{
+						worldStars[2,i] = int.Parse(result.Data["A"+(i+1).ToString()].Value);
+						advCounter += int.Parse(result.Data["A"+(i+1).ToString()].Value);
+					}
+					advancedStars = advCounter;
+
 				}
-				advancedStars = advCounter;
+
 
 
 			}
