@@ -629,6 +629,18 @@ public class BoardEvaluator : MonoBehaviour {
                                         break;
                                     }
                                 }
+
+                                //traverse right from neighbour to first space ading total
+                                for (int xii = tileX; xii < BoardController.instance.GRID_SIZE; xii++)
+                                {
+                                    Debug.LogWarning("Traversing right from surround!!!!!");
+                                    if(gameGrid[xii,tileY] != 0)
+                                    {
+                                        prevtTotal += gameGrid[xii,tileY];
+                                    } else{
+                                        break;
+                                    }
+                                }
                             }
                         }
 
@@ -764,19 +776,46 @@ public class BoardEvaluator : MonoBehaviour {
                     int prevtTotal = CalculateListTotal(yList);
                     CalculateMatchCriteriaCol(tileX, y, prevtTotal);
 
-
                     // surround LIST
                     List<int> sList = new List<int>();
                     sList.Clear();
 
-
-                    //Debug.Log("Creating surround criteria...");
+                    
 
 
                     if(tileY != 0)
                     {
                         sList.Add((tileY - 1));
                         sList.Add(y);
+
+                        if(tileY >= 2)
+                        {
+                            if(gameGrid[tileX,tileY-2] != 0)
+                            {
+                                //traverse down from neighbour to first space, adding total
+                                for (int yi = tileY-2; yi >= 0; yi--)
+                                {
+                                    if(gameGrid[tileX,yi] != 0)
+                                    {
+                                        prevtTotal += gameGrid[tileX,yi];
+                                    } else{
+                                        break;
+                                    }
+                                }
+
+                                //traverse right from neighbour to first space ading total
+                                for (int yii = tileY; yii < BoardController.instance.GRID_SIZE; yii++)
+                                {
+                                    Debug.LogWarning("Traversing right from surround!!!!!");
+                                    if(gameGrid[tileX,yii] != 0)
+                                    {
+                                        prevtTotal += gameGrid[tileX,yii];
+                                    } else{
+                                        break;
+                                    }
+                                }
+                            }
+                        }
 
                         //Also create match criteria for the 'surround' - placing a tile at each side of the tile rown
                         CreateNewMatchCriteria(2, prevtTotal, sList, tileX, isEven(prevtTotal), 'X');

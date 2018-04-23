@@ -11132,9 +11132,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 0
   InactiveCardPositions:
-  - {fileID: 1406406312}
-  - {fileID: 1320167627}
   - {fileID: 1530949186}
+  - {fileID: 1320167627}
+  - {fileID: 1406406312}
   GameGrid_5x5: {fileID: 586577618}
   GameGrid_7x7: {fileID: 1059324062}
   GameGrid_9x9: {fileID: 683268184}
@@ -14206,6 +14206,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   Active: 0
+  queuePos: 0
 --- !u!4 &499445891
 Transform:
   m_ObjectHideFlags: 0
@@ -28327,6 +28328,7 @@ MonoBehaviour:
   InactiveCardScore: {fileID: 1228365846}
   ScoreAnimTransforms: []
   Active: 0
+  queuePos: 0
 --- !u!224 &1365793510 stripped
 RectTransform:
   m_PrefabParentObject: {fileID: 22434346, guid: de1465e60af5f6347bb9523d52b11901,
@@ -28714,6 +28716,7 @@ MonoBehaviour:
   InactiveCardScore: {fileID: 660430604}
   ScoreAnimTransforms: []
   Active: 0
+  queuePos: 0
 --- !u!1 &1393948808
 GameObject:
   m_ObjectHideFlags: 0
@@ -35349,6 +35352,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   Active: 0
+  queuePos: 0
 --- !u!114 &1879484538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36811,6 +36815,7 @@ MonoBehaviour:
   InactiveCardScore: {fileID: 478337840}
   ScoreAnimTransforms: []
   Active: 0
+  queuePos: 0
 --- !u!1001 &1989321369
 Prefab:
   m_ObjectHideFlags: 0

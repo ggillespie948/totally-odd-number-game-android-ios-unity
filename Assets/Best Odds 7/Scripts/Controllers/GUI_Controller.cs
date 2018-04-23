@@ -745,7 +745,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         } else {
             TextPopup instance = Instantiate(POPUP_TEXT);
             instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-            instance.transform.position = location.transform.position + new Vector3(UnityEngine.Random.Range(0.05f, .1f),UnityEngine.Random.Range(0.12f, .15f),-3); 
+            instance.transform.position = location.transform.position + new Vector3(UnityEngine.Random.Range(0.05f, .07f),UnityEngine.Random.Range(0.12f, .15f),-3); 
             if(instance.transform.position.x <= .7)
                 instance.transform.position += new Vector3(.2f,0f,0f);
 

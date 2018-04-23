@@ -38,6 +38,13 @@ public class AI_Player : MonoBehaviour {
         //Load current hand from game master
         LoadHand();
 
+        // if(GameMaster.instance.totalTiles ==0)
+        // {
+        //     PlayFirstTile();    
+        // }
+
+
+
 
         BoardEvaluator.isPlayerbool(true);
         // _thread = new Thread(BoardEvaluator.EvaluateBoard);  //temp removed threading
@@ -46,6 +53,35 @@ public class AI_Player : MonoBehaviour {
 
         //Loop which waits for the thread to complete board evaluation
         StartCoroutine("WaitLoop");
+
+    }
+
+    private void PlayFirstTile()
+    {
+        //find odd tile in hand
+        GridTile tile = new GridTile();
+
+        foreach(GridTile t in CurrentHand)
+        {
+            if(t.value%2!=0)
+            {
+                tile=t;
+                break;
+            }
+        }
+
+        if(tile!=null && BoardController.instance.gameGrid[BoardController.instance.GRID_CENTER,BoardController.instance.GRID_CENTER]==0)
+        {
+            //play tile
+            GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER]);
+            tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER].transform.position + new Vector3(0, 0, -1);
+            GUI_Controller.instance.AnimateTo(tile.GetComponent<GUI_Object>(), GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER].transform.position + new Vector3(0, 0, -1), .8f);
+            GUI_Controller.instance.RotateObjectBackward(tile.gameObject, .8f, 360);
+            GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER,BoardController.instance.GRID_CENTER].cellTile = tile;
+            GameMaster.instance.totalTiles++;
+            GameMaster.instance.StateMachine.SetLastValidState(2);
+        }
+
 
     }
 
