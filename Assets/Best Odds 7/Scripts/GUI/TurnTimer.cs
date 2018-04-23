@@ -18,9 +18,6 @@ public class TurnTimer : MonoBehaviour {
 	public Image fillerImage;
 
 	public float _currentSize = 2f;
-	private RectTransform _fillerRect;
-    private RectTransform _fillerRect2;
-
     public float timeLeft;
 
     public int startTime;
@@ -31,7 +28,7 @@ public class TurnTimer : MonoBehaviour {
     {
         instance = this;
         startTime = ApplicationModel.TURN_TIME;
-        if(startTime == null || startTime ==0)
+        if(startTime ==0)
             startTime=30;
 
         timeLeft = startTime;
@@ -90,8 +87,6 @@ public class TurnTimer : MonoBehaviour {
             remainingtext.text = "Remaining time: " + time;
             remainingtext2.text = "Remaining time: " + time;
             _currentSize -= Time.deltaTime*0.045f;
-			_fillerRect.sizeDelta = new Vector2(minWidth+(maxWidth - minWidth)*_currentSize, _fillerRect.sizeDelta.y);
-            _fillerRect2.sizeDelta = new Vector2(minWidth+(maxWidth - minWidth)*_currentSize, _fillerRect2.sizeDelta.y);
 
             //Color lerpedColor = Color.Lerp(Color.red, Color.green, barOverlay.fillAmount);
             //this.GetComponent<Image>().color = lerpedColor;

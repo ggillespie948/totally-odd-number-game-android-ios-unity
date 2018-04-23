@@ -36810,7 +36810,7 @@ MonoBehaviour:
   InactiveNameTag: {fileID: 1638658613}
   InactiveCardScore: {fileID: 478337840}
   ScoreAnimTransforms: []
-  Active: 1
+  Active: 0
 --- !u!1001 &1989321369
 Prefab:
   m_ObjectHideFlags: 0

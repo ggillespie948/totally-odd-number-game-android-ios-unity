@@ -129,6 +129,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             for(int i=0; i<GameMaster.MAX_TURN_INDICATOR; i++)
             {
+                GUI_Controller.instance.PlayerCards[i].SetQueuePos(i);
+                //GUI_Controller.instance.PlayerCards[i].SetPlayerNo(i-1);
                 //GameMaster.instance.turnIndicator = i;
                 //GameMaster.instance.humanTurn = GameMaster.instance.turnIdentifier[GameMaster.instance.turnIndicator]; 
                 if(GameMaster.instance.humanTurn)
@@ -136,6 +138,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 else
                     GUI_Controller.instance.PlayerCards[i].UpdateName("AI " + (i+1));
             }
+            GUI_Controller.instance.PlayerCards[0].SetQueuePos(1);
+
         }
         Time.timeScale = 1f;
     }
@@ -665,9 +669,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
         //Deactive All Cards
         foreach(PlayerCard card in PlayerCards)
         {
-            if(card.Active)
-                card.ToggleCard();
-            else
+             if(card.Active)
+                 card.ToggleCard();
+             else
             card.ShuffleCardPosition();
         }
 

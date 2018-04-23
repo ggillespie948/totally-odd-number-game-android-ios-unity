@@ -240,7 +240,7 @@ public class Game_Configuration : MonoBehaviour {
 	/// </summary>
 	public void IncrementPlayers()
 	{
-		if(human_players < 3)
+		if(human_players <= 3)
 		{
 			human_players++;
 			if(human_players+ai_opponents >4)

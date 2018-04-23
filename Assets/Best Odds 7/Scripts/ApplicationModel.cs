@@ -31,7 +31,7 @@
 
 	public static int HUMAN_PLAYERS = 1;
 
-	public static int AI_PLAYERS = 1;
+	public static int AI_PLAYERS = 3;
 
 	public static bool TUTORIAL_MODE = false;
 
