@@ -178,6 +178,7 @@ public class MenuController : MonoBehaviour {
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().levelNo = config.levelNo;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().worldNo = config.worldNo;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().gridSize = config.gridSize;
+		LevelSelectionDialogue.GetComponent<Game_Configuration>().human_players = config.human_players;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().ai_opponents = config.ai_opponents;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().turnTime = config.turnTime;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().maxTile = config.maxTile;
@@ -698,7 +699,7 @@ public class MenuController : MonoBehaviour {
 				Dialogue.Close();
 		}
 
-		foreach(GUI_Dialogue_Call Dialogue in World2Levels)
+		foreach(GUI_Dialogue_Call Dialogue in World3Levels)
 		{
 			if(Dialogue.isOpen)
 				Dialogue.Close();

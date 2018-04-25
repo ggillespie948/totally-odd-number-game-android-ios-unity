@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "Grid_Data_State", menuName = "Top Odds!/Grid")]
 public class Grid_Data : ScriptableObject
 {
-    private const int defaultGridSize = 7;
+    private const int defaultGridSize = 9;
 
     [Range(3, 9)]
     public int gridSize = defaultGridSize;
@@ -18,6 +18,11 @@ public class Grid_Data : ScriptableObject
     public int OneTileCount;
     public int TwoTileCount;
     public int ThreeTileCount;
+    public int FourTileCount;
+    public int FiveTileCount;
+    public int SixTileCount;
+    public int SevenTileCount;
+
 
 
     public int[,] GetCells()
@@ -44,6 +49,10 @@ public class Grid_Data : ScriptableObject
         OneTileCount = 0;
         TwoTileCount = 0;
         ThreeTileCount = 0;
+        FourTileCount=0;
+        FiveTileCount=0;
+        SixTileCount=0;
+        SevenTileCount=0;
 
         for (int i = 0; i < gridSize; i++)
         {
@@ -65,6 +74,22 @@ public class Grid_Data : ScriptableObject
 
                     case 3:
                     ThreeTileCount++;
+                    break;
+
+                    case 4:
+                    FourTileCount++;
+                    break;
+
+                    case 5:
+                    FiveTileCount++;
+                    break;
+
+                    case 6:
+                    SixTileCount++;
+                    break;
+
+                    case 7:
+                    SevenTileCount++;
                     break;
 
                 } 

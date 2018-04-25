@@ -315,9 +315,9 @@ public class Game_Configuration : MonoBehaviour {
 		switch(maxTile)
 		{
 			case 3:
-				oneTiles=gridSize*(8-maxTile);
-				twoTiles=gridSize*(8-maxTile);
-				threeTiles=gridSize*(8-maxTile);
+				oneTiles=gridSize*(8-maxTile)+9;
+				twoTiles=gridSize*(8-maxTile)+9;
+				threeTiles=gridSize*(8-maxTile)+9;
 				fourTiles=0;
 				fiveTiles=0;
 				sixTiles=0;
@@ -325,43 +325,43 @@ public class Game_Configuration : MonoBehaviour {
 			break;
 
 			case 4:
-				oneTiles=gridSize*(8-maxTile);
-				twoTiles=gridSize*(8-maxTile);
-				threeTiles=gridSize*(8-maxTile);
-				fourTiles=gridSize*(8-maxTile);
+				oneTiles=gridSize*(8-maxTile)+9;
+				twoTiles=gridSize*(8-maxTile)+9;
+				threeTiles=gridSize*(8-maxTile)+9;
+				fourTiles=gridSize*(8-maxTile)+9;
 				fiveTiles=0;
 				sixTiles=0;
 				sevenTiles=0;
 			break;
 
 			case 5:
-				oneTiles=gridSize*(8-maxTile);
-				twoTiles=gridSize*(8-maxTile);
-				threeTiles=gridSize*(8-maxTile);
-				fourTiles=gridSize*(8-maxTile);
-				fiveTiles=gridSize*(8-maxTile);
+				oneTiles=gridSize*(8-maxTile)+9;
+				twoTiles=gridSize*(8-maxTile)+9;
+				threeTiles=gridSize*(8-maxTile)+9;
+				fourTiles=gridSize*(8-maxTile)+9;
+				fiveTiles=gridSize*(8-maxTile)+9;
 				sixTiles=0;
 				sevenTiles=0;
 			break;
 
 			case 6:
-				oneTiles=gridSize*(8-maxTile);
-				twoTiles=gridSize*(8-maxTile);
-				threeTiles=gridSize*(8-maxTile);
-				fourTiles=gridSize*(8-maxTile);
-				fiveTiles=gridSize*(8-maxTile);
-				sixTiles=gridSize*(8-maxTile);
+				oneTiles=gridSize*(8-maxTile)+9;
+				twoTiles=gridSize*(8-maxTile)+9;
+				threeTiles=gridSize*(8-maxTile)+9;
+				fourTiles=gridSize*(8-maxTile)+9;
+				fiveTiles=gridSize*(8-maxTile)+9;
+				sixTiles=gridSize*(8-maxTile)+9;
 				sevenTiles=0;
 			break;
 
 			case 7:
-				oneTiles=gridSize*(8-maxTile);
-				twoTiles=gridSize*(8-maxTile);
-				threeTiles=gridSize*(8-maxTile);
-				fourTiles=gridSize*(8-maxTile);
-				fiveTiles=gridSize*(8-maxTile);
-				sixTiles=gridSize*(8-maxTile);
-				sevenTiles=gridSize*(8-maxTile);
+				oneTiles=gridSize*(8-maxTile)+9;
+				twoTiles=gridSize*(8-maxTile)+9;
+				threeTiles=gridSize*(8-maxTile)+9;
+				fourTiles=gridSize*(8-maxTile)+9;
+				fiveTiles=gridSize*(8-maxTile)+9;
+				sixTiles=gridSize*(8-maxTile)+9;
+				sevenTiles=gridSize*(8-maxTile)+9;
 			break;
 		}
 

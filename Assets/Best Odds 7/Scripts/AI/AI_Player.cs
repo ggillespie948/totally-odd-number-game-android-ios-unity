@@ -45,7 +45,7 @@ public class AI_Player : MonoBehaviour {
 
 
 
-
+        Debug.LogWarning("AI Player Begin Board Eval");
         BoardEvaluator.isPlayerbool(true);
         // _thread = new Thread(BoardEvaluator.EvaluateBoard);  //temp removed threading
         // _thread.Start();

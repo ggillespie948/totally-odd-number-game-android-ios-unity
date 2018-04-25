@@ -6,8 +6,6 @@ using TMPro;
 
 public class TurnTimer : MonoBehaviour {
 
-    public static TurnTimer instance = null;
-
     public TextMeshProUGUI remainingtext;
     public TextMeshProUGUI remainingtext2;
     public bool pauseFlag {get; private set;}
@@ -26,7 +24,6 @@ public class TurnTimer : MonoBehaviour {
 
     void Awake()
     {
-        instance = this;
         startTime = ApplicationModel.TURN_TIME;
         if(startTime ==0)
             startTime=30;

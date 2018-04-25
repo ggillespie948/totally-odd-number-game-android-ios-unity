@@ -35,13 +35,13 @@
 
 	public static bool TUTORIAL_MODE = false;
 
-	public static int ONE_TILES = 7;
-	public static int TWO_TILES = 7;
-	public static int THREE_TILES = 7;
-	public static int FOUR_TILES = 7;
-	public static int FIVE_TILES = 7;
-	public static int SIX_TILES = 7;
-	public static int SEVEN_TILES = 7;
+	public static int ONE_TILES = 15;
+	public static int TWO_TILES = 15;
+	public static int THREE_TILES = 15;
+	public static int FOUR_TILES = 15;
+	public static int FIVE_TILES = 15;
+	public static int SIX_TILES = 15;
+	public static int SEVEN_TILES = 15;
 
 	public static int RETURN_TO_WORLD =-1;
 

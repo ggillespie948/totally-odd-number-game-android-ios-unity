@@ -17,6 +17,8 @@ public class BoardEvaluator : MonoBehaviour {
 	public bool movesCalculated{ get; private set;}
     public  bool noValidMoves{ get; private set;}
 
+    public bool inEvaluation = false;
+
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
     /// any of the Update methods is called the first time.
@@ -615,6 +617,40 @@ public class BoardEvaluator : MonoBehaviour {
                         sList.Add((tileX-1));
                         sList.Add(x);
 
+                        // if(tileY >= 2)
+                        // {
+                        //     if(gameGrid[tileX,tileY-2] != 0)
+                        //     {
+                        //         //traverse down from neighbour to first space, adding total
+                        //         for (int yi = tileY-2; yi >= 0; yi--)
+                        //         {
+                        //             //Debug.LogWarning("Traversing down from surround!!!!!");
+                        //             if(gameGrid[tileX,yi] != 0)
+                        //             {
+                        //                 prevtTotal += gameGrid[tileX,yi];
+                        //             } else{
+                        //                 //Debug.LogWarning("Break");
+                        //                 break;
+                        //             }
+                        //         }
+
+                        //         //traverse up from neighbour to first space ading total
+                        //         for (int yii = tileY; yii < BoardController.instance.GRID_SIZE; yii++)
+                        //         {
+                        //             //Debug.LogWarning("Traversing up from surround!!!!!");
+                        //             if(gameGrid[tileX,yii] != 0)
+                        //             {
+                        //                 prevtTotal += gameGrid[tileX,yii];
+                        //             } else{
+                        //                 //Debug.LogWarning("Break");
+                        //                 break;
+                        //             }
+                        //         }
+
+                                
+                        //     }
+                        // }
+
                         if(tileX >= 2)
                         {
                             if(gameGrid[tileX-2,tileY] != 0)
@@ -622,10 +658,12 @@ public class BoardEvaluator : MonoBehaviour {
                                 //traverse left from neighbour to first space, adding total
                                 for (int xi = tileX-2; xi >= 0; xi--)
                                 {
+                                    //Debug.LogWarning("Traversing left from surround!!!!!");
                                     if(gameGrid[xi,tileY] != 0)
                                     {
                                         prevtTotal += gameGrid[xi,tileY];
                                     } else{
+                                        //Debug.LogWarning("Break");
                                         break;
                                     }
                                 }
@@ -633,18 +671,17 @@ public class BoardEvaluator : MonoBehaviour {
                                 //traverse right from neighbour to first space ading total
                                 for (int xii = tileX; xii < BoardController.instance.GRID_SIZE; xii++)
                                 {
-                                    Debug.LogWarning("Traversing right from surround!!!!!");
+                                    //Debug.LogWarning("Traversing right from surround!!!!!");
                                     if(gameGrid[xii,tileY] != 0)
                                     {
                                         prevtTotal += gameGrid[xii,tileY];
                                     } else{
+                                        //Debug.LogWarning("Break");
                                         break;
                                     }
                                 }
                             }
                         }
-
-
 
                         //Also create match criteria for the 'surround' - placing a tile at each side of the tile rown
                         CreateNewMatchCriteria(2, prevtTotal+gameGrid[x,tileY], sList, tileY, isEven(prevtTotal), 'S');
@@ -769,7 +806,6 @@ public class BoardEvaluator : MonoBehaviour {
             {
 
                 //first match criteria could be created here usiong the number of cSpaces with the total of the rowOfTiles!!!
-
                 if (gameGrid[tileX, y] == 0)
                 {
                     // Calculate match critera for the opposite side of this number set now
@@ -779,9 +815,6 @@ public class BoardEvaluator : MonoBehaviour {
                     // surround LIST
                     List<int> sList = new List<int>();
                     sList.Clear();
-
-                    
-
 
                     if(tileY != 0)
                     {
@@ -795,27 +828,68 @@ public class BoardEvaluator : MonoBehaviour {
                                 //traverse down from neighbour to first space, adding total
                                 for (int yi = tileY-2; yi >= 0; yi--)
                                 {
+                                    //Debug.LogWarning("Traversing down from surround!!!!!");
                                     if(gameGrid[tileX,yi] != 0)
                                     {
                                         prevtTotal += gameGrid[tileX,yi];
                                     } else{
+                                        //Debug.LogWarning("Break");
                                         break;
                                     }
                                 }
 
-                                //traverse right from neighbour to first space ading total
+                                //Debug.LogWarning("Transition Col 1");
+
+                                //traverse up from neighbour to first space ading total
                                 for (int yii = tileY; yii < BoardController.instance.GRID_SIZE; yii++)
                                 {
-                                    Debug.LogWarning("Traversing right from surround!!!!!");
+                                    //Debug.LogWarning("Traversing up from surround!!!!!");
                                     if(gameGrid[tileX,yii] != 0)
                                     {
                                         prevtTotal += gameGrid[tileX,yii];
                                     } else{
+                                        //Debug.LogWarning("Break");
                                         break;
                                     }
                                 }
+
+                                
                             }
                         }
+
+                        // if(tileX >= 2)
+                        // {
+                        //     if(gameGrid[tileX-2,tileY] != 0)
+                        //     {
+                        //         //traverse left from neighbour to first space, adding total
+                        //         for (int xi = tileX-2; xi >= 0; xi--)
+                        //         {
+                        //             //Debug.LogWarning("Traversing left from surround!!!!!");
+                        //             if(gameGrid[xi,tileY] != 0)
+                        //             {
+                        //                 prevtTotal += gameGrid[xi,tileY];
+                        //             } else{
+                        //                 //Debug.LogWarning("Break");
+                        //                 break;
+                        //             }
+                        //         }
+
+                        //         //Debug.LogWarning("Transition Col 2");
+
+                        //         //traverse right from neighbour to first space ading total
+                        //         for (int xii = tileX; xii < BoardController.instance.GRID_SIZE; xii++)
+                        //         {
+                        //             //Debug.LogWarning("Traversing right from surround!!!!!");
+                        //             if(gameGrid[xii,tileY] != 0)
+                        //             {
+                        //                 prevtTotal += gameGrid[xii,tileY];
+                        //             } else{
+                        //                 //Debug.LogWarning("Break");
+                        //                 break;
+                        //             }
+                        //         }
+                        //     }
+                        // }
 
                         //Also create match criteria for the 'surround' - placing a tile at each side of the tile rown
                         CreateNewMatchCriteria(2, prevtTotal, sList, tileX, isEven(prevtTotal), 'X');
@@ -929,17 +1003,34 @@ public class BoardEvaluator : MonoBehaviour {
     void TestMoveHorizontal(AI_Move Move, AI_MatchCriteria Criteria)
     {
         //try and place tiles
+        //Debug.LogWarning("Testing new move.");
         int y = Criteria.rowcolNo;
+
+        if(y==5)
+        {
+            //Debug.LogWarning("testing fifth row..");
+            foreach(int t in Move.tileValues)
+            {
+                //Debug.LogWarning(t);
+            }
+        }
+
+        int[] tempTileValues = new int[Move.tileValues.Count];
+        for(int i=0; i<Move.tileValues.Count;i++)
+        {
+            tempTileValues[i]=Move.tileValues[i];
+        }
 
         int tileCount = 0;
         int tilesPlayed = 0;
-        int currentTileVal = Move.tileValues[tileCount];
+        int currentTileVal = tempTileValues[tileCount];
         foreach (int x in Criteria.xSpaces)
         {
 
             //if tilesPlayed >= tiles in move then BREAK
             if (tilesPlayed >= Move.tileCount)
             {
+                //Debug.LogWarning("Tiles played break;");
                 break;
             }
 
@@ -947,16 +1038,26 @@ public class BoardEvaluator : MonoBehaviour {
             while (currentTileVal == 0)
             {
                 tileCount++;
-                currentTileVal = Move.tileValues[tileCount];
+                if(tileCount <= Move.tileValues.Count-1)
+                {
+                    currentTileVal = tempTileValues[tileCount];
+                } else {
+                    //Debug.LogWarning("Safety guard in place"); //TEMP?
+                    break;
+                }
             }
 
-            if (BoardController.instance.gameGrid[x, y] != 0)
+            if (BoardController.instance.gameGrid[x, y] != 0)                               
             {
-                Debug.Log("ERROR ERROR ERROR ERROR:   TRYING TO PLACE TILE ON NON ZERO VALUE");
+                //Debug.Log("ERROR ERROR ERROR ERROR:   TRYING TO PLACE TILE ON NON ZERO VALUE");
                 return;
             }
 
+            //Debug.LogWarning("PLACING: currentTileVal:" + currentTileVal);
             BoardController.instance.gameGrid[x, y] = currentTileVal;
+
+            tempTileValues[tileCount]=0;
+            currentTileVal=0;
             tilesPlayed++;
         }
 
@@ -969,13 +1070,14 @@ public class BoardEvaluator : MonoBehaviour {
 
             if(BoardController.instance.gameGrid[x, y] != 0)
             {
-
+                //Debug.LogWarning("Checking Tile Validity..");
                 if (!BoardController.instance.CheckAITileValidity(x, y))
                 {
                     isValid = false;
 					if(Criteria.startDirection == 'S') //if move is of type surround
 					{
 						if (currentHand.Count == 3) {
+                            //Debug.LogWarning("Attempting Correction");
 							int otherTileVal  = FindUnusedTileValue(Move);
 							CorrectSurround(x,y, otherTileVal, Move, Criteria);
 						}
@@ -1307,31 +1409,42 @@ public class BoardEvaluator : MonoBehaviour {
     {
         //try and place tiles
         int x = Criteria.rowcolNo;
+        
+        int[] tempTileValues = new int[Move.tileValues.Count];
+        for(int i=0; i<Move.tileValues.Count;i++)
+        {
+            tempTileValues[i]=Move.tileValues[i];
+        }
 
         int tileCount = 0;
         int tilesPlayed = 0;
-        int currentTileVal = Move.tileValues[tileCount];
+        int currentTileVal = tempTileValues[tileCount];
         foreach (int y in Criteria.xSpaces)
         {
 
             //if tilesPlayed >= tiles in move then BREAK
             if (tilesPlayed >= Move.tileCount)
+            {
+                //Debug.LogWarning("Tiles played break;");
                 break;
+            }
 
             //loop until non 0 val
             while (currentTileVal == 0)
             {
                 tileCount++;
-                currentTileVal = Move.tileValues[tileCount];
-            }
-
-            if (BoardController.instance.gameGrid[x, y] != 0)
-            {
-                Debug.Log("ERROR ERROR ERROR ERROR: TRYING TO PLACE TILE ON NON ZERO VALUE ");
-                return;
+                if(tileCount <= Move.tileValues.Count-1)
+                {
+                    currentTileVal = tempTileValues[tileCount];
+                } else {
+                    //Debug.LogWarning("Safety guard in place"); //TEMP?
+                    break;
+                }
             }
 
             BoardController.instance.gameGrid[x, y] = currentTileVal;
+            tempTileValues[tileCount]=0;
+            currentTileVal=0;
             tilesPlayed++;
         }
 

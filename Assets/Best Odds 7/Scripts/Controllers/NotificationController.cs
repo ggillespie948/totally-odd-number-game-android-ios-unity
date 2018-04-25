@@ -4,20 +4,6 @@ using UnityEngine;
 
 public class NotificationController : MonoBehaviour, Observer {
 
-	// Notification Metrics
-
-	// nice streak counter
-
-	// error streak counter
-
-	// hints?
-
-	// target progress notifcaitons
-
-	// player taking the lead notifcations
-
-	// time up notificaiton
-
 	[SerializeField]
 	private string[] Tier0_Score_Phrase; //these are negative score for players who score < 7 points in a turn past 5 total turns
 	[SerializeField]

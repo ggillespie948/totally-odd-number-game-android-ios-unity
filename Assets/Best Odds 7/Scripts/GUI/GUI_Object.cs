@@ -180,7 +180,7 @@ public class GUI_Object : MonoBehaviour {
         while (curveTime <= time)
         {
             if(transform != null)
-            transform.position = Vector3.Lerp(_startPos, pos, 
+                transform.position = Vector3.Lerp(_startPos, pos, 
                 InvalidTileCurve.Evaluate(curveTime / time));
             curveTime += Time.deltaTime;
             yield return null;

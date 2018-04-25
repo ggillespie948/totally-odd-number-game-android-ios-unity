@@ -18,6 +18,9 @@ public class GameMaster : MonoBehaviour, Observable {
     public BoardEvaluator BoardEvaluator;
     public  TutorialController TutorialController;
     public GridCell[,] objGameGrid;
+
+    public TurnTimer TurnTimer;
+
     List<Observer> observers = new List<Observer>();
 
     [Header("Game Configuration Constants")]
@@ -279,6 +282,7 @@ public class GameMaster : MonoBehaviour, Observable {
     
     public void InitGame()
     {
+        StopAllCoroutines();
         Debug.Log("Init game");
         if(vsAi)
             AI_PLAYER=GetComponent<AI_Player>();
@@ -385,7 +389,7 @@ public class GameMaster : MonoBehaviour, Observable {
     {
         while(BoardEvaluator.movesCalculated == false)
         {
-            //Debug.Log("Master Waiting For Evaluatoion...");
+            Debug.LogWarning("Master Waiting For Evaluatoion...");
             yield return new WaitForSeconds(1f);
         }
 
@@ -395,29 +399,30 @@ public class GameMaster : MonoBehaviour, Observable {
             GameOver();
         } else {
             Debug.Log("GG = LVG");
-            StateMachine.LastValidGameGrid();  // temp - after the board evaluator has 
+            StateMachine.LastValidGameGrid(); 
         }
     }
 
     public void EndTurn()
     {
         Debug.Log("End turn");
+        StopCoroutine("WaitingForBoardEvaluator");
         if(gameOver) {return;}
         if(!soloPlay) {turnCounter++;}
         if(vsAi){AI_PLAYER.StopAllCoroutines();}
-        if(TurnTimer.instance != null)
+        BoardEvaluator.StopAllCoroutines();
+        if(TurnTimer != null)
         {
-            TurnTimer.instance.StopAllCoroutines();
-            TurnTimer.instance.StartTurn();
+            TurnTimer.StopAllCoroutines();
+            TurnTimer.StartTurn();
         }
         StartCoroutine("WaitingForBoardEvaluator");
         HidePlayerTiles();
         SwitchTurnIndicator();
         LoadCurrentHand(); 
         GUI_Controller.instance.EnableAllEmissions();
-        if(totalTiles >  3) 
+        if(totalTiles >  3 && humanTurn) 
         {
-            Debug.Log("Begin end game detection");
             EndGameDetection();
         }
 
@@ -1113,6 +1118,7 @@ public class GameMaster : MonoBehaviour, Observable {
     /// </summary>
     public void EndGameDetection()
     {
+        Debug.LogWarning("Begin End Game Detection..");
         BoardEvaluator.isPlayerbool(false);
         // // _thread = new Thread(BoardEvaluator.EvaluateBoard);
         // // _thread.Start();

@@ -25,6 +25,7 @@ public class StateMachine : MonoBehaviour {
     public void LoadGameState()
     {
         Debug.Log("LOADING GAME STATE");
+        StopAllCoroutines();
         GameMaster.instance.InitGame();
         for (int i = 0; i < BoardController.instance.GRID_SIZE; i++)
         {
@@ -35,7 +36,8 @@ public class StateMachine : MonoBehaviour {
                BoardController.instance.staticgameGrid[o,i] = BOARD_STATE.gameGrid[o,i];
             }
         }
-        GameMaster.instance.totalTiles = (BOARD_STATE.OneTileCount+BOARD_STATE.TwoTileCount);
+        GameMaster.instance.totalTiles = (BOARD_STATE.OneTileCount+BOARD_STATE.TwoTileCount+BOARD_STATE.ThreeTileCount+
+                                            BOARD_STATE.FourTileCount+BOARD_STATE.FiveTileCount+BOARD_STATE.SixTileCount+BOARD_STATE.SevenTileCount);
         BoardController.instance.GenerateBoardTiles();
         GameMaster.instance.Player1Hand.Clear();
         GameMaster.instance.EndTurn();
