@@ -36,7 +36,6 @@ public class AccountInfo : MonoBehaviour {
 	public static string COINS_CODE  = "PC";
 	public static string GEMS_CODE  = "PG";
 	public static string LIVES_CODE  = "PL";
-
 	public static string DATA_STARS  = "DS";
 	
 
@@ -316,8 +315,6 @@ public class AccountInfo : MonoBehaviour {
 		} else{
 			Debug.Log("Star count not improved");
 		}
-
-
 	}
 
 

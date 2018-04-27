@@ -554,7 +554,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public void ActivateCell(GridTile tile) 
     {
-        if (tile != null && !tile.Activated )//&& tile.GetComponent<GUI_Object>().GetState() != GUI_Object.GUIState.inAnimation)
+        if (tile != null && !tile.Activated )
         {
             tile.ActiveTileSkin();
             tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
@@ -563,7 +563,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
             switch(tile.value)
             {
                 case 1:
-                GameObject FX = Instantiate(Tile1ActivateFX, tile.transform.position- new Vector3(0,0,1), Tile1ActivateFX.transform.rotation);
+                GameObject FX = Instantiate(Tile1ActivateFX, tile.transform.position-
+                    new Vector3(0,0,1), Tile1ActivateFX.transform.rotation);
                 FX.transform.localScale=AdjustFXScale();
                 Destroy(FX, 1f);
                 break;

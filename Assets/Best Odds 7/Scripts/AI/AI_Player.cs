@@ -45,15 +45,14 @@ public class AI_Player : MonoBehaviour {
 
 
 
-        Debug.LogWarning("AI Player Begin Board Eval");
-        BoardEvaluator.isPlayerbool(true);
-        // _thread = new Thread(BoardEvaluator.EvaluateBoard);  //temp removed threading
+        Debug.Log("AI Player Begin Board Evaluation");
+        // _thread = new Thread(BoardEvaluator.EvaluateBoard);  
         // _thread.Start();
-        BoardEvaluator.EvaluateBoard();
-
         //Loop which waits for the thread to complete board evaluation
         StartCoroutine("WaitLoop");
 
+        BoardEvaluator.isPlayerbool(true);
+        BoardEvaluator.EvaluateBoard();
     }
 
     private void PlayFirstTile()

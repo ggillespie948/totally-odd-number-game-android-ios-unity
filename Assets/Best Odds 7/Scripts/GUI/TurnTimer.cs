@@ -64,7 +64,6 @@ public class TurnTimer : MonoBehaviour {
 
     public void StartTurn()
     {
-        _currentSize = 2f;
         timeLeft = ApplicationModel.TURN_TIME;
     }
 
