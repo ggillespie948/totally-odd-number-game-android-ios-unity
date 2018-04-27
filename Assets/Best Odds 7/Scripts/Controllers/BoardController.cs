@@ -214,7 +214,7 @@ public class BoardController : MonoBehaviour, Observable {
 
         if(GameMaster.instance.TUTORIAL_MODE && !GameMaster.instance.TutorialController.clear3) //refactor this out into better architecture temp
         {
-            GameMaster.instance.TutorialController.Clear3();
+            NotifyObservers(this, "Tutorial.3");
         }
 
         GameMaster.instance.staticStateBroken = true;

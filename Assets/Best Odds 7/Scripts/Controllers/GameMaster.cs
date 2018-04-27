@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Threading;
 
-public class GameMaster : MonoBehaviour, Observable {
+public class GameMaster : MonoBehaviour{
 
     public static GameMaster instance = null;     // Singleton instance
 
@@ -389,7 +389,7 @@ public class GameMaster : MonoBehaviour, Observable {
     {
         while(BoardEvaluator.movesCalculated == false)
         {
-            Debug.LogWarning("Master Waiting For Evaluatoion...");
+            //Debug.Log("Master Waiting For Evaluatoion...");
             yield return new WaitForSeconds(1f);
         }
 
@@ -413,7 +413,6 @@ public class GameMaster : MonoBehaviour, Observable {
         BoardEvaluator.StopAllCoroutines();
         if(TurnTimer != null)
         {
-            TurnTimer.StopAllCoroutines();
             TurnTimer.StartTurn();
         }
         StartCoroutine("WaitingForBoardEvaluator");
@@ -682,6 +681,7 @@ public class GameMaster : MonoBehaviour, Observable {
                                     GridTile t = Instantiate(tile1, transform.position, Quaternion.Euler(0, 0, 0));
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                    t.AddObserver(TutorialController);
                                     bool spawnFlag = false;
                                     while(spawnFlag == false)
                                     {
@@ -714,6 +714,7 @@ public class GameMaster : MonoBehaviour, Observable {
                                     GridTile t = Instantiate(tile2, transform.position, Quaternion.Euler(0, 0, 0));
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                    t.AddObserver(TutorialController);
                                     bool spawnFlag = false;
                                     while(spawnFlag == false)
                                     {
@@ -745,6 +746,7 @@ public class GameMaster : MonoBehaviour, Observable {
                                     GridTile t = Instantiate(tile3, transform.position, Quaternion.Euler(0, 0, 0));
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                    t.AddObserver(TutorialController);
                                     bool spawnFlag = false;
                                     while(spawnFlag == false)
                                     {
@@ -777,6 +779,7 @@ public class GameMaster : MonoBehaviour, Observable {
                                     GridTile t = Instantiate(tile4, transform.position, Quaternion.Euler(0, 0, 0));
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                    t.AddObserver(TutorialController);
                                     bool spawnFlag = false;
                                     while(spawnFlag == false)
                                     {
@@ -809,6 +812,7 @@ public class GameMaster : MonoBehaviour, Observable {
                                         GridTile t = Instantiate(tile5, transform.position, Quaternion.Euler(0, 0, 0));
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                        t.AddObserver(TutorialController);
                                         bool spawnFlag = false;
                                         while(spawnFlag == false)
                                         {
@@ -841,6 +845,7 @@ public class GameMaster : MonoBehaviour, Observable {
                                         GridTile t = Instantiate(tile6, transform.position, Quaternion.Euler(0, 0, 0));
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                        t.AddObserver(TutorialController);
                                         bool spawnFlag = false;
                                         while(spawnFlag == false)
                                         {
@@ -873,6 +878,7 @@ public class GameMaster : MonoBehaviour, Observable {
                                         GridTile t = Instantiate(tile7, transform.position, Quaternion.Euler(0, 0, 0));
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                        t.AddObserver(TutorialController);
                                         bool spawnFlag = false;
                                         while(spawnFlag == false)
                                         {
@@ -1124,22 +1130,5 @@ public class GameMaster : MonoBehaviour, Observable {
         // // _thread.Start();
         BoardEvaluator.EvaluateBoard();
     }
-
-    public virtual void AddObserver(Observer ob)
-    {
-
-    }
-
-    public virtual void DeleteObserver(Observer ob)
-    {
-
-    }
-
-    public virtual void NotifyObservers(MonoBehaviour _class, string _event)
-    {
-
-    }
-
-
 
 }

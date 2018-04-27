@@ -17,7 +17,6 @@ public class NotificationController : MonoBehaviour, Observer {
 
 	// Use this for initialization
 	void Start () {
-		GameMaster.instance.AddObserver(this);
 		GUI_Controller.instance.AddObserver(this);
 		BoardController.instance.AddObserver(this);
 		//foreach player var in game master.. add observer
@@ -28,6 +27,7 @@ public class NotificationController : MonoBehaviour, Observer {
 		//Split string into three identifiers
 		// Event.Score.24
 		// Event.Objective. something //temp add this <-
+		Debug.LogWarning("Notif recieved: " + e);
 		Debug.Log("Notifcation received");
 		string[] ret = e.Split('.');
 

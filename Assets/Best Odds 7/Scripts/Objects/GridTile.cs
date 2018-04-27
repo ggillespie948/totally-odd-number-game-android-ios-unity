@@ -31,9 +31,12 @@ public class GridTile : MonoBehaviour {
 
     public bool isFlashing = false;
 
+    public List<Observer> observerList;
+
 
     void Awake()
     {
+        observerList=new List<Observer>();
         this.renderer = this.GetComponent<Renderer>();
         pickedUp = false;
         PointLightStrength = PointLight.intensity;
@@ -81,7 +84,10 @@ public class GridTile : MonoBehaviour {
 
             if(GameMaster.instance.TUTORIAL_MODE && GameMaster.instance.TutorialController.clear4 && !GameMaster.instance.TutorialController.clear5)
             {
-                GameMaster.instance.TutorialController.Clear5();
+                if(observerList.Count==0)
+                    observerList.Add(GameMaster.instance.TutorialController);
+
+                NotifyObservers(this, "Tutorial.5");
             }
 
         }
@@ -126,7 +132,10 @@ public class GridTile : MonoBehaviour {
             return;
         } else if (GameMaster.instance.TUTORIAL_MODE && GameMaster.instance.totalTiles == 1 && (GameMaster.instance.activeCell.x == 2 && GameMaster.instance.activeCell.y == 3))
         {
-            GameMaster.instance.TutorialController.Clear4();
+            if(observerList.Count==0)
+                    observerList.Add(GameMaster.instance.TutorialController);
+
+            NotifyObservers(this, "Tutorial.4");
         }
 
         if (BoardController.instance.gameGrid[GameMaster.instance.activeCell.x, GameMaster.instance.activeCell.y] != 0)
@@ -140,9 +149,6 @@ public class GridTile : MonoBehaviour {
         } 
 
         //Temporarily place the tile
-
-        //temp
-        
         GUI_Controller.instance.LastPlacedTile = this.gameObject;
         BoardController.instance.gameGrid[GameMaster.instance.activeCell.x, GameMaster.instance.activeCell.y] = this.value;
         GameMaster.instance.playedTiles.Add(GameMaster.instance.activeCell);
@@ -152,6 +158,7 @@ public class GridTile : MonoBehaviour {
         GameMaster.instance.selectedTile.Location = GameMaster.instance.selectedTile.transform.position;
         
         pickedUp = false;
+
 
         //Check if move is actually valid
         if (BoardController.instance.CheckMoveValidity(GameMaster.instance.activeCell))
@@ -163,11 +170,34 @@ public class GridTile : MonoBehaviour {
 
         if(GameMaster.instance.TUTORIAL_MODE && GameMaster.instance.TutorialController.clear5 && GameMaster.instance.currentHand.Count >= 1 && GameMaster.instance.currentHand.Count <3) 
         {
-            GameMaster.instance.TutorialController.Clear6();
+            if(observerList.Count==0)
+                    observerList.Add(GameMaster.instance.TutorialController);
+
+            NotifyObservers(this, "Tutorial.6");
         }
 
         GameMaster.instance.selectedTile = null;
         this.GetComponent<GUI_Object>().PutObjectDown();
+    }
+
+    public virtual void AddObserver(Observer ob)
+    {
+        observerList.Add(ob);
+    }
+
+    public virtual void DeleteObserver(Observer ob)
+    {
+        observerList.Remove(ob);
+
+    }
+
+    public virtual void NotifyObservers(MonoBehaviour _class, string _event)
+    {
+        foreach (var Observer in observerList)
+        {
+            Observer.OnNotification(_class, _event);
+        }
+
     }
 
     

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TutorialController : MonoBehaviour {
+public class TutorialController : MonoBehaviour, Observer {
 
 	[Header("Tutorial Dialogues")]
 	public GameObject OpeningDialogue;
@@ -18,15 +18,43 @@ public class TutorialController : MonoBehaviour {
 	public bool clear1;
 	public bool clear2;
 	public bool clear3;
-
 	public bool clear4;
-
 	public bool clear5;
 
 	[Header("Tutorial Tiles")]
 	public GridTile tile1;
 	public GridTile tile2;
 	public GridTile tile3;
+
+	void Start()
+	{
+		GUI_Controller.instance.AddObserver(this);
+		BoardController.instance.AddObserver(this);
+	}
+
+	public void OnNotification(MonoBehaviour _class, string e)
+	{
+		switch(e)
+		{
+			case "Tutorial.6":
+			Clear6();
+			break;
+
+			case "Tutorial.5":
+			Clear5();
+			break;
+
+			case "Tutorial.4":
+			Clear4();
+			break;
+
+			case "Tutorial.3":
+			Clear3();
+			break;
+
+		}
+
+	}
 
 	public void StartTutorial()
 	{
@@ -56,12 +84,11 @@ public class TutorialController : MonoBehaviour {
 		tile3.gameObject.SetActive(true);
 		tile1.GetComponent<BoxCollider2D>().enabled = false;
 		tile3.GetComponent<BoxCollider2D>().enabled = false;
-
 		//Deal player hand 121, set last valid state
 		//disable box coliders on all tiles bar 1 tile
 	}
 
-	public void Clear3()
+	private void Clear3()
 	{
 		clear3 = true;
 		DragTilesDialogue.SetActive(false);
@@ -69,20 +96,20 @@ public class TutorialController : MonoBehaviour {
 		tile1.GetComponent<BoxCollider2D>().enabled = true;
 	}
 
-	public void Clear4()
+	private void Clear4()
 	{
 		clear4 = true;
 		InactiveTileDialogue.SetActive(true);
 		InactiveTileGesture.SetActive(false);
 	}
 
-	public void Clear5()
+	private void Clear5()
 	{
 		clear5 = true;
 		InactiveTileDialogue.SetActive(false);
 	}
 
-	public void Clear6()
+	private void Clear6()
 	{
 		EndTurnDialogue.SetActive(true);
 		GUI_Controller.instance.ActionButtons.SetActive(true);
