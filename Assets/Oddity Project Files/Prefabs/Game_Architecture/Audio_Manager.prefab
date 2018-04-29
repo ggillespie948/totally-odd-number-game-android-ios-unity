@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1686344915030024}
+  m_IsPrefabParent: 1
+--- !u!1 &1686344915030024
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4716640605361136}
+  - component: {fileID: 114455493792570398}
+  m_Layer: 0
+  m_Name: Audio_Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4716640605361136
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1686344915030024}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114455493792570398
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1686344915030024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b366c9915b098d64ca1b154a7b8ab7c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - clip: {fileID: 8300000, guid: 6d2e8721e7466af4b9b96fc7e4cb6f6b, type: 3}
+    source: {fileID: 0}
+    name: StatusRotateStone
+    volume: 10
+    pitch: 1.072
+  - clip: {fileID: 8300000, guid: ff50cd575419c4b4486d849bf7bca8e5, type: 3}
+    source: {fileID: 0}
+    name: play1
+    volume: 1
+    pitch: 1.072
+  - clip: {fileID: 8300000, guid: 17328fe226ab90e4ca0279307dbfb90e, type: 3}
+    source: {fileID: 0}
+    name: play2
+    volume: 1
+    pitch: 1.072
+  - clip: {fileID: 8300000, guid: e57870352e54cb7408890b95508d6955, type: 3}
+    source: {fileID: 0}
+    name: play3
+    volume: 0.95
+    pitch: 1
+  - clip: {fileID: 8300000, guid: 7af74f57279b64945bc92c7eab42a345, type: 3}
+    source: {fileID: 0}
+    name: Oops
+    volume: 1
+    pitch: 1.072
+  - clip: {fileID: 8300000, guid: e466af77dfae23b44b695c6aa9b981f4, type: 3}
+    source: {fileID: 0}
+    name: DealTile
+    volume: 7
+    pitch: 1.072
+  - clip: {fileID: 8300000, guid: 627dce3741f62884ca75c2baf264014e, type: 3}
+    source: {fileID: 0}
+    name: YouWinCheer
+    volume: 7
+    pitch: 1.072
+  - clip: {fileID: 8300000, guid: f39836f18e5cb4b418032b8e16331d15, type: 3}
+    source: {fileID: 0}
+    name: play0
+    volume: 7
+    pitch: 1.072
+  - clip: {fileID: 8300000, guid: 11553d49860d45f468857480a9cbcb61, type: 3}
+    source: {fileID: 0}
+    name: YouLose
+    volume: 7
+    pitch: 1.072
+  - clip: {fileID: 8300000, guid: 4f16e33816a14be49beaf8909c09758f, type: 3}
+    source: {fileID: 0}
+    name: title
+    volume: 6.46
+    pitch: 1.072
