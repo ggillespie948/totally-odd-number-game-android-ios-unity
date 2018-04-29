@@ -13,11 +13,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public static GUI_Controller instance = null;
     public int animationCount = 0;
     public TextMeshProUGUI menuDebugTxt;
-    public GameObject themeIndicator;
     public GameObject LastPlacedTile;
     [Header("Popup Fonts")]
     public TMP_FontAsset orangeGlow;
-    public TMP_FontAsset menuUI;
     public GameObject TimerUI;
     public Transform exchangePoint;
     [Header("Grid Options")]
@@ -26,8 +24,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GameObject statusBar;
     public GameObject buttons;
     [Header("UI Text")]
-    public TextMeshProUGUI lbl_targetScore;
-    public TextMeshProUGUI lbl_playerScore;
     public GameObject ScoreText;
     public GameObject physcialGridContainer;
     public AnimationCurve ElasticCurve;
@@ -69,7 +65,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GUI_Object TargetScore_Stone;
     public GUI_Object RemainingTurns_Stone;
     public GUI_Object PlayerCoins_Stone;
-    public GUI_Object PlayerLives_Stone;
     public TextMeshProUGUI remainingTurnText;
     public TextMeshProUGUI remainingTilesText;
     public TextMeshProUGUI targetScoreText;
@@ -130,23 +125,22 @@ public class GUI_Controller : MonoBehaviour, Observable {
             for(int i=0; i<GameMaster.MAX_TURN_INDICATOR; i++)
             {
                 GUI_Controller.instance.PlayerCards[i].SetQueuePos(i);
-                //GUI_Controller.instance.PlayerCards[i].SetPlayerNo(i-1);
-                //GameMaster.instance.turnIndicator = i;
-                //GameMaster.instance.humanTurn = GameMaster.instance.turnIdentifier[GameMaster.instance.turnIndicator]; 
                 if(GameMaster.instance.humanTurn)
                     GUI_Controller.instance.PlayerCards[i].UpdateName("Player " + (i+1));
                 else
                     GUI_Controller.instance.PlayerCards[i].UpdateName("AI " + (i+1));
             }
             GUI_Controller.instance.PlayerCards[0].SetQueuePos(1);
-
         }
         Time.timeScale = 1f;
     }
 
+    /// <summary>
+    /// Method originally used to rotate the screen in local multiplayer when game was restrcited to two players
+    /// </summary>
     public void RotateScreen()
     {
-                // if( ApplicationModel.vsLocalMP )
+        // if( ApplicationModel.vsLocalMP )
         // {
         //     //GUI_Controller.instance.RotateScreen();
 
@@ -206,7 +200,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         // Menu_Btn.gameObject.SetActive(!Menu_Btn.gameObject.activeSelf);
     }
 
-    //IEnumerators For Animation        //temp why not make this a scale object function instead
+    //IEnumerators For Animation        //temp - could refactor into scale object ?
     public IEnumerator GridIntroAnim()
     {
 

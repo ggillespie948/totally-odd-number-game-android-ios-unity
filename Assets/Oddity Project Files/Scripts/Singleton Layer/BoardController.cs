@@ -9,17 +9,11 @@ public class BoardController : MonoBehaviour, Observable {
 
     //GameGrids
     public int[,] staticgameGrid; //updated every round
-    //[SerializeField]
     public int[,] lastValidGameGrid; //updated after each valid board state
-    //[SerializeField]
     public int[,] gameGrid; //updated after each move
-
     public List<Observer> observerList;
-
     public int GRID_SIZE = 7;
     public int GRID_CENTER;
-
-
 
     // Use this for initialization
     void Awake () {

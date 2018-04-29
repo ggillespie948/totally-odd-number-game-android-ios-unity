@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class AccountInfo : MonoBehaviour {
 
+	//Singleton Instance
 	private static AccountInfo instance;
 
 	public static AccountInfo Instance

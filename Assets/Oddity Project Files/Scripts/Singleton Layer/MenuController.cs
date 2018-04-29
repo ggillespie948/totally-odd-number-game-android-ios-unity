@@ -264,6 +264,7 @@ public class MenuController : MonoBehaviour {
 		ApplicationModel.SOLO_PLAY = false;
 		ApplicationModel.AI_PLAYERS=1;
 		ApplicationModel.HUMAN_PLAYERS=1;
+		ApplicationModel.RETURN_TO_WORLD=-1;
 		SceneManager.LoadScene("Main");
 	}
 

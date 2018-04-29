@@ -160,8 +160,12 @@ public class Game_Configuration : MonoBehaviour {
 		ApplicationModel.GRID_SIZE=gridSize;
 		ApplicationModel.TURN_TIME=turnTime;
 		ApplicationModel.TUTORIAL_MODE=false;
-		ApplicationModel.RETURN_TO_WORLD=worldNo;
 		ApplicationModel.HUMAN_PLAYERS=human_players;
+
+		if(challengeMode)
+			ApplicationModel.RETURN_TO_WORLD=worldNo;
+		else
+			ApplicationModel.RETURN_TO_WORLD=-1;
 		//ApplicationModel.THEME=theme;
 
 		if(targetScore ==0)
