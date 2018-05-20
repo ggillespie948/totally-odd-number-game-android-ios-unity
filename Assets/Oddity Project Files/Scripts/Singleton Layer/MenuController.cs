@@ -90,6 +90,9 @@ public class MenuController : MonoBehaviour {
 	public GUI_Dialogue_Call Ai_Three_MenuButton;
 
 	public GUI_Dialogue_Call CustomGame_Dialogue;
+
+	public GUI_Dialogue_Call PuzzleMode_Dialogue;
+
 	public GUI_Dialogue_Call ThemeMenu_Dialogue;
 
 	[SerializeField]
@@ -192,7 +195,12 @@ public class MenuController : MonoBehaviour {
 	{
 		CloseAllMenus(true);
 		CustomGame_Dialogue.Open();
+	}
 
+	public void OpenPuzzleMode()
+	{
+		CloseAllMenus(true);
+		PuzzleMode_Dialogue.Open();
 	}
 
 

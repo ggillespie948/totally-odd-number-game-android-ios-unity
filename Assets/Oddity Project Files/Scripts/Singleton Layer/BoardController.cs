@@ -135,7 +135,7 @@ public class BoardController : MonoBehaviour, Observable {
                     break;
 
                     case 5:
-                        Debug.Log("3 TILE GENERATED");
+                        Debug.Log("5 TILE GENERATED");
                         GridTile tile5= Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile5, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
                         tile5.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
                         GameMaster.instance.objGameGrid[i,o].cellTile = tile5;
@@ -146,7 +146,7 @@ public class BoardController : MonoBehaviour, Observable {
                     break;
 
                     case 6:
-                        Debug.Log("3 TILE GENERATED");
+                        Debug.Log("6 TILE GENERATED");
                         GridTile tile6 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile6, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
                         tile6.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
                         GameMaster.instance.objGameGrid[i,o].cellTile = tile6;
@@ -157,7 +157,7 @@ public class BoardController : MonoBehaviour, Observable {
                     break;
 
                     case 7:
-                        Debug.Log("3 TILE GENERATED");
+                        Debug.Log("7 TILE GENERATED");
                         GridTile tile7 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile7, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
                         tile7.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
                         GameMaster.instance.objGameGrid[i,o].cellTile = tile7;
@@ -1013,7 +1013,6 @@ public class BoardController : MonoBehaviour, Observable {
                     }
                     break;
             }
-            GUI_Controller.instance.PlayerCard1.CardScoreAnim(GUI_Controller.instance.TilesScored);
 
              //Activate Score Effect for tiles
             GUI_Controller.instance.ScoreTrailEffect();

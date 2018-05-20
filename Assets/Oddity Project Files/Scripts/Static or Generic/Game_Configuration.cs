@@ -19,6 +19,7 @@ public class Game_Configuration : MonoBehaviour {
 
 	[Header("Game Configuration Settings")]
 	public bool challengeMode;
+	public bool puzzleMode;
 	public string levelTitle;
 	public string levelCode;
 	public int levelNo;
@@ -37,6 +38,12 @@ public class Game_Configuration : MonoBehaviour {
 	public int sixTiles;
 	public int sevenTiles;
 	public int targetScore;
+
+	public int rewardCoins;
+
+	public int rewardLives;
+
+	public string rewardSpecial;
 
 	public GameObject tile1;
 	public GameObject tile2;

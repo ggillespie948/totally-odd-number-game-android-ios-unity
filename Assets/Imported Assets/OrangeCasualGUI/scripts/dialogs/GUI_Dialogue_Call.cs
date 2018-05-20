@@ -41,7 +41,7 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		if(intermediateText != null)
 			intermediateText.text = "Intermediate "+AccountInfo.intermediateStars+"/15";
 		if(advancedText != null)
-			advancedText.text = "Advanced "+AccountInfo.advancedStars+"/15";
+			advancedText.text = "Requires 30 stars";
 		if(masterText != null)
 			masterText.text = "Requires 45 stars";
     }

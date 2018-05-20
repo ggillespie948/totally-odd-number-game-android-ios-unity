@@ -50,10 +50,24 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     [Header("Game UI objects")]
     public GameObject Rotate_Tiles_Btn;
+
+    [Header("Active Player Cards")]
     public PlayerCard PlayerCard1;
     public PlayerCard PlayerCard2;
     public PlayerCard PlayerCard3;
     public PlayerCard PlayerCard4;
+
+    [Header("3 Player Cards")]
+    public PlayerCard PlayerCard5;
+    public PlayerCard PlayerCard6;
+    public PlayerCard PlayerCard7;
+
+    [Header("4 Player Cards")]
+    public PlayerCard PlayerCard8;
+    public PlayerCard PlayerCard9;
+    public PlayerCard PlayerCard10;
+    public PlayerCard PlayerCard11;
+
     public List<PlayerCard> PlayerCards = new List<PlayerCard>();
     public Light directionalLight;
     private static TextPopup POPUP_TEXT;
@@ -276,7 +290,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             } else {
                 startScore++;
             }
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(.03f);
         }
         
     }
@@ -665,8 +679,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
              if(card.Active)
                  card.ToggleCard();
-             else
-            card.ShuffleCardPosition();
         }
 
         //Activate Current Card

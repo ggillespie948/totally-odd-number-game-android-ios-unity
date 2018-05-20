@@ -128,17 +128,34 @@ public class GameMaster : MonoBehaviour{
 
     void Start()
     {
-        if(MAX_TURN_INDICATOR < 4)
+        if(MAX_TURN_INDICATOR ==4)
         {
-            Destroy(GUI_Controller.instance.PlayerCard4.gameObject);
-            GUI_Controller.instance.PlayerCard4 = null;
-        }
+            GUI_Controller.instance.PlayerCard1=GUI_Controller.instance.PlayerCard8;
+            GUI_Controller.instance.PlayerCard2=GUI_Controller.instance.PlayerCard9;
+            GUI_Controller.instance.PlayerCard3=GUI_Controller.instance.PlayerCard10;
+            GUI_Controller.instance.PlayerCard4=GUI_Controller.instance.PlayerCard11;
+            GUI_Controller.instance.PlayerCard1.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard2.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard3.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard4.gameObject.SetActive(true);
 
-        if(MAX_TURN_INDICATOR < 3)
+        } else if (MAX_TURN_INDICATOR ==3)
         {
-            Destroy(GUI_Controller.instance.PlayerCard3.gameObject);
-            GUI_Controller.instance.PlayerCard3 = null;
-        }
+            GUI_Controller.instance.PlayerCard1=GUI_Controller.instance.PlayerCard5;
+            GUI_Controller.instance.PlayerCard2=GUI_Controller.instance.PlayerCard6;
+            GUI_Controller.instance.PlayerCard3=GUI_Controller.instance.PlayerCard7;
+            GUI_Controller.instance.PlayerCard4=null;
+            GUI_Controller.instance.PlayerCard1.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard2.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard3.gameObject.SetActive(true);
+
+        } else if(MAX_TURN_INDICATOR ==2)
+        {
+            GUI_Controller.instance.PlayerCard1.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard2.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard3=null;
+            GUI_Controller.instance.PlayerCard4=null;
+        }       
 
         Time.timeScale = 1f;
         errorsMade = 0;
@@ -438,6 +455,7 @@ public class GameMaster : MonoBehaviour{
             Debug.Log("INVOKING AI:::");
             Invoke("InvokeAI", 3.5f); //temp ?
             ToggleBoxColliders(false);
+
         } else
         {
             ToggleBoxColliders(true);
@@ -574,7 +592,14 @@ public class GameMaster : MonoBehaviour{
         foreach (GridTile tile in currentHand)
         {
             tile.GetComponent<BoxCollider2D>().enabled = Toggle;
+            if(!Toggle)
+                DisableTileEmission(tile);
         }
+    }
+
+    private void DisableTileEmission(GridTile tile)
+    {
+        tile.GetComponent<Renderer>().material.SetColor("_EmissionColor", tile.activeSkin.color*0f);
     }
 
     void HidePlayerTiles()
@@ -1115,6 +1140,9 @@ public class GameMaster : MonoBehaviour{
     /// </summary>
     public void HandExchangeBtn()
     {
+        if(GameMaster.instance.vsAi && !GameMaster.instance.humanTurn)
+            return;
+
         BoardController.instance.CheckBoardValidity(false, false);
         HandExchange();
     }

@@ -205,7 +205,6 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
-    //unfinished
     public IEnumerator Shake(float time)
     {
 
@@ -310,6 +309,11 @@ public class GUI_Object : MonoBehaviour {
         }
 
 	}
+
+    public IEnumerator Rotate()
+    {
+        yield return null;
+    }
 
     
 
