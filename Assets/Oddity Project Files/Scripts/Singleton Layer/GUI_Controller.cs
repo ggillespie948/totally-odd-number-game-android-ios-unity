@@ -480,12 +480,16 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public void EnableAllEmissions()
     {
-        StartCoroutine(EnableEM());
+        StartCoroutine(EnableEM(1.5f));
     }
 
-    private IEnumerator EnableEM()
+    /// <summary>
+    /// Enables emissions of all tiles after a set delay
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator EnableEM(float delay)
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(delay);
         GridTiles = GetComponentsInChildren<GridTile>();
         foreach (GridTile tile in GridTiles)
         {

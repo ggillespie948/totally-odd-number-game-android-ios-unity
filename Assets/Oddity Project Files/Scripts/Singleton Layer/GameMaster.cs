@@ -1084,7 +1084,7 @@ public class GameMaster : MonoBehaviour{
             return;
 
 
-        GUI_Controller.instance.SpawnTextPopup("Exchange!", Color.yellow, GUI_Controller.instance.exchangePoint.transform, 38);
+        GUI_Controller.instance.SpawnTextPopup("Exchange!", Color.gray, GUI_Controller.instance.exchangePoint.transform, 38);
 
 
 
