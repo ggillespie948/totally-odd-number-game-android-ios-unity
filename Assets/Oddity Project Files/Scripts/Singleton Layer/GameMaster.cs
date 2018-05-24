@@ -762,7 +762,7 @@ public class GameMaster : MonoBehaviour{
                                         }
                                     }
                                     t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                    t.GetComponent<GUI_Object>().StartIntroAnim();
+                                    t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                     currentHand.Add(t);
                                 } else
                                 {
@@ -803,7 +803,7 @@ public class GameMaster : MonoBehaviour{
                                         }
                                     }
                                     t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                    t.GetComponent<GUI_Object>().StartIntroAnim();
+                                    t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                     currentHand.Add(t);
                                 } else
                                 {
@@ -843,7 +843,7 @@ public class GameMaster : MonoBehaviour{
                                         }
                                     }
                                     t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                    t.GetComponent<GUI_Object>().StartIntroAnim();
+                                    t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                     currentHand.Add(t);
                                 } else
                                 {
@@ -884,7 +884,7 @@ public class GameMaster : MonoBehaviour{
                                         }
                                     }
                                     t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                    t.GetComponent<GUI_Object>().StartIntroAnim();
+                                    t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                     currentHand.Add(t);
                                 } else
                                 {
@@ -925,7 +925,7 @@ public class GameMaster : MonoBehaviour{
                                             }
                                         }
                                         t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                        t.GetComponent<GUI_Object>().StartIntroAnim();
+                                        t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                         currentHand.Add(t);
                                     } else
                                     {
@@ -966,7 +966,7 @@ public class GameMaster : MonoBehaviour{
                                             }
                                         }
                                         t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                        t.GetComponent<GUI_Object>().StartIntroAnim();
+                                        t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                         currentHand.Add(t);
                                     } else
                                     {
@@ -1007,7 +1007,7 @@ public class GameMaster : MonoBehaviour{
                                             }
                                         }
                                         t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                        t.GetComponent<GUI_Object>().StartIntroAnim();
+                                        t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                         currentHand.Add(t);
                                     } else
                                     {

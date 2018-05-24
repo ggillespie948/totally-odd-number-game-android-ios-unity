@@ -75,4 +75,62 @@ public class NotificationController : MonoBehaviour, Observer {
 
 	}
 
+	public string GenerateObjectiveText(string objCode)
+	{
+		string[] ret = objCode.Split('.');
+
+		switch(ret[0])
+		{
+			case "Win":
+				return "Win the game";
+
+			case "WinBy":
+				return "Win by "+ret[1]+" points";
+
+			case "Fill":
+				return "Fill the game grid completely";
+
+			case "BestTurnScore":
+				return "Finish with the best turn score";
+
+			case "TurnScore":
+				return "Score" + ret[1] + " or more in a single turn";
+
+			case "TurnScoreExact":
+				return "Score exactly" + ret[1] + " in a single turn";
+
+			case "MostTiles":
+				return "Play the most tiles in the game";
+
+			case "PlayTiles":
+				return "Play " + ret[1] + " or more tiles in the game";
+
+			case "Score":
+				return "Score " + ret[1] + " or more";
+
+			case "Errors":
+				return "Finish with " + ret[1] + " errors or less";
+
+			case "ErrorsWin":
+				return "Win with  " + ret[1] + "errors or less";
+
+			case "ErrorsMore":
+				return "Win with  " + ret[1] + "errors or more";
+
+			case "Odd":
+				return "Win the game with an odd score";
+
+			case "Even":
+				return "Win the game with an even score";
+
+			case "Activate":
+				return "Activate " + ret[0] + " tiles in a single turn";
+
+			default:
+				return "404: Object code unrecognised";
+
+		}
+
+	}
+
 }

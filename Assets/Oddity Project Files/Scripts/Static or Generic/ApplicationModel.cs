@@ -26,4 +26,8 @@
 	public static int SIX_TILES = 15;
 	public static int SEVEN_TILES = 15;
 	public static int RETURN_TO_WORLD =-1;
+
+	public static string Objective1Code = "Win";
+	public static string Objective2Code = "Score.450";
+	public static string Objective3Code = "Errors.3"; //less than
 }

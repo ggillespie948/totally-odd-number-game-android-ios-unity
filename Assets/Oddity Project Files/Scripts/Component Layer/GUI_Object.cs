@@ -78,17 +78,23 @@ public class GUI_Object : MonoBehaviour {
         
         
 
-        StartIntroAnim();
-        
 		
 	}
 
-    public void StartIntroAnim()
+
+    public void StartIntroAnim(float delay)    {StartCoroutine(IntroDelay(delay));}
+    private IEnumerator IntroDelay(float delay)
     {
+        yield return new WaitForSeconds(delay);
+        IntroAnim();
+    }
+
+    private void IntroAnim()
+    {
+        AudioManager.instance.PlayAfterDelay(1f,"TileWoosh");
         startPos = this.transform.position;
         GUI_Controller.instance.animationCount++;
-        StartCoroutine(AnimateIn(Speed));
-
+        StartCoroutine(AnimateIn(2f));
     }
 
 

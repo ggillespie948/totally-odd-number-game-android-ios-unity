@@ -114,6 +114,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GameObject GridCompleteAnim;
 
 
+    
+
+
     void Awake()
     {
         if(instance == null)
@@ -823,6 +826,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         animationCount++;
         StartCoroutine(gui_obj.AnimateTo(pos, animTime));
     }
+
 
     public void RotateObjectBackward(GameObject gUI_Object, float animTime, int rotAmount)
     {

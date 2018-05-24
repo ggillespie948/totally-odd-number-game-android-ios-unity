@@ -11,6 +11,10 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 	public TextMeshProUGUI playerErrorsTxt;
 	public TextMeshProUGUI playerBestScoreTxt;
 
+	public TextMeshProUGUI objective1Txt;
+	public TextMeshProUGUI objective2Txt;
+	public TextMeshProUGUI objective3Txt;
+
 	[Header("VS Attributes (optional)")]
 	public TextMeshProUGUI summaryText;
 
@@ -30,6 +34,10 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 	private int playerCounter;
 
 	public bool isOpen = false;
+
+	public GameObject objectivePanel;
+	public GameObject playerPanel;
+	
 
 
 	public void Open() {
@@ -56,9 +64,21 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		if(GameMaster.instance.soloPlay)
 			return;
 		GUI_Controller.instance.StopAllCoroutines();
+
 		playerCounter++;
+		if(playerCounter==1)
+		{
+			playerPanel.SetActive(true);
+			objectivePanel.SetActive(false);
+		} else if(playerCounter==0)
+		{
+			playerPanel.SetActive(false);
+			objectivePanel.SetActive(true);
+		}
+
+
 		if(playerCounter > GameMaster.instance.playerScores.Count)
-			playerCounter=1;
+			playerCounter=0;
 
 		bool bestTurnScore = true;
 		 foreach(int score in playerBestScores)
@@ -154,6 +174,12 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			playerScoreTxt.fontStyle = FontStyles.Normal;
 			playerScoreTxt.color = Color.white;
 		}
+	}
+
+	public void InitObjectivePanel()
+	{
+		//objective1Txt.text = GUI_Controller.instance.NotificationController.
+
 	}
 
 	public void InitDialogue(List<int> playerScores, List<int> playerBestScores, List<int> playerErrors, int targetScore)
