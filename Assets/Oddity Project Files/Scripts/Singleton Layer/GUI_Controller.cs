@@ -111,6 +111,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public int inactiveCardCount=0;   
     public GameObject Confetti; 
 
+    public GameObject GridCompleteAnim;
+
 
     void Awake()
     {
@@ -441,7 +443,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     {
         DisableAllEmissions();
         Invoke("GridFullEffect", 3f);
-        Invoke("EndGame", 6.5f);
+        Invoke("EndGame", 7.5f);
     }
 
     public void EndGame()
@@ -491,7 +493,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public GridTile[] GetAllTiles()
     {
-        return GetComponentsInParent<GridTile>();
+        return GetComponentsInChildren<GridTile>();
         
     }
 
@@ -734,7 +736,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             {
                 tile.isFlashing = true;
                 //tile.ScoreEffect.Play(); // temp - decided to remove effect particle colour effect
-                StartCoroutine( tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, 1.5f) );
+                StartCoroutine( tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, 1.5f, true) );
             }
         }
        TilesScored.Clear();
@@ -760,8 +762,13 @@ public class GUI_Controller : MonoBehaviour, Observable {
         GridTiles = GetComponentsInChildren<GridTile>();
         foreach (GridTile tile in GridTiles)
         {
-            StartCoroutine(tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, 3f));
-            yield return new WaitForSeconds(        (300/(BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE)) /100      );
+            StartCoroutine(tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, .75f, false));
+            if(BoardController.instance.GRID_SIZE==5)
+                yield return new WaitForSeconds(.12f);
+            else if (BoardController.instance.GRID_SIZE==7)
+                yield return new WaitForSeconds(.06f);
+            else if (BoardController.instance.GRID_SIZE==9)
+                yield return new WaitForSeconds(.03f);
         }
 
     }

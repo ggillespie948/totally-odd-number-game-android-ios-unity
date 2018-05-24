@@ -436,9 +436,11 @@ public class GameMaster : MonoBehaviour{
 
         if(BoardEvaluator.noValidMoves == true)
         {
+            Debug.LogWarning("al tile length: " + GUI_Controller.instance.GetAllTiles().Length + "G*G: " + BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE);
             if(GUI_Controller.instance.GetAllTiles().Length >= BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE)
             {
-                GUI_Controller.instance.SpawnTextPopup("Grid Complete!", Color.white, GUI_Controller.instance.gameObject.transform, 100);
+                GUI_Controller.instance.GridCompleteAnim.SetActive(true);
+
                 BoardController.instance.boardFull=true;
             } else {
                 GUI_Controller.instance.SpawnTextPopup("No Moves!", Color.red, GUI_Controller.instance.gameObject.transform, 38);
@@ -734,7 +736,7 @@ public class GameMaster : MonoBehaviour{
                                 if(OddTiles.Remove(1))
                                 {
                                     successFlag = true;
-                                    GridTile t = new GridTile();
+                                    GridTile t;
                                     if(humanTurn)
                                     {
                                         t = Instantiate(tile1, transform.position, Quaternion.Euler(0, 0, 0));
@@ -775,7 +777,7 @@ public class GameMaster : MonoBehaviour{
                                 if(EvenTiles.Remove(2))
                                 {
                                     successFlag = true;
-                                    GridTile t = new GridTile();
+                                    GridTile t;
                                     if(humanTurn)
                                     {
                                         t = Instantiate(tile2, transform.position, Quaternion.Euler(0, 0, 0));
@@ -815,7 +817,7 @@ public class GameMaster : MonoBehaviour{
                                 if(OddTiles.Remove(3))
                                 {
                                     successFlag = true;
-                                    GridTile t = new GridTile();
+                                    GridTile t;
                                     if(humanTurn)
                                     {
                                         t = Instantiate(tile3, transform.position, Quaternion.Euler(0, 0, 0));
@@ -856,7 +858,7 @@ public class GameMaster : MonoBehaviour{
                                 if(EvenTiles.Remove(4))
                                 {
                                     successFlag = true;
-                                    GridTile t = new GridTile();
+                                    GridTile t;
                                     if(humanTurn)
                                     {
                                         t = Instantiate(tile4, transform.position, Quaternion.Euler(0, 0, 0));
@@ -897,7 +899,7 @@ public class GameMaster : MonoBehaviour{
                                     if(OddTiles.Remove(5))
                                     {
                                         successFlag = true;
-                                        GridTile t = new GridTile();
+                                        GridTile t;
                                         if(humanTurn)
                                         {
                                             t = Instantiate(tile5, transform.position, Quaternion.Euler(0, 0, 0));
@@ -938,7 +940,7 @@ public class GameMaster : MonoBehaviour{
                                     if(EvenTiles.Remove(6))
                                     {
                                         successFlag = true;
-                                        GridTile t = new GridTile();
+                                        GridTile t;
                                         if(humanTurn)
                                         {
                                             t = Instantiate(tile6, transform.position, Quaternion.Euler(0, 0, 0));
@@ -979,7 +981,7 @@ public class GameMaster : MonoBehaviour{
                                     if(OddTiles.Remove(7))
                                     {
                                         successFlag = true;
-                                        GridTile t = new GridTile();
+                                        GridTile t;
                                         if(humanTurn)
                                         {
                                             t = Instantiate(tile7, transform.position, Quaternion.Euler(0, 0, 0));

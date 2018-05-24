@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 626a27f84ffb1204bbee11bd2672daf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: Dark Sky
+  name: Red
   themeID: 0
   GridCell: {fileID: 2100000, guid: 4cbe0aeb196131941b5307ce7d6a9d59, type: 2}
   GirdCellAlt: {fileID: 2100000, guid: 822e7d6b6c3901e4babeb85ec9eab4fc, type: 2}
@@ -67,7 +67,7 @@ MonoBehaviour:
   Tile1MM: {fileID: 1833302828181152, guid: 00efefc7147c38c44b61b9ae03b0d249, type: 2}
   Tile2MM: {fileID: 1562054812276200, guid: 732a42677647806438eac047efd010e1, type: 2}
   Tile3MM: {fileID: 1658915923227020, guid: b17d1a40875120742b28a468b161f7e5, type: 2}
-  Skybox: {fileID: 2100000, guid: 97637a2a763b7f24b8da4e139e4144ca, type: 2}
+  Skybox: {fileID: 2100000, guid: 493bfb50af5d9424da505ba945c86600, type: 2}
   SunLightIntensity: 0.25
   TileLightIntensity: 1.25
   Tile1FX: {fileID: 1268414511968048, guid: d8f3ae9408dc96a44b8f2bfba77ed1b3, type: 2}

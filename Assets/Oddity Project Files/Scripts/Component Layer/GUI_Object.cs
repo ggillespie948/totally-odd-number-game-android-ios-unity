@@ -218,7 +218,7 @@ public class GUI_Object : MonoBehaviour {
     }
 
 
-    public IEnumerator Flash(Color startCol, float time)
+    public IEnumerator Flash(Color startCol, float time, bool enableEmission)
     {
         this.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
 
@@ -244,6 +244,10 @@ public class GUI_Object : MonoBehaviour {
         }
 
         rend.material.SetColor("_EmissionColor", startCol*0.6f);
+
+        if(!enableEmission)
+            rend.material.DisableKeyword("_EMISSION");
+
 
     }
 
