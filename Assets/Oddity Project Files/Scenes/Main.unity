@@ -11926,8 +11926,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad65a03e2ba19b346ad04e5fcb9723f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RotationPerSecond: 1
-  _rotate: 0
+  RotationPerSecond: 2.5
+  _rotate: 1
 --- !u!114 &328692985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13511,6 +13511,11 @@ MonoBehaviour:
     name: ObjectiveComplete
     volume: 7
     pitch: 1
+  - clip: {fileID: 8300000, guid: 29a2d8735a73e0f47b6263d9965c8a24, type: 3}
+    source: {fileID: 0}
+    name: GridFull
+    volume: 10
+    pitch: 1
 --- !u!1 &409040066
 GameObject:
   m_ObjectHideFlags: 0
@@ -14372,6 +14377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GRID_SIZE: 9
   GRID_CENTER: 0
+  boardFull: 0
 --- !u!114 &459949745
 MonoBehaviour:
   m_ObjectHideFlags: 0

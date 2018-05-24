@@ -5,7 +5,7 @@
 	public static int WORLD_NO = 0;
 	public static string LEVEL_CODE = "";
 	public static int GAME_DIFFICULTY = 20;  // /100
-	public static int THEME = 0;
+	public static int THEME = 3;
 	public static int GRID_SIZE = 5;
 	public static int MAX_TILE = 8;
 	public static int PLAYERS;

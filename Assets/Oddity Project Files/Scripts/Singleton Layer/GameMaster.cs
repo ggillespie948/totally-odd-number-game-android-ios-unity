@@ -54,6 +54,8 @@ public class GameMaster : MonoBehaviour{
     private int totalRemainingTiles;
     private static GridTile tile1;    private static GridTile tile2;    private static GridTile tile3;
     private static GridTile tile4;    private static GridTile tile5;    private static GridTile tile6;  private static GridTile tile7;
+    private static GridTile tile1_alt;    private static GridTile tile2_alt;    private static GridTile tile3_alt;
+    private static GridTile tile4_alt;    private static GridTile tile5_alt;    private static GridTile tile6_alt;  private static GridTile tile7_alt;
     private List<GridTile> tileModels = new List<GridTile>();
 
     public int totalTiles{get; set;}
@@ -80,6 +82,8 @@ public class GameMaster : MonoBehaviour{
     public static float GRID_TILE_LIGHT_RANGE{get; set;}
     public int starCount{get; set;}
     public int errorsMade{get; set;} 
+
+    public bool playerWin {get; set;}
 
 
     [Header("Debugging")]
@@ -222,6 +226,7 @@ public class GameMaster : MonoBehaviour{
     void SetTheme()
     {
         Theme currentTheme = themes[ApplicationModel.THEME];
+        Theme altTheme = themes[2];
         Debug.Log("Loading Theme: " + currentTheme.name);
 
         GUI_Controller.instance.directionalLight.intensity=currentTheme.SunLightIntensity;
@@ -233,6 +238,15 @@ public class GameMaster : MonoBehaviour{
         tile5=currentTheme.Tile5;
         tile6=currentTheme.Tile6;
         tile7=currentTheme.Tile7;
+        //load oppoent alt theme
+        tile1_alt=altTheme.Tile1;
+        tile2_alt=altTheme.Tile2;
+        tile3_alt=altTheme.Tile3;
+        tile4_alt=altTheme.Tile4;
+        tile5_alt=altTheme.Tile5;
+        tile6_alt=altTheme.Tile6;
+        tile7_alt=altTheme.Tile7;
+
         GUI_Controller.instance.Tile1ActivateFX=currentTheme.Tile1FX;
         GUI_Controller.instance.Tile2ActivateFX=currentTheme.Tile2FX;
         GUI_Controller.instance.Tile3ActivateFX=currentTheme.Tile3FX;
@@ -240,6 +254,16 @@ public class GameMaster : MonoBehaviour{
         GUI_Controller.instance.Tile5ActivateFX=currentTheme.Tile5FX;
         GUI_Controller.instance.Tile6ActivateFX=currentTheme.Tile6FX;
         GUI_Controller.instance.Tile7ActivateFX=currentTheme.Tile7FX;
+
+        GUI_Controller.instance.Tile1ActivateFX_alt=altTheme.Tile1FX;
+        GUI_Controller.instance.Tile2ActivateFX_alt=altTheme.Tile2FX;
+        GUI_Controller.instance.Tile3ActivateFX_alt=altTheme.Tile3FX;
+        GUI_Controller.instance.Tile4ActivateFX_alt=altTheme.Tile4FX;
+        GUI_Controller.instance.Tile5ActivateFX_alt=altTheme.Tile5FX;
+        GUI_Controller.instance.Tile6ActivateFX_alt=altTheme.Tile6FX;
+        GUI_Controller.instance.Tile7ActivateFX_alt=altTheme.Tile7FX;
+
+
         
         //assign materials
         GridCell[] GridCells =
@@ -412,7 +436,14 @@ public class GameMaster : MonoBehaviour{
 
         if(BoardEvaluator.noValidMoves == true)
         {
-            GUI_Controller.instance.SpawnTextPopup("No Moves!", Color.red, GUI_Controller.instance.gameObject.transform, 38);
+            if(GUI_Controller.instance.GetAllTiles().Length >= BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE)
+            {
+                GUI_Controller.instance.SpawnTextPopup("Grid Complete!", Color.white, GUI_Controller.instance.gameObject.transform, 100);
+                BoardController.instance.boardFull=true;
+            } else {
+                GUI_Controller.instance.SpawnTextPopup("No Moves!", Color.red, GUI_Controller.instance.gameObject.transform, 38);
+            }
+
             GameOver();
         } else {
             Debug.Log("GG = LVG");
@@ -703,7 +734,15 @@ public class GameMaster : MonoBehaviour{
                                 if(OddTiles.Remove(1))
                                 {
                                     successFlag = true;
-                                    GridTile t = Instantiate(tile1, transform.position, Quaternion.Euler(0, 0, 0));
+                                    GridTile t = new GridTile();
+                                    if(humanTurn)
+                                    {
+                                        t = Instantiate(tile1, transform.position, Quaternion.Euler(0, 0, 0));
+                                    }
+                                    else
+                                    {
+                                        t = Instantiate(tile1_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
+                                    }
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
@@ -736,7 +775,15 @@ public class GameMaster : MonoBehaviour{
                                 if(EvenTiles.Remove(2))
                                 {
                                     successFlag = true;
-                                    GridTile t = Instantiate(tile2, transform.position, Quaternion.Euler(0, 0, 0));
+                                    GridTile t = new GridTile();
+                                    if(humanTurn)
+                                    {
+                                        t = Instantiate(tile2, transform.position, Quaternion.Euler(0, 0, 0));
+                                    }
+                                    else
+                                    {
+                                        t = Instantiate(tile2_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
+                                    }
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
@@ -768,7 +815,15 @@ public class GameMaster : MonoBehaviour{
                                 if(OddTiles.Remove(3))
                                 {
                                     successFlag = true;
-                                    GridTile t = Instantiate(tile3, transform.position, Quaternion.Euler(0, 0, 0));
+                                    GridTile t = new GridTile();
+                                    if(humanTurn)
+                                    {
+                                        t = Instantiate(tile3, transform.position, Quaternion.Euler(0, 0, 0));
+                                    }
+                                    else
+                                    {
+                                        t = Instantiate(tile3_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
+                                    }
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
@@ -801,7 +856,15 @@ public class GameMaster : MonoBehaviour{
                                 if(EvenTiles.Remove(4))
                                 {
                                     successFlag = true;
-                                    GridTile t = Instantiate(tile4, transform.position, Quaternion.Euler(0, 0, 0));
+                                    GridTile t = new GridTile();
+                                    if(humanTurn)
+                                    {
+                                        t = Instantiate(tile4, transform.position, Quaternion.Euler(0, 0, 0));
+                                    }
+                                    else
+                                    {
+                                        t = Instantiate(tile4_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
+                                    }
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
@@ -834,7 +897,15 @@ public class GameMaster : MonoBehaviour{
                                     if(OddTiles.Remove(5))
                                     {
                                         successFlag = true;
-                                        GridTile t = Instantiate(tile5, transform.position, Quaternion.Euler(0, 0, 0));
+                                        GridTile t = new GridTile();
+                                        if(humanTurn)
+                                        {
+                                            t = Instantiate(tile5, transform.position, Quaternion.Euler(0, 0, 0));
+                                        }
+                                        else
+                                        {
+                                            t = Instantiate(tile5_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
+                                        }
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
@@ -867,7 +938,15 @@ public class GameMaster : MonoBehaviour{
                                     if(EvenTiles.Remove(6))
                                     {
                                         successFlag = true;
-                                        GridTile t = Instantiate(tile6, transform.position, Quaternion.Euler(0, 0, 0));
+                                        GridTile t = new GridTile();
+                                        if(humanTurn)
+                                        {
+                                            t = Instantiate(tile6, transform.position, Quaternion.Euler(0, 0, 0));
+                                        }
+                                        else
+                                        {
+                                            t = Instantiate(tile6_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
+                                        }
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
@@ -900,7 +979,15 @@ public class GameMaster : MonoBehaviour{
                                     if(OddTiles.Remove(7))
                                     {
                                         successFlag = true;
-                                        GridTile t = Instantiate(tile7, transform.position, Quaternion.Euler(0, 0, 0));
+                                        GridTile t = new GridTile();
+                                        if(humanTurn)
+                                        {
+                                            t = Instantiate(tile7, transform.position, Quaternion.Euler(0, 0, 0));
+                                        }
+                                        else
+                                        {
+                                            t = Instantiate(tile7_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
+                                        }
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
@@ -946,7 +1033,7 @@ public class GameMaster : MonoBehaviour{
         gameOver = true;
         HidePlayerTiles();
 
-        bool playerWin = true;
+        playerWin = true;
 
         if(vsAi)
         {
@@ -971,15 +1058,13 @@ public class GameMaster : MonoBehaviour{
                 playerWin = false;
         } 
 
-        if(playerWin)
-        {
-            AudioManager.instance.Play("YouWinCheer");
-            if(starCount > 1)
-                GUI_Controller.instance.Confetti.SetActive(true);
-        }
         
-        StopAllCoroutines();
-        StartCoroutine(ActivateGameOverDialogue(2.5f, playerWin));
+        
+        //StopAllCoroutines();
+        TurnTimer.StopAllCoroutines();
+        BoardController.instance.StopAllCoroutines();
+
+        StartCoroutine(ActivateGameOverDialogue(9f, playerWin));
 
         GUI_Controller.instance.GameOver();
         

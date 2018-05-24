@@ -15,6 +15,8 @@ public class BoardController : MonoBehaviour, Observable {
     public int GRID_SIZE = 7;
     public int GRID_CENTER;
 
+    public bool boardFull = false;
+
     // Use this for initialization
     void Awake () {
         if (instance == null)
