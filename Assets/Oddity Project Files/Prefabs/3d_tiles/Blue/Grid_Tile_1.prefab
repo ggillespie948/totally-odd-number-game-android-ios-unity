@@ -280,7 +280,7 @@ MonoBehaviour:
   pickedUp: 1
   placedByAI: 0
   defaultSkin: {fileID: 0}
-  activeSkin: {fileID: 2100000, guid: 25a695636e04ee049a7dd784cf33b4a1, type: 2}
+  activeSkin: {fileID: 2100000, guid: a56c35016842bd8448a50049e03b1cb0, type: 2}
   location: {x: 0, y: 0, z: 0}
   activated: 0
   isFlashing: 0

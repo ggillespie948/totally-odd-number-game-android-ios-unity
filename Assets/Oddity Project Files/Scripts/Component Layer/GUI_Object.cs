@@ -217,9 +217,10 @@ public class GUI_Object : MonoBehaviour {
         GUI_Controller.instance.animationCount--;
     }
 
+
     public IEnumerator Flash(Color startCol, float time)
     {
-        
+        this.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
 
         Renderer rend = this.GetComponent<Renderer>();
         float curveTime = 0.0f;

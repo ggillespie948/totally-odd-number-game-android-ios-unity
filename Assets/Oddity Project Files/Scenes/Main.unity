@@ -5294,6 +5294,8 @@ MonoBehaviour:
   themes:
   - {fileID: 114099337718805684, guid: 14c251b80044aff4a90ff3e7eef59fcf, type: 2}
   - {fileID: 114099337718805684, guid: 810f5601f66a9d1418214b057b7bf987, type: 2}
+  - {fileID: 114099337718805684, guid: 4f097bf5c55d9e440a053363a1e92015, type: 2}
+  - {fileID: 114099337718805684, guid: bc72af89f206e47428d145dbd9097912, type: 2}
   averageTurnTime: 0
   lblGrid: {fileID: 1842626963}
   lblLVGrid: {fileID: 1639910557}
@@ -11873,6 +11875,13 @@ MonoBehaviour:
   Tile5ActivateFX: {fileID: 0}
   Tile6ActivateFX: {fileID: 0}
   Tile7ActivateFX: {fileID: 0}
+  Tile1ActivateFX_alt: {fileID: 0}
+  Tile2ActivateFX_alt: {fileID: 0}
+  Tile3ActivateFX_alt: {fileID: 0}
+  Tile4ActivateFX_alt: {fileID: 0}
+  Tile5ActivateFX_alt: {fileID: 0}
+  Tile6ActivateFX_alt: {fileID: 0}
+  Tile7ActivateFX_alt: {fileID: 0}
   GridTiles: []
   Rotate_Tiles_Btn: {fileID: 549197272}
   PlayerCard1: {fileID: 29561915}
