@@ -13528,6 +13528,11 @@ MonoBehaviour:
     name: GridFull
     volume: 10
     pitch: 1
+  - clip: {fileID: 8300000, guid: 62640b8122ac8a54c9821879e6919f93, type: 3}
+    source: {fileID: 0}
+    name: TileWoosh
+    volume: 10
+    pitch: 1.957
 --- !u!1 &409040066
 GameObject:
   m_ObjectHideFlags: 0
@@ -21422,12 +21427,12 @@ Prefab:
     - target: {fileID: 224671076439520526, guid: cc691d62acc0dec40831018da8a0a9e5,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 873
+      value: 847
       objectReference: {fileID: 0}
     - target: {fileID: 224671076439520526, guid: cc691d62acc0dec40831018da8a0a9e5,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -277.0001
+      value: -315
       objectReference: {fileID: 0}
     - target: {fileID: 224671076439520526, guid: cc691d62acc0dec40831018da8a0a9e5,
         type: 2}
@@ -21482,7 +21487,7 @@ Prefab:
     - target: {fileID: 114555984599567062, guid: cc691d62acc0dec40831018da8a0a9e5,
         type: 2}
       propertyPath: m_text
-      value: '   Grid Complete!'
+      value: Grid Complete!
       objectReference: {fileID: 0}
     - target: {fileID: 114555984599567062, guid: cc691d62acc0dec40831018da8a0a9e5,
         type: 2}

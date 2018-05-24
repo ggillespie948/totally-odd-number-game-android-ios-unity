@@ -439,8 +439,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
         Time.timeScale = 1f;
     }
 
-    public void GameOver()
+    public void  GameOver()
     {
+        ForceDisableAllEmissions();
         DisableAllEmissions();
         Invoke("GridFullEffect", 3f);
         Invoke("EndGame", 7.5f);
@@ -507,8 +508,18 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(!tile.isFlashing && (tile.placed || tile.placedByAI) )
             {
-                tile.GetComponent<Renderer>().material.DisableKeyword("_EMISSION");
+                tile.GetComponent<Renderer>().material.DisableEmission();
             }
+        }
+    }
+
+    public void ForceDisableAllEmissions()
+    {
+        Debug.LogWarning("Force Disabling All Tiles emissions");
+        GridTiles = GetComponentsInChildren<GridTile>();
+        foreach (GridTile tile in GridTiles)
+        {
+            tile.GetComponent<Renderer>().material.DisableEmission();
         }
     }
 
@@ -524,13 +535,17 @@ public class GUI_Controller : MonoBehaviour, Observable {
     /// <returns></returns>
     private IEnumerator EnableEM(float delay)
     {
-        Debug.LogWarning("Enabling ALL EM");
         yield return new WaitForSeconds(delay);
+        if(GameMaster.instance.gameOver)
+            yield return null;
+
+        Debug.LogWarning("Enable ALL emissions :(");
         GridTiles = GetComponentsInChildren<GridTile>();
         foreach (GridTile tile in GridTiles)
         {
             tile.isFlashing=false;
-            tile.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
+            if(!GameMaster.instance.gameOver)
+            tile.GetComponent<Renderer>().material.EnableEmission();
         }
 
     }
@@ -762,7 +777,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
         GridTiles = GetComponentsInChildren<GridTile>();
         foreach (GridTile tile in GridTiles)
         {
-            StartCoroutine(tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, .75f, false));
+            //StartCoroutine(tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, 1.5f, true));
+            tile.GetComponent<Renderer>().material.EnableEmission();
+            tile.GetComponent<Renderer>().material.SetEmissionRate(.8f);
             if(BoardController.instance.GRID_SIZE==5)
                 yield return new WaitForSeconds(.12f);
             else if (BoardController.instance.GRID_SIZE==7)

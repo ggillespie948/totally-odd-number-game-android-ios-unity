@@ -1,6 +1,7 @@
 ﻿using UnityEngine.Audio;
 using System;
 using UnityEngine;
+using System.Collections;
 
 public class AudioManager : MonoBehaviour {
 
@@ -63,4 +64,15 @@ public class AudioManager : MonoBehaviour {
         s.source.Play();
 
     }
+
+    public void PlayAfterDelay(float delay, string name)
+    {
+        StartCoroutine(PlayDelay(delay, name));
+    }
+
+    private IEnumerator PlayDelay(float delay, string name)
+    {
+        yield return new WaitForSeconds(delay);
+        Play(name);
+    } 
 }

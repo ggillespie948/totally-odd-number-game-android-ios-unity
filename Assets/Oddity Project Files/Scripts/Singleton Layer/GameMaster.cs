@@ -1062,8 +1062,7 @@ public class GameMaster : MonoBehaviour{
 
         
         
-        //StopAllCoroutines();
-        TurnTimer.StopAllCoroutines();
+         TurnTimer.StopAllCoroutines();
         BoardController.instance.StopAllCoroutines();
 
         StartCoroutine(ActivateGameOverDialogue(9f, playerWin));
