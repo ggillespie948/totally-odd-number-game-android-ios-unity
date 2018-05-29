@@ -19,6 +19,8 @@ public class GameMaster : MonoBehaviour{
     public  TutorialController TutorialController;
     public GridCell[,] objGameGrid;
 
+    public PlayerStatistics PlayerStatistics;
+
     public TurnTimer TurnTimer;
 
     List<Observer> observers = new List<Observer>();
@@ -98,6 +100,7 @@ public class GameMaster : MonoBehaviour{
     void Awake()
     {
         StateMachine = GetComponent<StateMachine>();
+        PlayerStatistics = GetComponent<PlayerStatistics>();
 
         TUTORIAL_MODE = ApplicationModel.TUTORIAL_MODE;
         if(TUTORIAL_MODE)
@@ -1080,7 +1083,7 @@ public class GameMaster : MonoBehaviour{
         
         TurnTimer.StopAllCoroutines();
         BoardController.instance.StopAllCoroutines();
-
+        GameMaster.instance.PlayerStatistics.PlayedMostTiles(GUI_Controller.instance.GetAllTiles());
         StartCoroutine(ActivateGameOverDialogue(9f, playerWin));
 
         GUI_Controller.instance.GameOver();

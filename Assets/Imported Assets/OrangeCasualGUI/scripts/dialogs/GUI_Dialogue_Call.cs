@@ -31,7 +31,6 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 	public TextMeshProUGUI targetScoreText;
 
 	[Header("Objective Panel Attributes")]
-	public starFxController objectiveStarController;
 
 	private int playerCounter;
 
@@ -96,6 +95,7 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 
 		}
 
+		
 
 		bool bestTurnScore = true;
 		 foreach(int score in playerBestScores)
@@ -109,15 +109,12 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			if(score> playerScores[playerCounter-1])
 				bestScore = false;
 		}
-
-		// bool bestTilesPlayed = true;
-		//  foreach(int score in playerScores)
-		// {
-		// 	if(score> playerScores[playerCounter-1])
-		// 		bestScore = false;
-		// }
-
-		//tilesPlayedTxt.text = "Tiles Played: " + GameMaster.instance.GetComponent<PlayerStatistics>().playedTiles[playerCounter-1].ToString();
+		bool bestTilesplayed = true;
+		foreach(int score in GameMaster.instance.PlayerStatistics.playedTiles)
+		{
+			if(score> GameMaster.instance.PlayerStatistics.playedTiles[playerCounter-1])
+				bestTilesplayed = false;
+		} 
 
 		if(bestTurnScore)
 		{
@@ -145,12 +142,31 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			playerScoreTxt.color = Color.white;
 		}
 
+		if(bestTilesplayed)
+			tilesPlayedTxt.color = Color.green;
+		else
+		{
+			tilesPlayedTxt.fontStyle = FontStyles.Normal;
+			tilesPlayedTxt.color = Color.white;
+		}
+
+		if(playerCounter==0)
+		{
+			return;
+		}
+
 		playerNameTxt.text = "Player " + playerCounter;
+
+		if(bestScore)
+		{
+			playerNameTxt.text += " (Winner)";
+		}
+
 		if(playerScoreTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerScores[playerCounter-1], playerScoreTxt, "Score: "));}
 		if(playerErrorsTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerErrors[playerCounter-1], playerErrorsTxt, "Errors: "));}
 		if(playerBestScoreTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerBestScores[playerCounter-1], playerBestScoreTxt, "Best turn score: "));}
-		if(tilesPlayedTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,GameMaster.instance.GetComponent<PlayerStatistics>().playedTiles[playerCounter-1], tilesPlayedTxt, "Tiles played: "));}
-		
+		if(tilesPlayedTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,GameMaster.instance.PlayerStatistics.playedTiles[playerCounter-1], tilesPlayedTxt, "Tiles played: "));}
+		Debug.LogWarning("Tiles played count: " + GameMaster.instance.PlayerStatistics.playedTiles.Count);
 	}
 
 	public void PreviousPlayer(List<int> playerScores, List<int> playerBestScores, List<int> playerErrors, int targetScore)
@@ -172,11 +188,12 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			objectivePanel.SetActive(false);
 		}
 
-		playerNameTxt.text = "Player " + playerCounter;
+		
+
 		if(playerScoreTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerScores[playerCounter-1], playerScoreTxt, "Score: "));}
 		if(playerErrorsTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerErrors[playerCounter-1], playerErrorsTxt, "Errors: "));}
 		if(playerBestScoreTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerBestScores[playerCounter-1], playerBestScoreTxt, "Best turn score: "));}
-		if(tilesPlayedTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,GameMaster.instance.GetComponent<PlayerStatistics>().playedTiles[playerCounter-1], tilesPlayedTxt, "Tiles played: "));}
+		if(tilesPlayedTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,GameMaster.instance.PlayerStatistics.playedTiles[playerCounter-1], tilesPlayedTxt, "Tiles played: "));}
 
 		bool bestTurnScore = true;
 		 foreach(int score in playerBestScores)
@@ -190,6 +207,12 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			if(score> playerScores[playerCounter-1])
 				bestScore = false;
 		}
+		bool bestTilesplayed = true;
+		foreach(int score in GameMaster.instance.PlayerStatistics.playedTiles)
+		{
+			if(score> GameMaster.instance.PlayerStatistics.playedTiles[playerCounter-1])
+				bestTurnScore = false;
+		} 
 
 		if(bestTurnScore)
 			playerBestScoreTxt.color = Color.green;
@@ -214,33 +237,46 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			playerScoreTxt.fontStyle = FontStyles.Normal;
 			playerScoreTxt.color = Color.white;
 		}
+		if(bestTilesplayed)
+			tilesPlayedTxt.color = Color.green;
+		else
+		{
+			tilesPlayedTxt.fontStyle = FontStyles.Normal;
+			tilesPlayedTxt.color = Color.white;
+		}
+
+		playerNameTxt.text = "Player " + playerCounter;
+		if(bestScore)
+		{
+			playerNameTxt.text += " (Winner)";
+		}
 	}
 
 	public void InitObjectivePanel()
 	{
-		objective1Txt.text = GameMaster.instance.GetComponent<PlayerStatistics>().GenerateObjectiveText(ApplicationModel.Objective1Code);
-		objective2Txt.text = GameMaster.instance.GetComponent<PlayerStatistics>().GenerateObjectiveText(ApplicationModel.Objective2Code);
-		objective3Txt.text = GameMaster.instance.GetComponent<PlayerStatistics>().GenerateObjectiveText(ApplicationModel.Objective3Code);
+		objective1Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective1Code);
+		objective2Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective2Code);
+		objective3Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective3Code);
 
 		//Generate Star Animations
-		GameMaster.instance.GetComponent<PlayerStatistics>().GenerateAllOBjectiveOutcomes();
+		GameMaster.instance.PlayerStatistics.GenerateAllOBjectiveOutcomes();
 
 
 		if(targetStarController != null)
 		{
 			//targetStarController.Reset();
 			int starCount =0;
-			if(GameMaster.instance.GetComponent<PlayerStatistics>().OBJECTIVE_1)
+			if(GameMaster.instance.PlayerStatistics.OBJECTIVE_1)
 			{
 				starCount++;
 				objectiveStar1.SetActive(true);
 			} 
-			if(GameMaster.instance.GetComponent<PlayerStatistics>().OBJECTIVE_2)
+			if(GameMaster.instance.PlayerStatistics.OBJECTIVE_2)
 			{
 				starCount++;
 				objectiveStar2.SetActive(true);
 			}
-			if(GameMaster.instance.GetComponent<PlayerStatistics>().OBJECTIVE_3)
+			if(GameMaster.instance.PlayerStatistics.OBJECTIVE_3)
 			{
 				starCount++;
 				objectiveStar3.SetActive(true);
@@ -276,11 +312,19 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		if(playerScoreTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerScores[playerCounter-1], playerScoreTxt, "Score: "));}
 		if(playerErrorsTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerErrors[playerCounter-1], playerErrorsTxt, "Errors: "));}
 		if(playerBestScoreTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,playerBestScores[playerCounter-1], playerBestScoreTxt, "Best turn score: "));}
+		if(tilesPlayedTxt != null) { StartCoroutine(GUI_Controller.instance.UpdateUIScore(0,GameMaster.instance.PlayerStatistics.playedTiles[playerCounter-1], tilesPlayedTxt, "Tiles played: "));}
 
 		bool bestTurnScore = true;
 		 foreach(int score in playerBestScores)
 		{
 			if(score> playerBestScores[0])
+				bestTurnScore = false;
+		} 
+
+		bool bestTilesplayed = true;
+		foreach(int score in GameMaster.instance.PlayerStatistics.playedTiles)
+		{
+			if(score> GameMaster.instance.PlayerStatistics.playedTiles[0])
 				bestTurnScore = false;
 		} 
 
@@ -313,6 +357,14 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		{
 			playerScoreTxt.fontStyle = FontStyles.Normal;
 			playerScoreTxt.color = Color.white;
+		}
+
+		if(bestTilesplayed)
+			tilesPlayedTxt.color = Color.green;
+		else
+		{
+			tilesPlayedTxt.fontStyle = FontStyles.Normal;
+			tilesPlayedTxt.color = Color.white;
 		}
 
 

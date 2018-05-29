@@ -194,10 +194,10 @@ public class PlayerStatistics : MonoBehaviour {
 				p4Tiles++;
 				break;
 			}
-
 		}
 
 		playedTiles = new List<int>();
+		playedTiles.Clear();
 
 		playedTiles.Add(p1Tiles);
 		playedTiles.Add(p2Tiles);

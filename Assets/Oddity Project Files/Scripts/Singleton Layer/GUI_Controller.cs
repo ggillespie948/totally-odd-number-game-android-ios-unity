@@ -383,12 +383,36 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public void CashRewardAnim()
     {
         int cashReward = 0;
-        for(int i=0; i<GameMaster.instance.starCount; i++)
+        int i =0;
+        
+
+        if(GameMaster.instance.PlayerStatistics.OBJECTIVE_1)
         {
             StartCoroutine(SpawnCashPopup("+100", Color.green, 
-            DialogueController.ActiveDialogue.targetStarController.starFX[i].transform, (i)+1.5f, "")); 
+            DialogueController.ActiveDialogue.objectiveStar1.transform, (i)+1.5f, "")); 
             cashReward+=100;
+            i++;
         }
+
+        if(GameMaster.instance.PlayerStatistics.OBJECTIVE_2)
+        {
+            StartCoroutine(SpawnCashPopup("+100", Color.green, 
+            DialogueController.ActiveDialogue.objectiveStar2.transform, (i)+1.5f, "")); 
+            cashReward+=100;
+            i++;
+        }
+
+        if(GameMaster.instance.PlayerStatistics.OBJECTIVE_3)
+        {
+            StartCoroutine(SpawnCashPopup("+100", Color.green, 
+            DialogueController.ActiveDialogue.objectiveStar3.transform, (i)+1.5f, "")); 
+            cashReward+=100;
+            i++;
+        }
+
+        
+
+
         // if(GameMaster.instance.errorsMade == 0)
         // {
             
@@ -940,7 +964,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         yield return new WaitForSeconds(delay);
         TextPopup instance = Instantiate(POPUP_CASH);
         instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-        instance.transform.position = location.transform.position + new Vector3(0,+1,+50);
+        instance.transform.position = location.transform.position + new Vector3(+10,+1,+20);
         instance.SetText(text);
 
         if(popup != "")
