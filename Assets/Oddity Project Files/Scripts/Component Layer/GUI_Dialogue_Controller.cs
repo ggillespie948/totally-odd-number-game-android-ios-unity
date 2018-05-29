@@ -23,13 +23,15 @@ public class GUI_Dialogue_Controller : MonoBehaviour {
 			case "Win":
 				YouWinDialogue.Open();
 				ActiveDialogue = YouWinDialogue;
-				YouWinDialogue.InitDialogue(playerScores, playerBestScores, playerErrors, targetScore);
+				//YouWinDialogue.InitDialogue(playerScores, playerBestScores, playerErrors, targetScore);
+				YouWinDialogue.InitObjectivePanel();
 			break;
 
 			case "Lose":
 				YouLoseDialogue.Open();
 				ActiveDialogue = YouLoseDialogue;
-				YouLoseDialogue.InitDialogue(playerScores, playerBestScores, playerErrors, targetScore);
+				//YouLoseDialogue.InitDialogue(playerScores, playerBestScores, playerErrors, targetScore);
+				YouLoseDialogue.InitObjectivePanel();
 			break;
 
 			// case "SoloWin":

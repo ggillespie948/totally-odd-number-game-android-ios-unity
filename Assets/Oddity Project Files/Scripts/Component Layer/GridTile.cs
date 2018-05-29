@@ -13,6 +13,8 @@ public class GridTile : MonoBehaviour {
 
     public bool placedByAI = false;
 
+    public int placedBy;
+
     GameMaster GM;
 
     private Renderer renderer;

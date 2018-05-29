@@ -70,6 +70,8 @@ public class GameMaster : MonoBehaviour{
     public List<int> playerScores{get; set;}
     public List<int> playerBestScores{get; set;}
     public List<int> playerErrors{get; set;}
+    public List<int> playerBestTurnActivateTiles{get; set;}
+    public List<int> playerPlayedTiles{get; set;}
 
     //Spawn Location
     [Header("Other")]
@@ -84,6 +86,7 @@ public class GameMaster : MonoBehaviour{
     public int errorsMade{get; set;} 
 
     public bool playerWin {get; set;}
+    public bool gridFull {get; set;}
 
 
     [Header("Debugging")]
@@ -436,14 +439,20 @@ public class GameMaster : MonoBehaviour{
 
         if(BoardEvaluator.noValidMoves == true)
         {
-            Debug.LogWarning("al tile length: " + GUI_Controller.instance.GetAllTiles().Length + "G*G: " + BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE);
-            if(GUI_Controller.instance.GetAllTiles().Length >= BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE)
+            int tileCount = 0;
+            foreach(GridTile tile in GUI_Controller.instance.GetAllTiles())
+            {
+                if(tile.placed && tile.activated)
+                tileCount++;
+            }
+            if(tileCount >= BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE)
             {
                 GUI_Controller.instance.GridCompleteAnim.SetActive(true);
 
                 BoardController.instance.boardFull=true;
             } else {
-                GUI_Controller.instance.SpawnTextPopup("No Moves!", Color.red, GUI_Controller.instance.gameObject.transform, 38);
+                //GUI_Controller.instance.SpawnTextPopup("No Moves!", Color.red, GUI_Controller.instance.gameObject.transform, 38);
+                GUI_Controller.instance.NoMovesAnim.SetActive(true);
             }
 
             GameOver();
@@ -748,6 +757,7 @@ public class GameMaster : MonoBehaviour{
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
+                                    t.placedBy = turnIndicator;
                                     bool spawnFlag = false;
                                     while(spawnFlag == false)
                                     {
@@ -789,6 +799,7 @@ public class GameMaster : MonoBehaviour{
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
+                                    t.placedBy = turnIndicator;
                                     bool spawnFlag = false;
                                     while(spawnFlag == false)
                                     {
@@ -829,6 +840,7 @@ public class GameMaster : MonoBehaviour{
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
+                                    t.placedBy = turnIndicator;
                                     bool spawnFlag = false;
                                     while(spawnFlag == false)
                                     {
@@ -870,6 +882,7 @@ public class GameMaster : MonoBehaviour{
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
+                                    t.placedBy = turnIndicator;
                                     bool spawnFlag = false;
                                     while(spawnFlag == false)
                                     {
@@ -911,6 +924,7 @@ public class GameMaster : MonoBehaviour{
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
+                                        t.placedBy = turnIndicator;
                                         bool spawnFlag = false;
                                         while(spawnFlag == false)
                                         {
@@ -952,6 +966,7 @@ public class GameMaster : MonoBehaviour{
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
+                                        t.placedBy = turnIndicator;
                                         bool spawnFlag = false;
                                         while(spawnFlag == false)
                                         {
@@ -993,6 +1008,7 @@ public class GameMaster : MonoBehaviour{
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
+                                        t.placedBy = turnIndicator;
                                         bool spawnFlag = false;
                                         while(spawnFlag == false)
                                         {
@@ -1062,7 +1078,7 @@ public class GameMaster : MonoBehaviour{
 
         
         
-         TurnTimer.StopAllCoroutines();
+        TurnTimer.StopAllCoroutines();
         BoardController.instance.StopAllCoroutines();
 
         StartCoroutine(ActivateGameOverDialogue(9f, playerWin));

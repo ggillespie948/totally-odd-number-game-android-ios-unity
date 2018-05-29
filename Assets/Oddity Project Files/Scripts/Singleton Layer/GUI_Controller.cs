@@ -110,8 +110,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GameObject LivesDialogue;
     public int inactiveCardCount=0;   
     public GameObject Confetti; 
-
     public GameObject GridCompleteAnim;
+    public GameObject NoMovesAnim;
 
 
     
@@ -389,13 +389,13 @@ public class GUI_Controller : MonoBehaviour, Observable {
             DialogueController.ActiveDialogue.targetStarController.starFX[i].transform, (i)+1.5f, "")); 
             cashReward+=100;
         }
-        if(GameMaster.instance.errorsMade == 0)
-        {
+        // if(GameMaster.instance.errorsMade == 0)
+        // {
             
-            StartCoroutine(SpawnCashPopup("+20", Color.green, 
-            DialogueController.ActiveDialogue.playerErrorsTxt.transform, 5f, "Error bonus!")); 
-            cashReward+=20;
-        }
+        //     StartCoroutine(SpawnCashPopup("+20", Color.green, 
+        //     DialogueController.ActiveDialogue.playerErrorsTxt.transform, 5f, "Error bonus!")); 
+        //     cashReward+=20;
+        // }
         int res=-1;
         if(AccountInfo.playfabId != null)
         {
@@ -901,10 +901,10 @@ public class GUI_Controller : MonoBehaviour, Observable {
             TextPopup instance = Instantiate(POPUP_TEXT);
             instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
             instance.transform.position = location.transform.position - 
-                        new Vector3(UnityEngine.Random.Range(0.03f, .1f),UnityEngine.Random.Range(0.05f, .1f),-3);
+                        new Vector3(UnityEngine.Random.Range(0.03f, .05f),UnityEngine.Random.Range(0.05f, .05f),-3);
             
-            if(instance.transform.position.x <= .7)
-                instance.transform.position += new Vector3(.2f,0f,0f);
+            // if(instance.transform.position.x <= .7)
+            //     instance.transform.position += new Vector3(.2f,0f,0f);
 
             instance.SetText(text);
             instance.SetSize(size);

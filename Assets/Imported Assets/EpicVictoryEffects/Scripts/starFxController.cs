@@ -36,9 +36,6 @@ public class starFxController : MonoBehaviour {
 				}
 			}
 		}
-		if (Input.GetKeyDown (KeyCode.DownArrow)) {
-			Reset ();
-		}
 	}
 
 	public void Reset () {
