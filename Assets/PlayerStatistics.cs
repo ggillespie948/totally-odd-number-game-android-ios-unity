@@ -41,10 +41,10 @@ public class PlayerStatistics : MonoBehaviour {
 				return "Finish with the best turn score";
 
 			case "TurnScore":
-				return "Score" + ret[1] + " or more in a single turn";
+				return "Score " + ret[1] + " or more in a single turn";
 
 			case "TurnScoreExact":
-				return "Score exactly" + ret[1] + " in a single turn";
+				return "Score exactly " + ret[1] + " in a single turn";
 
 			case "MostTiles":
 				return "Play the most tiles in the game";
@@ -138,11 +138,11 @@ public class PlayerStatistics : MonoBehaviour {
 			break;
 
 			case "Odd":
-				if(GameMaster.instance.playerScores[0] %2 == 0) {return true;} 
+				if(GameMaster.instance.playerScores[0] %2 != 0) {return true;} 
 			break;
 
 			case "Even":
-				if(GameMaster.instance.playerScores[0] %2 != 0) {return true;} 
+				if(GameMaster.instance.playerScores[0] %2 == 0) {return true;} 
 			break;
 
 			case "Activate":
