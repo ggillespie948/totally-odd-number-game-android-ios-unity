@@ -57,7 +57,7 @@ public class MenuController : MonoBehaviour {
 
 	public GUI_Dialogue_Call ChallengeMode_MenuButton;
 	public GUI_Dialogue_Call TargetMode_MenuButton;
-	public GUI_Dialogue_Call VsCPU_MenuButton;
+	public GUI_Dialogue_Call PuzzleMode_MenuButton;
 	public GUI_Dialogue_Call Practice_MenuButton;
 	private List<GUI_Dialogue_Call> MultiplayerDialogues;
 
@@ -113,7 +113,7 @@ public class MenuController : MonoBehaviour {
 		SinglePlayerDialogues = new List<GUI_Dialogue_Call>();
 		if(ChallengeMode_MenuButton != null) { SinglePlayerDialogues.Add(ChallengeMode_MenuButton); }
 		if(TargetMode_MenuButton != null) { SinglePlayerDialogues.Add(TargetMode_MenuButton); }
-		if(VsCPU_MenuButton != null) { SinglePlayerDialogues.Add(VsCPU_MenuButton); }
+		if(PuzzleMode_MenuButton != null) { SinglePlayerDialogues.Add(PuzzleMode_MenuButton); }
 		if(Practice_MenuButton != null) { SinglePlayerDialogues.Add(Practice_MenuButton); }
 		if(Home_Dialogue != null) {SinglePlayerDialogues.Add(Home_Dialogue); }
 
@@ -181,6 +181,9 @@ public class MenuController : MonoBehaviour {
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().sixTiles = config.sixTiles;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().sevenTiles = config.sevenTiles;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().targetScore = config.targetScore;
+		LevelSelectionDialogue.GetComponent<Game_Configuration>().objective1Code = config.objective1Code;
+		LevelSelectionDialogue.GetComponent<Game_Configuration>().objective2Code = config.objective2Code;
+		LevelSelectionDialogue.GetComponent<Game_Configuration>().objective3Code = config.objective3Code;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().InitaliseLevelSelection();
 		if(!LevelSelectionDialogue.isOpen)
 			LevelSelectionDialogue.Open();
@@ -208,13 +211,13 @@ public class MenuController : MonoBehaviour {
 	{
 		CloseAllMenus(true);
 		WorldSelectionDialogue.Open();
-		InfoPanelText.text = "Select World";
-		InfoPanel_Dialogue.SetActive(true);
+		// InfoPanelText.text = "Select World";
+		// InfoPanel_Dialogue.SetActive(true);
 	}
 
 	public void SelectWorld(int worldNo)
 	{
-		CloseAllMenus(false);
+		CloseAllMenus(true);
 		GUI_Controller.instance.CoinDialogue.SetActive(true);
 		InfoPanelText.text = "Level Select";
 		switch(worldNo)
