@@ -52,7 +52,11 @@ public class Game_Configuration : MonoBehaviour {
 	public GameObject tile5;
 	public GameObject tile6;
 	public GameObject tile7;
+	public string objective1Code;
+	public string objective2Code;
+	public string objective3Code;
 	private List<GameObject> tiles = new List<GameObject>();
+
 
 
 	/// <summary>
@@ -168,12 +172,14 @@ public class Game_Configuration : MonoBehaviour {
 		ApplicationModel.TURN_TIME=turnTime;
 		ApplicationModel.TUTORIAL_MODE=false;
 		ApplicationModel.HUMAN_PLAYERS=human_players;
+		ApplicationModel.Objective1Code=objective1Code;
+		ApplicationModel.Objective2Code=objective2Code;
+		ApplicationModel.Objective3Code=objective3Code;
 
 		if(challengeMode)
 			ApplicationModel.RETURN_TO_WORLD=worldNo;
 		else
 			ApplicationModel.RETURN_TO_WORLD=-1;
-		//ApplicationModel.THEME=theme;
 
 		if(targetScore ==0)
 		{
