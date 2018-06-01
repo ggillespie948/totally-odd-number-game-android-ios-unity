@@ -21,4 +21,6 @@ public static class MaterialExtension
 	{
 		material.SetColor("_EmissionColor", material.color*emissionRate);
 	}
+
+	
 }

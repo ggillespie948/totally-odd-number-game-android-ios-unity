@@ -17,6 +17,17 @@ public class Game_Configuration : MonoBehaviour {
 	public TextMeshProUGUI turnTimeTxt;
 	public starFxController starFx;
 
+	public TextMeshProUGUI objectiveText1;
+	public TextMeshProUGUI objectiveText2;
+	public TextMeshProUGUI objectiveText3;
+
+	public GameObject objectivePanel;
+	public GameObject configPanel;
+
+	public GameObject objStar1;
+	public GameObject objStar2;
+	public GameObject objStar3;
+
 	[Header("Game Configuration Settings")]
 	public bool challengeMode;
 	public bool puzzleMode;
@@ -77,13 +88,26 @@ public class Game_Configuration : MonoBehaviour {
 		{
 			if(challengeMode)
 			{
-				if(starFx != null && worldNo >= 0)
+				if(worldNo >= 0)
 				{
 					Debug.Log("wordl no  " + worldNo);
 					Debug.Log("level no  " + levelNo);
-					Debug.Log("wordlstars level,world:  " + AccountInfo.worldStars[worldNo,levelNo]);
-					starFx.ea=AccountInfo.worldStars[worldNo,levelNo];
-					starFx.enabled=true;
+					Debug.LogWarning("wordlstars level,world:  " + AccountInfo.worldStars[worldNo,levelNo]);
+					
+					if(AccountInfo.worldStars[worldNo, levelNo][0]=='1')
+						if(objStar1 != null){objStar1.SetActive(true);}
+					else
+						if(objStar1 != null){objStar1.SetActive(false);}
+
+					if(AccountInfo.worldStars[worldNo, levelNo][1]=='1')
+						if(objStar2 != null){objStar2.SetActive(true);}
+					else
+						if(objStar2 != null){objStar2.SetActive(false);}
+
+					if(AccountInfo.worldStars[worldNo, levelNo][2]=='1')
+						if(objStar3 != null){objStar3.SetActive(true);}
+					else
+						if(objStar3 != null){objStar3.SetActive(false);}
 				}
 			}
 		}
@@ -91,7 +115,9 @@ public class Game_Configuration : MonoBehaviour {
 
 	public void InitaliseLevelSelection()
 	{
-		titleTxt.text = levelTitle;
+		objectivePanel.SetActive(false);
+		configPanel.SetActive(true);
+		
 		gridSizeTxt.text = "Grid: "+gridSize+"x"+gridSize;
 
 		if(challengeMode)
@@ -146,12 +172,33 @@ public class Game_Configuration : MonoBehaviour {
 		else
 			tile7.SetActive(true);
 
-		if(challengeMode && worldNo >= 0)
-		{
-			starFx.Reset();
-			starFx.ea=AccountInfo.worldStars[worldNo,levelNo];
-		}
 		
+		
+	}
+
+	public void InitaliseLevelObjectives()
+	{
+		objectivePanel.SetActive(true);
+		configPanel.SetActive(false);
+		titleTxt.text = levelTitle;
+		objectiveText1.text=GenerateObjectiveText(objective1Code);
+		objectiveText2.text=GenerateObjectiveText(objective2Code);
+		objectiveText3.text=GenerateObjectiveText(objective3Code);
+
+		if(AccountInfo.worldStars[worldNo, levelNo][0]=='1')
+		objStar1.SetActive(true);
+		else
+		objStar1.SetActive(false);
+
+		if(AccountInfo.worldStars[worldNo, levelNo][1]=='1')
+		objStar2.SetActive(true);
+		else
+		objStar2.SetActive(false);
+
+		if(AccountInfo.worldStars[worldNo, levelNo][2]=='1')
+		objStar3.SetActive(true);
+		else
+		objStar3.SetActive(false);
 	}
 
 	public void StartLevel()
@@ -188,6 +235,37 @@ public class Game_Configuration : MonoBehaviour {
 			ApplicationModel.TARGET = targetScore;
 			MenuController.instance.SoloPlay();
 		}
+	}
+
+	public void LoadConfiguration(Game_Configuration config)
+	{
+		if(challengeMode)
+			GUI_Controller.instance.NavBar.CloseAllDialogues();
+
+		levelCode = config.levelCode;
+		ai_difficulty = config.ai_difficulty;
+		levelTitle = config.levelTitle;
+		levelNo = config.levelNo;
+		worldNo = config.worldNo;
+		gridSize = config.gridSize;
+		human_players = config.human_players;
+		ai_opponents = config.ai_opponents;
+		turnTime = config.turnTime;
+		maxTile = config.maxTile;
+		oneTiles = config.oneTiles;
+		twoTiles = config.twoTiles;
+		threeTiles = config.threeTiles;
+		fourTiles = config.fourTiles;
+		fiveTiles = config.fiveTiles;
+		sixTiles = config.sixTiles;
+		sevenTiles = config.sevenTiles;
+		targetScore = config.targetScore;
+		objective1Code = config.objective1Code;
+		objective2Code = config.objective2Code;
+		objective3Code = config.objective3Code;
+		gameObject.SetActive(true);
+		InitaliseLevelObjectives();
+
 	}
 
 	/// <summary>
@@ -380,6 +458,69 @@ public class Game_Configuration : MonoBehaviour {
 				sixTiles=gridSize*(8-maxTile)+9;
 				sevenTiles=gridSize*(8-maxTile)+9;
 			break;
+		}
+
+	}
+
+	public void ReturnToWorldSelection()
+	{
+		GUI_Controller.instance.NavBar.challengeModeDialogue.GetComponent<ChallengeModeController>().SelectWorld(worldNo);
+	}
+
+	public string GenerateObjectiveText(string objCode)
+	{
+		string[] ret = objCode.Split('.');
+
+		switch(ret[0])
+		{
+			case "Win":
+				return "Win the game";
+
+			case "WinBy":
+				return "Win by "+ret[1]+" points";
+
+			case "Fill":
+				return "Fill the game grid completely";
+
+			case "BestTurnScore":
+				return "Finish with the best turn score";
+
+			case "TurnScore":
+				return "Score " + ret[1] + " or more in a single turn";
+
+			case "TurnScoreExact":
+				return "Score exactly " + ret[1] + " in a single turn";
+
+			case "MostTiles":
+				return "Play the most tiles in the game";
+
+			case "PlayTiles":
+				return "Play " + ret[1] + " or more tiles in the game";
+
+			case "Score":
+				return "Score " + ret[1] + " or more";
+
+			case "Errors":
+				return "Finish with " + ret[1] + " errors or less";
+
+			case "ErrorsWin":
+				return "Win with  " + ret[1] + "errors or less";
+
+			case "ErrorsMore":
+				return "Win with  " + ret[1] + "errors or more";
+
+			case "Odd":
+				return "Win the game with an odd score";
+
+			case "Even":
+				return "Win the game with an even score";
+
+			case "Activate":
+				return "Activate " + ret[0] + " tiles in a single turn";
+
+			default:
+				return "404: Object code unrecognised";
+
 		}
 
 	}

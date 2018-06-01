@@ -18,7 +18,7 @@ public class NavigationBarController : MonoBehaviour {
 
 	[Header("Home Dialogues")]
 	[SerializeField]
-	private GameObject challengeModeDialogue;
+	public GameObject challengeModeDialogue;
 	[SerializeField]
 	private GameObject practiceModeDialogue;
 	[SerializeField]
@@ -50,6 +50,9 @@ public class NavigationBarController : MonoBehaviour {
 
 	private Animator activeButtonIcon;
 
+	[SerializeField]
+	private Color enabledCol;
+
 	/// <summary>
 	/// Function used to change the the animated button of an icon when pressed
 	/// </summary>
@@ -60,12 +63,15 @@ public class NavigationBarController : MonoBehaviour {
 		{
 			activeButtonIcon=btn.GetComponentInChildren<Animator>();
 			activeButtonIcon.enabled=true;
+			activeButtonIcon.gameObject.GetComponent<Image>().color=enabledCol;
 			return;
 		} else 
 		{
 			activeButtonIcon.enabled=false;
+			activeButtonIcon.gameObject.GetComponent<Image>().color=Color.white;
 			activeButtonIcon=btn.GetComponentInChildren<Animator>();
 			activeButtonIcon.enabled=true;
+			activeButtonIcon.gameObject.GetComponent<Image>().color=enabledCol;
 		}
 	}
 
@@ -106,11 +112,18 @@ public class NavigationBarController : MonoBehaviour {
 	/// </summary>
 	public void CloseAllDialogues()
 	{
+		challengeModeDialogue.GetComponent<ChallengeModeController>().CloseAllDialogues();
 		challengeModeDialogue.SetActive(false);
+
 		practiceModeDialogue.SetActive(false);
+
 		multiplayerDialogue.SetActive(false);
+
 		tutorialModeDialogue.SetActive(false);
+
+		//unlockablesPannel.GetComponent<UnlockablesController>().CloseAllTabs();
 		unlockablesPannel.SetActive(false);
+
 		gameTitle.SetActive(false);
 	}
 

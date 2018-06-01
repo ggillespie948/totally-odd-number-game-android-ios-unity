@@ -86,6 +86,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GUI_Object TargetScore_Stone;
     public GUI_Object RemainingTurns_Stone;
     public GUI_Object PlayerCoins_Stone;
+    public GUI_Object PlayerLives_Stone;
+    public GUI_Object PlayerStar_Stone;
     public TextMeshProUGUI remainingTurnText;
     public TextMeshProUGUI remainingTilesText;
     public TextMeshProUGUI targetScoreText;
@@ -108,10 +110,13 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GameObject MusicButton;
     public GameObject CoinDialogue;
     public GameObject LivesDialogue;
+    public GameObject StarDialogue;
     public int inactiveCardCount=0;   
     public GameObject Confetti; 
     public GameObject GridCompleteAnim;
     public GameObject NoMovesAnim;
+
+    public NavigationBarController NavBar;
 
 
     
@@ -536,6 +541,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             if(!tile.isFlashing && (tile.placed || tile.placedByAI) )
             {
                 tile.GetComponent<Renderer>().material.DisableEmission();
+                tile.GetComponent<Renderer>().material.SetEmissionRate(0f);
             }
         }
     }
@@ -573,6 +579,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             tile.isFlashing=false;
             if(!GameMaster.instance.gameOver)
             tile.GetComponent<Renderer>().material.EnableEmission();
+            StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission(tile.GetComponent<Renderer>().material.color, 0.5f));
         }
 
     }

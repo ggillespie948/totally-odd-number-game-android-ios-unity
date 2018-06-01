@@ -261,6 +261,7 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		//Generate Star Animations
 		GameMaster.instance.PlayerStatistics.GenerateAllOBjectiveOutcomes();
 
+		string starString="";
 
 		if(targetStarController != null)
 		{
@@ -269,32 +270,40 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			if(GameMaster.instance.PlayerStatistics.OBJECTIVE_1)
 			{
 				starCount++;
+				starString+="1";
 				objectiveStar1.SetActive(true);
-			} 
+			} else 
+			{
+				starString+="0";
+			}
 			if(GameMaster.instance.PlayerStatistics.OBJECTIVE_2)
 			{
 				starCount++;
+				starString+="1";
 				objectiveStar2.SetActive(true);
+			} else 
+			{
+				starString+="0";
 			}
 			if(GameMaster.instance.PlayerStatistics.OBJECTIVE_3)
 			{
 				starCount++;
+				starString+="1";
 				objectiveStar3.SetActive(true);
+			} else 
+			{
+				starString+="0";
 			}
 
-			Debug.LogWarning("Star Count: " + starCount);
-
-			
+			Debug.LogWarning("Star String: " + starString);
 			GameMaster.instance.starCount = starCount;
 		}
-		
-
 		//Update PlayFab star data based on performance temp - refactor this into 000 or 101 format!!!!
 
 		if(ApplicationModel.LEVEL_CODE != "" && AccountInfo.playfabId != null)
 		{
 			Debug.Log("Star Count: " + GameMaster.instance.starCount);
-			AccountInfo.Instance.UpdatePlayerStarData(ApplicationModel.WORLD_NO, ApplicationModel.LEVEL_NO, ApplicationModel.LEVEL_CODE, GameMaster.instance.starCount);
+			AccountInfo.Instance.UpdatePlayerStarData(ApplicationModel.WORLD_NO, ApplicationModel.LEVEL_NO, ApplicationModel.LEVEL_CODE, starString);
 		} else 
 		{
 			Debug.Log("Null level code..");

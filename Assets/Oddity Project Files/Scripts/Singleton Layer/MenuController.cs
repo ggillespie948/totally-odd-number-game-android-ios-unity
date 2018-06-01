@@ -35,7 +35,7 @@ public class MenuController : MonoBehaviour {
 	public GUI_Dialogue_Call LevelSelectionDialogue;
 	public Game_Configuration LevelSelectionConfig;
 
-	public List<GUI_Dialogue_Call> World1Levels;
+	public List<GameObject> World1Levels;
 	public List<GUI_Dialogue_Call> World2Levels;
 	public List<GUI_Dialogue_Call> World3Levels;
 	public List<GUI_Dialogue_Call> World4Levels;
@@ -223,9 +223,9 @@ public class MenuController : MonoBehaviour {
 		switch(worldNo)
 		{
 			case 1:
-			foreach(GUI_Dialogue_Call Dialogue in World1Levels)
+			foreach(GameObject Dialogue in World1Levels)
 			{
-				Dialogue.Open();
+				Dialogue.SetActive(true);
 			}
 			if(AccountInfo.beginnerStars == 15)
 			fireWorks.SetActive(true);
@@ -553,103 +553,103 @@ public class MenuController : MonoBehaviour {
 
 	public void CloseAllMenus(bool closeInfo)
 	{
-		foreach( GUI_Dialogue_Call Dialogue in MainMenuDialogues)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
-		ToggleDialogueInteractions(MainMenuDialogues, false);
+	// 	foreach( GUI_Dialogue_Call Dialogue in MainMenuDialogues)
+	// 	{
+	// 		if(Dialogue.isOpen)
+	// 			Dialogue.Close();
+	// 	}
+	// 	ToggleDialogueInteractions(MainMenuDialogues, false);
 
-		foreach( GUI_Dialogue_Call Dialogue in SinglePlayerDialogues)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
-		ToggleDialogueInteractions(SinglePlayerDialogues, false);
+	// 	foreach( GUI_Dialogue_Call Dialogue in SinglePlayerDialogues)
+	// 	{
+	// 		if(Dialogue.isOpen)
+	// 			Dialogue.Close();
+	// 	}
+	// 	ToggleDialogueInteractions(SinglePlayerDialogues, false);
 
-		foreach( GUI_Dialogue_Call Dialogue in GridSizeDialogues)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
-		ToggleDialogueInteractions(GridSizeDialogues, false);
+	// 	foreach( GUI_Dialogue_Call Dialogue in GridSizeDialogues)
+	// 	{
+	// 		if(Dialogue.isOpen)
+	// 			Dialogue.Close();
+	// 	}
+	// 	ToggleDialogueInteractions(GridSizeDialogues, false);
 
-		foreach( GUI_Dialogue_Call Dialogue in PlayerNumberDialogues)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
-		ToggleDialogueInteractions(PlayerNumberDialogues, false);
+	// 	foreach( GUI_Dialogue_Call Dialogue in PlayerNumberDialogues)
+	// 	{
+	// 		if(Dialogue.isOpen)
+	// 			Dialogue.Close();
+	// 	}
+	// 	ToggleDialogueInteractions(PlayerNumberDialogues, false);
 
-		foreach( GUI_Dialogue_Call Dialogue in PlayerNumberHumanDialogues)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
-		ToggleDialogueInteractions(PlayerNumberHumanDialogues, false);
+	// 	foreach( GUI_Dialogue_Call Dialogue in PlayerNumberHumanDialogues)
+	// 	{
+	// 		if(Dialogue.isOpen)
+	// 			Dialogue.Close();
+	// 	}
+	// 	ToggleDialogueInteractions(PlayerNumberHumanDialogues, false);
 
-		foreach( GUI_Dialogue_Call Dialogue in PlayerNumberAIDialogues)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
-		ToggleDialogueInteractions(PlayerNumberAIDialogues, false);
+	// 	foreach( GUI_Dialogue_Call Dialogue in PlayerNumberAIDialogues)
+	// 	{
+	// 		if(Dialogue.isOpen)
+	// 			Dialogue.Close();
+	// 	}
+	// 	ToggleDialogueInteractions(PlayerNumberAIDialogues, false);
 
-		if(closeInfo)
-			InfoPanel_Dialogue.SetActive(false);
+	// 	if(closeInfo)
+	// 		InfoPanel_Dialogue.SetActive(false);
 
-		if(PlayGame_MenuButton.isOpen)
-			PlayGame_MenuButton.Close();
-		if(LevelSelectionDialogue.isOpen)	
-			LevelSelectionDialogue.Close();
-		if(WorldSelectionDialogue.isOpen)			
-			WorldSelectionDialogue.Close();
+	// 	if(PlayGame_MenuButton.isOpen)
+	// 		PlayGame_MenuButton.Close();
+	// 	if(LevelSelectionDialogue.isOpen)	
+	// 		LevelSelectionDialogue.Close();
+	// 	if(WorldSelectionDialogue.isOpen)			
+	// 		WorldSelectionDialogue.Close();
 
-		fireWorks.SetActive(false);
+	// 	fireWorks.SetActive(false);
 
-		foreach(GUI_Dialogue_Call Dialogue in World1Levels)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
+	// 	// foreach(GUI_Dialogue_Call Dialogue in World1Levels)
+	// 	// {
+	// 	// 	if(Dialogue.isOpen)
+	// 	// 		Dialogue.Close();
+	// 	// }
 
-		foreach(GUI_Dialogue_Call Dialogue in World2Levels)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
+	// 	foreach(GUI_Dialogue_Call Dialogue in World2Levels)
+	// 	{
+	// 		if(Dialogue.isOpen)
+	// 			Dialogue.Close();
+	// 	}
 
-		foreach(GUI_Dialogue_Call Dialogue in World3Levels)
-		{
-			if(Dialogue.isOpen)
-				Dialogue.Close();
-		}
+	// 	foreach(GUI_Dialogue_Call Dialogue in World3Levels)
+	// 	{
+	// 		if(Dialogue.isOpen)
+	// 			Dialogue.Close();
+	// 	}
 
-		if(CustomGame_Dialogue.isOpen)
-		{
-			CustomGame_Dialogue.Close();
-		}
+	// 	if(CustomGame_Dialogue.isOpen)
+	// 	{
+	// 		CustomGame_Dialogue.Close();
+	// 	}
 
-		if(ThemeMenu_Dialogue.isOpen)
-		{
-			ThemeMenu_Dialogue.Close();
-		}
+	// 	if(ThemeMenu_Dialogue.isOpen)
+	// 	{
+	// 		ThemeMenu_Dialogue.Close();
+	// 	}
 
-		// foreach(GUI_Dialogue_Call Dialogue in World3Levels)
-		// {
-		// 	Dialogue.Close();
-		// }
+	// 	// foreach(GUI_Dialogue_Call Dialogue in World3Levels)
+	// 	// {
+	// 	// 	Dialogue.Close();
+	// 	// }
 
-		// foreach(GUI_Dialogue_Call Dialogue in World4Levels)
-		// {
-		// 	Dialogue.Close();
-		// }
+	// 	// foreach(GUI_Dialogue_Call Dialogue in World4Levels)
+	// 	// {
+	// 	// 	Dialogue.Close();
+	// 	// }
 
 		
 
-		//close unlockables Dialogue list
+	// 	//close unlockables Dialogue list
 
-		//close multipalyer Dialogue list
+	// 	//close multipalyer Dialogue list
 	}
 
 	public void Quit()

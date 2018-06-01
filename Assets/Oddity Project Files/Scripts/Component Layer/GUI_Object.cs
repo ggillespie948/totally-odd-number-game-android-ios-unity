@@ -211,6 +211,8 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
+    
+
     public IEnumerator Shake(float time)
     {
 
@@ -257,27 +259,40 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
-    private IEnumerator UnFlash(Color startCol, float time)
+    public IEnumerator GlowToEmission(Color startCol, float time)
     {
+        this.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
+
         Renderer rend = this.GetComponent<Renderer>();
         float curveTime = 0.0f;
-        Color flashCol = startCol - new Color(0,0,0,0.2f);
-        
+
                
         while (curveTime <= time)
         {
-            if(transform != null)
-            //transform.position = Vector3.Lerp(_startPos, pos, TileFlashCurve.Evaluate(curveTime / time));
-            //rend.material.SetColor("_EmissionColor",  Color.Lerp(startCol, Color.red, (ElapsedTime / TotalTime)));
-            rend.material.SetColor("_EmissionColor",  Color.Lerp(startCol, flashCol, TileFlashCurve.Evaluate(curveTime / time)));
-            curveTime -= Time.deltaTime;
-            //Debug.Log("unflash curve: " +  TileFlashCurve.Evaluate(curveTime / time));
+            if(this==null)
+                yield return null; //if tile is destroyed while flashing (game over)
+
+            Material mat = rend.material;
+            curveTime += Time.deltaTime;
+            
+            float emission = 0.1f*Time.deltaTime;
+            Debug.LogWarning("Emission: " + emission);
+            if(Mathf.LinearToGammaSpace(emission) >= 0.6f)
+                yield return null;
+            Color finalColor = startCol * Mathf.LinearToGammaSpace (emission);
+            mat.SetColor ("_EmissionColor", finalColor);
             yield return null;
         }
 
-        Debug.Log("un MF flash");
+        rend.material.SetColor("_EmissionColor", startCol*0.6f);
+
+        
+
 
     }
+
+
+    
 
     public IEnumerator ScaleUp()
 	{
