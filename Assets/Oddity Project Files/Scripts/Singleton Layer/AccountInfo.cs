@@ -18,7 +18,7 @@ public class AccountInfo : MonoBehaviour {
 	}
 
 	[SerializeField]
-	public static int[,] worldStars;
+	public static string[,] worldStars;
 	public static string playfabId;
 
 	public static int beginnerStars;
@@ -48,7 +48,7 @@ public class AccountInfo : MonoBehaviour {
 
 		DontDestroyOnLoad(gameObject);
 
-		worldStars = new int[4,5]; // temp - hard coded the number of worlds/levels
+		worldStars = new string[4,5]; // temp - hard coded the number of worlds/levels
 	}
 
 	/// <summary>
@@ -159,8 +159,15 @@ public class AccountInfo : MonoBehaviour {
 		{
 			if(Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.COINS_CODE, out res))
 			{
-				GUI_Controller.instance.PlayerCoins_Stone.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
+				GUI_Controller.instance.CoinDialogue.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
 			}
+
+			if(Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.LIVES_CODE, out res))
+			{
+				GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
+			}
+
+			GUI_Controller.instance.StarDialogue.GetComponentInChildren<TextMeshProUGUI>().text = (beginnerStars+intermediateStars+advancedStars).ToString();
 
 			
 		}
@@ -176,16 +183,16 @@ public class AccountInfo : MonoBehaviour {
 	public static void SetUpAccount() {
 		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
 			Data = new Dictionary<string, string>() {
-				{"B1", "0"},
-				{"B2", "0"},
-				{"B3", "0"},
-				{"B4", "0"},
-				{"B5", "0"},
-				{"I1", "0"},
-				{"I2", "0"},
-				{"I3", "0"},
-				{"I4", "0"},
-				{"I5", "0"},
+				{"B1", "000"},
+				{"B2", "000"},
+				{"B3", "000"},
+				{"B4", "000"},
+				{"B5", "000"},
+				{"I1", "000"},
+				{"I2", "000"},
+				{"I3", "000"},
+				{"I4", "000"},
+				{"I5", "000"},
 			}
 		}, 
 		result => SetUpAccount2(),
@@ -199,16 +206,16 @@ public class AccountInfo : MonoBehaviour {
 	{
 			PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
 			Data = new Dictionary<string, string>() {
-				{"A1", "0"},
-				{"A2", "0"},
-				{"A3", "0"},
-				{"A4", "0"},
-				{"A5", "0"},
-				{"M1", "0"},
-				{"M2", "0"},
-				{"M3", "0"},
-				{"M4", "0"},
-				{"M5", "0"}
+				{"A1", "000"},
+				{"A2", "000"},
+				{"A3", "000"},
+				{"A4", "000"},
+				{"A5", "000"},
+				{"M1", "000"},
+				{"M2", "000"},
+				{"M3", "000"},
+				{"M4", "000"},
+				{"M5", "000"}
 			}
 		}, 
 		result => Debug.Log("Successfully setup user data"),
@@ -266,31 +273,15 @@ public class AccountInfo : MonoBehaviour {
 					int beginnerCounter = 0;
 					for(int i=0; i<5; i++)
 					{
-						worldStars[0,i] = int.Parse(result.Data["B"+(i+1).ToString()].Value);
-						beginnerCounter += int.Parse(result.Data["B"+(i+1).ToString()].Value);
+						worldStars[0,i] = result.Data["B"+(i+1).ToString()].Value;
+						foreach(char c in result.Data["B"+(i+1).ToString()].Value)
+						{
+							if(c=='1')
+								beginnerCounter++;
+						}
 					}
 					beginnerStars = beginnerCounter;
-
-					int interCounter = 0;
-					for(int i=0; i<5; i++)
-					{
-						worldStars[1,i] = int.Parse(result.Data["I"+(i+1).ToString()].Value);
-						interCounter += int.Parse(result.Data["I"+(i+1).ToString()].Value);
-					}
-					intermediateStars = interCounter;
-
-					int advCounter = 0;
-					for(int i=0; i<5; i++)
-					{
-						worldStars[2,i] = int.Parse(result.Data["A"+(i+1).ToString()].Value);
-						advCounter += int.Parse(result.Data["A"+(i+1).ToString()].Value);
-					}
-					advancedStars = advCounter;
-
 				}
-
-
-
 			}
 		}, (error) => {
 			Debug.Log("Got error retrieving user data:");
@@ -298,14 +289,25 @@ public class AccountInfo : MonoBehaviour {
 		});
 	}
 
-	public void UpdatePlayerStarData(int worldNo, int levelNo, string levelCode, int starCount)
+	public void UpdatePlayerStarData(int worldNo, int levelNo, string levelCode, string starString)
 	{
-		if(worldStars[worldNo,levelNo] < starCount)
+		char[] sString = worldStars[worldNo,levelNo].ToCharArray();
+		bool improved = false;
+		for(int i=0; i<3; i++)
 		{
-			Debug.Log("Updating player star info.." + starCount);
+			if(sString[i]=='0'&&starString[i]=='1')
+			{
+				sString[i]='1';
+				improved=true;
+			}
+		}
+
+		if(improved)
+		{
+			Debug.Log("Updating player star info.." + new string(sString));
 			PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
 				Data = new Dictionary<string, string>() {
-					{levelCode, starCount.ToString()}
+					{levelCode, new string(sString)}
 				}
 			}, 
 			result => Debug.Log("Successfully updated player star data"),
@@ -317,8 +319,5 @@ public class AccountInfo : MonoBehaviour {
 			Debug.Log("Star count not improved");
 		}
 	}
-
-
-
 
 }
