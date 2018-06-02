@@ -320,4 +320,20 @@ public class AccountInfo : MonoBehaviour {
 		}
 	}
 
+	public void PlayerEvent_CompletedGame(bool playerWin, int gridSize, int maxTile, int score, bool targetMode)
+	{
+		PlayFabClientAPI.WritePlayerEvent(new WriteClientPlayerEventRequest() {
+        Body = new Dictionary<string, object>() {
+            { "Grid-Size", gridSize },
+            { "Max-Tile", maxTile },
+			{ "Score", score},
+			{ "Player-Win", playerWin},
+			{ "Target-Mode", targetMode}
+		},
+		EventName = "player_completed_game"
+		},
+		result => Debug.Log("Success"),
+		error => Debug.LogError(error.GenerateErrorReport()));
+	}
+
 }

@@ -201,7 +201,7 @@ Animator:
   m_GameObject: {fileID: 1104747222364664}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: cee6b992bd07f4f4ba5ecf02f5aaaf83, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 629018f018abf9b42abcd122237bd3bc, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -343,8 +343,8 @@ MonoBehaviour:
       outSlope: 1
       tangentMode: 0
     - serializedVersion: 2
-      time: 1
-      value: 1
+      time: 0.6083374
+      value: 0.61249924
       inSlope: 1
       outSlope: 1
       tangentMode: 0
@@ -375,6 +375,7 @@ MonoBehaviour:
   placed: 0
   pickedUp: 1
   placedByAI: 0
+  placedBy: 0
   defaultSkin: {fileID: 0}
   activeSkin: {fileID: 2100000, guid: 0a9aa97b84c8b7d448a7868d5465e8f1, type: 2}
   location: {x: 0, y: 0, z: 0}

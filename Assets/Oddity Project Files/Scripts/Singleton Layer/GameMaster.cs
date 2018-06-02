@@ -1079,12 +1079,16 @@ public class GameMaster : MonoBehaviour{
                 playerWin = false;
         } 
 
-        
-        
-        TurnTimer.StopAllCoroutines();
+        if(TurnTimer != null)
+            TurnTimer.StopAllCoroutines();
+            
         BoardController.instance.StopAllCoroutines();
+
         GameMaster.instance.PlayerStatistics.PlayedMostTiles(GUI_Controller.instance.GetAllTiles());
         StartCoroutine(ActivateGameOverDialogue(9f, playerWin));
+
+        AccountInfo.Instance.PlayerEvent_CompletedGame(playerWin, ApplicationModel.GRID_SIZE, ApplicationModel.MAX_TILE, playerScores[0], ApplicationModel.SOLO_PLAY);
+
 
         GUI_Controller.instance.GameOver();
         

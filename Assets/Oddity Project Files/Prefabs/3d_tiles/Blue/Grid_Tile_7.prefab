@@ -201,7 +201,7 @@ Animator:
   m_GameObject: {fileID: 1932024332330050}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: cee6b992bd07f4f4ba5ecf02f5aaaf83, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 629018f018abf9b42abcd122237bd3bc, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -262,6 +262,7 @@ MonoBehaviour:
   placed: 0
   pickedUp: 1
   placedByAI: 0
+  placedBy: 0
   defaultSkin: {fileID: 0}
   activeSkin: {fileID: 2100000, guid: bc7820475c2bbb24d949fc6a0a0560fa, type: 2}
   location: {x: 0, y: 0, z: 0}
@@ -357,10 +358,22 @@ MonoBehaviour:
     m_RotationOrder: 0
   TileFlashCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.6083374
+      value: 0.61249924
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   targetPosMarker: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
   startPos: {x: 0, y: 0, z: 0}
