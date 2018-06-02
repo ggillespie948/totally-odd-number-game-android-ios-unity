@@ -254,7 +254,9 @@ public class GUI_Object : MonoBehaviour {
         rend.material.SetColor("_EmissionColor", startCol*0.6f);
 
         if(!enableEmission)
+        {
             rend.material.DisableKeyword("_EMISSION");
+        }
 
 
     }
@@ -262,32 +264,23 @@ public class GUI_Object : MonoBehaviour {
     public IEnumerator GlowToEmission(Color startCol, float time)
     {
         this.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
-
         Renderer rend = this.GetComponent<Renderer>();
         float curveTime = 0.0f;
-
                
         while (curveTime <= time)
         {
             if(this==null)
                 yield return null; //if tile is destroyed while flashing (game over)
 
-            Material mat = rend.material;
             curveTime += Time.deltaTime;
-            
-            float emission = 0.1f*Time.deltaTime;
-            Debug.LogWarning("Emission: " + emission);
-            if(Mathf.LinearToGammaSpace(emission) >= 0.6f)
-                yield return null;
+            Material mat = rend.material;
+            float emission = TileFlashCurve.Evaluate(curveTime/time);
             Color finalColor = startCol * Mathf.LinearToGammaSpace (emission);
             mat.SetColor ("_EmissionColor", finalColor);
             yield return null;
         }
 
         rend.material.SetColor("_EmissionColor", startCol*0.6f);
-
-        
-
 
     }
 

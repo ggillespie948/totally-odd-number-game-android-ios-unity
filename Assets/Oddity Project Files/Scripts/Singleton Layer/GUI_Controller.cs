@@ -540,8 +540,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(!tile.isFlashing && (tile.placed || tile.placedByAI) )
             {
-                tile.GetComponent<Renderer>().material.DisableEmission();
                 tile.GetComponent<Renderer>().material.SetEmissionRate(0f);
+                //tile.GetComponent<Renderer>().material.DisableEmission();
             }
         }
     }
@@ -553,6 +553,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         foreach (GridTile tile in GridTiles)
         {
             tile.GetComponent<Renderer>().material.DisableEmission();
+
         }
     }
 
@@ -576,10 +577,15 @@ public class GUI_Controller : MonoBehaviour, Observable {
         GridTiles = GetComponentsInChildren<GridTile>();
         foreach (GridTile tile in GridTiles)
         {
+            if(!tile.isFlashing)
+            {
+                StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission(tile.GetComponent<Renderer>().material.color, .5f));
+            }
             tile.isFlashing=false;
             if(!GameMaster.instance.gameOver)
-            tile.GetComponent<Renderer>().material.EnableEmission();
-            StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission(tile.GetComponent<Renderer>().material.color, 0.5f));
+                tile.GetComponent<Renderer>().material.EnableEmission();
+            
+            tile.GetComponent<Renderer>().material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
         }
 
     }
