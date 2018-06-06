@@ -31,7 +31,7 @@ public class NavigationBarController : MonoBehaviour {
 
 	[Header("Unlockables Dialogue")]
 	[SerializeField]
-	private GameObject unlockablesPannel;
+	public GameObject unlockablesPannel;
 	[SerializeField]
 	private TextMeshProUGUI unlockablesPannelNotifTxt;
 
@@ -63,15 +63,17 @@ public class NavigationBarController : MonoBehaviour {
 		{
 			activeButtonIcon=btn.GetComponentInChildren<Animator>();
 			activeButtonIcon.enabled=true;
-			activeButtonIcon.gameObject.GetComponent<Image>().color=enabledCol;
+			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,20,0);
+			activeButtonIcon.gameObject.transform.parent.parent.GetComponent<Image>().color=enabledCol;
 			return;
 		} else 
 		{
 			activeButtonIcon.enabled=false;
-			activeButtonIcon.gameObject.GetComponent<Image>().color=Color.white;
+			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,-20,0);
+			activeButtonIcon.gameObject.transform.parent.parent.GetComponent<Image>().color=Color.white;
 			activeButtonIcon=btn.GetComponentInChildren<Animator>();
 			activeButtonIcon.enabled=true;
-			activeButtonIcon.gameObject.GetComponent<Image>().color=enabledCol;
+			activeButtonIcon.gameObject.transform.parent.parent.GetComponent<Image>().color=enabledCol;
 		}
 	}
 
@@ -80,13 +82,15 @@ public class NavigationBarController : MonoBehaviour {
 	/// </summary>
 	public void ToggleSettingsOption()
 	{
-		if(musicToggle.activeSelf)
+		Debug.LogWarning("Weow");
+		if(musicToggle.gameObject.activeSelf)
 		{
-			musicToggle.SetActive(true);
-			soundToggle.SetActive(true);
-		} else{
 			musicToggle.SetActive(false);
 			soundToggle.SetActive(false);
+		} else{
+			Debug.LogWarning("nah wtf");
+			musicToggle.SetActive(true);
+			soundToggle.SetActive(true);
 		}
 
 	}
@@ -94,7 +98,7 @@ public class NavigationBarController : MonoBehaviour {
 	public void ToggleLinksOption()
 	{
 		//ratingButton.SetActive(!ratingButton.gameObject.activeSelf);
-		devButton.SetActive(!devButton.gameObject.activeSelf);
+		devButton.SetActive(!devButton.gameObject.activeInHierarchy);
 	}
 
 	public void PressHomeButton()

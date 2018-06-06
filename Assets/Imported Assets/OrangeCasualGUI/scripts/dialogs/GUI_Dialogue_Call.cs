@@ -156,7 +156,6 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		}
 
 		playerNameTxt.text = "Player " + playerCounter;
-
 		if(bestScore)
 		{
 			playerNameTxt.text += " (Winner)";
