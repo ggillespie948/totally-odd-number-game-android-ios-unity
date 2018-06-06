@@ -24,9 +24,7 @@ public class Theme : MonoBehaviour {
 
 	public GridTile Tile7;
 
-	public GameObject Tile1MM;
-	public GameObject Tile2MM;
-	public GameObject Tile3MM;
+
 
 	public Material Skybox;
 
