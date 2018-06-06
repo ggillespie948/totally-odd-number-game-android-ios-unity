@@ -1017,7 +1017,7 @@ public class BoardController : MonoBehaviour, Observable {
             }
 
              //Activate Score Effect for tiles
-            GUI_Controller.instance.ScoreTrailEffect();
+            GUI_Controller.instance.TilesScoredEffect();
 
             
 

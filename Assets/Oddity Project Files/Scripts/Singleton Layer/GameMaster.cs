@@ -54,11 +54,10 @@ public class GameMaster : MonoBehaviour{
 
     [Header("Tile Variables")]
     private int totalRemainingTiles;
-    private static GridTile tile1;    private static GridTile tile2;    private static GridTile tile3;
-    private static GridTile tile4;    private static GridTile tile5;    private static GridTile tile6;  private static GridTile tile7;
-    private static GridTile tile1_alt;    private static GridTile tile2_alt;    private static GridTile tile3_alt;
-    private static GridTile tile4_alt;    private static GridTile tile5_alt;    private static GridTile tile6_alt;  private static GridTile tile7_alt;
-    private List<GridTile> tileModels = new List<GridTile>();
+    private static GridTile[] tile1;    private static GridTile[] tile2;    private static GridTile[] tile3;
+    private static GridTile[] tile4;    private static GridTile[] tile5;    private static GridTile[] tile6;  private static GridTile[] tile7;
+   
+    private List<GridTile[]> tileModels = new List<GridTile[]>();
 
     public int totalTiles{get; set;}
     public List<int> EvenTiles{get; private set;}
@@ -80,6 +79,8 @@ public class GameMaster : MonoBehaviour{
     [SerializeField]
     private List<GameObject> spawnLocations = new List<GameObject>();
     public Theme[] themes;
+    public TileSkin[] tileSkins;
+
     public float averageTurnTime; //not currently implemented
     public static float TILE_SCALE{get; set;}
     public static float GRID_SCALE{get; set;}
@@ -237,37 +238,96 @@ public class GameMaster : MonoBehaviour{
 
         GUI_Controller.instance.directionalLight.intensity=currentTheme.SunLightIntensity;
         RenderSettings.skybox = currentTheme.Skybox;
-        tile1=currentTheme.Tile1;
-        tile2=currentTheme.Tile2;
-        tile3=currentTheme.Tile3;
-        tile4=currentTheme.Tile4;
-        tile5=currentTheme.Tile5;
-        tile6=currentTheme.Tile6;
-        tile7=currentTheme.Tile7;
-        //load oppoent alt theme
-        tile1_alt=altTheme.Tile1;
-        tile2_alt=altTheme.Tile2;
-        tile3_alt=altTheme.Tile3;
-        tile4_alt=altTheme.Tile4;
-        tile5_alt=altTheme.Tile5;
-        tile6_alt=altTheme.Tile6;
-        tile7_alt=altTheme.Tile7;
+        tile1=new GridTile[MAX_TURN_INDICATOR];
+        tile2=new GridTile[MAX_TURN_INDICATOR];
+        tile3=new GridTile[MAX_TURN_INDICATOR];
+        tile4=new GridTile[MAX_TURN_INDICATOR];
+        tile5=new GridTile[MAX_TURN_INDICATOR];
+        tile6=new GridTile[MAX_TURN_INDICATOR];
+        tile7=new GridTile[MAX_TURN_INDICATOR];
 
-        GUI_Controller.instance.Tile1ActivateFX=currentTheme.Tile1FX;
-        GUI_Controller.instance.Tile2ActivateFX=currentTheme.Tile2FX;
-        GUI_Controller.instance.Tile3ActivateFX=currentTheme.Tile3FX;
-        GUI_Controller.instance.Tile4ActivateFX=currentTheme.Tile4FX;
-        GUI_Controller.instance.Tile5ActivateFX=currentTheme.Tile5FX;
-        GUI_Controller.instance.Tile6ActivateFX=currentTheme.Tile6FX;
-        GUI_Controller.instance.Tile7ActivateFX=currentTheme.Tile7FX;
+        GUI_Controller.instance.Tile1ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        GUI_Controller.instance.Tile2ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        GUI_Controller.instance.Tile3ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        GUI_Controller.instance.Tile4ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        GUI_Controller.instance.Tile5ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        GUI_Controller.instance.Tile6ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        GUI_Controller.instance.Tile7ActivateFX=new GameObject[MAX_TURN_INDICATOR];
 
-        GUI_Controller.instance.Tile1ActivateFX_alt=altTheme.Tile1FX;
-        GUI_Controller.instance.Tile2ActivateFX_alt=altTheme.Tile2FX;
-        GUI_Controller.instance.Tile3ActivateFX_alt=altTheme.Tile3FX;
-        GUI_Controller.instance.Tile4ActivateFX_alt=altTheme.Tile4FX;
-        GUI_Controller.instance.Tile5ActivateFX_alt=altTheme.Tile5FX;
-        GUI_Controller.instance.Tile6ActivateFX_alt=altTheme.Tile6FX;
-        GUI_Controller.instance.Tile7ActivateFX_alt=altTheme.Tile7FX;
+        if(ApplicationModel.MIRROR_TILESKIN)
+        {
+            for(int i=0; i<MAX_TURN_INDICATOR;i++)
+            {
+                tile1[i]=tileSkins[ApplicationModel.TILESKIN].Tile1;
+                tile2[i]=tileSkins[ApplicationModel.TILESKIN].Tile2;
+                tile3[i]=tileSkins[ApplicationModel.TILESKIN].Tile3;
+                tile4[i]=tileSkins[ApplicationModel.TILESKIN].Tile4;
+                tile5[i]=tileSkins[ApplicationModel.TILESKIN].Tile5;
+                tile6[i]=tileSkins[ApplicationModel.TILESKIN].Tile6;
+                tile7[i]=tileSkins[ApplicationModel.TILESKIN].Tile7;
+
+                GUI_Controller.instance.Tile1ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile1FX;
+                GUI_Controller.instance.Tile2ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile2FX;
+                GUI_Controller.instance.Tile3ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile3FX;
+                GUI_Controller.instance.Tile4ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile4FX;
+                GUI_Controller.instance.Tile5ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile5FX;
+                GUI_Controller.instance.Tile6ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile6FX;
+                GUI_Controller.instance.Tile7ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile7FX;
+            }
+
+        } else 
+        {
+            tile1[0]=tileSkins[ApplicationModel.TILESKIN].Tile1;
+            tile2[0]=tileSkins[ApplicationModel.TILESKIN].Tile2;
+            tile3[0]=tileSkins[ApplicationModel.TILESKIN].Tile3;
+            tile4[0]=tileSkins[ApplicationModel.TILESKIN].Tile4;
+            tile5[0]=tileSkins[ApplicationModel.TILESKIN].Tile5;
+            tile6[0]=tileSkins[ApplicationModel.TILESKIN].Tile6;
+            tile7[0]=tileSkins[ApplicationModel.TILESKIN].Tile7;
+
+            GUI_Controller.instance.Tile1ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile1FX;
+            GUI_Controller.instance.Tile2ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile2FX;
+            GUI_Controller.instance.Tile3ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile3FX;
+            GUI_Controller.instance.Tile4ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile4FX;
+            GUI_Controller.instance.Tile5ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile5FX;
+            GUI_Controller.instance.Tile6ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile6FX;
+            GUI_Controller.instance.Tile7ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile7FX;
+
+            for(int i=1; i<MAX_TURN_INDICATOR;i++)
+            {
+                tile1[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile1;
+                tile2[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile2;
+                tile3[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile3;
+                tile4[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile4;
+                tile5[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile5;
+                tile6[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile6;
+                tile7[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile7;
+
+                GUI_Controller.instance.Tile1ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile1FX;
+                GUI_Controller.instance.Tile2ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile2FX;
+                GUI_Controller.instance.Tile3ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile3FX;
+                GUI_Controller.instance.Tile4ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile4FX;
+                GUI_Controller.instance.Tile5ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile5FX;
+                GUI_Controller.instance.Tile6ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile6FX;
+                GUI_Controller.instance.Tile7ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile7FX;
+            }
+        }
+
+        // GUI_Controller.instance.Tile1ActivateFX=currentTheme.Tile1FX;
+        // GUI_Controller.instance.Tile2ActivateFX=currentTheme.Tile2FX;
+        // GUI_Controller.instance.Tile3ActivateFX=currentTheme.Tile3FX;
+        // GUI_Controller.instance.Tile4ActivateFX=currentTheme.Tile4FX;
+        // GUI_Controller.instance.Tile5ActivateFX=currentTheme.Tile5FX;
+        // GUI_Controller.instance.Tile6ActivateFX=currentTheme.Tile6FX;
+        // GUI_Controller.instance.Tile7ActivateFX=currentTheme.Tile7FX;
+
+        // GUI_Controller.instance.Tile1ActivateFX_alt=altTheme.Tile1FX;
+        // GUI_Controller.instance.Tile2ActivateFX_alt=altTheme.Tile2FX;
+        // GUI_Controller.instance.Tile3ActivateFX_alt=altTheme.Tile3FX;
+        // GUI_Controller.instance.Tile4ActivateFX_alt=altTheme.Tile4FX;
+        // GUI_Controller.instance.Tile5ActivateFX_alt=altTheme.Tile5FX;
+        // GUI_Controller.instance.Tile6ActivateFX_alt=altTheme.Tile6FX;
+        // GUI_Controller.instance.Tile7ActivateFX_alt=altTheme.Tile7FX;
 
 
         
@@ -360,9 +420,9 @@ public class GameMaster : MonoBehaviour{
 
         if(soloPlay) 
         {
-            targetScore_3Star = (ApplicationModel.TARGET);  
-            targetScore1_1Star = (ApplicationModel.TARGET)-5*ApplicationModel.GRID_SIZE;
-            targetScore2_2Star = (ApplicationModel.TARGET)-2*ApplicationModel.GRID_SIZE; 
+            targetScore_3Star = (ApplicationModel.TARGET3);  
+            targetScore1_1Star = (ApplicationModel.TARGET);
+            targetScore2_2Star = (ApplicationModel.TARGET2);
         }
 
         turnLimit = ApplicationModel.GRID_SIZE*3;
@@ -480,6 +540,7 @@ public class GameMaster : MonoBehaviour{
         StartCoroutine("WaitingForBoardEvaluator");
         HidePlayerTiles();
         SwitchTurnIndicator();
+        GUI_Controller.instance.SwitchEndTurnButton();
         LoadCurrentHand(); 
         GUI_Controller.instance.EnableAllEmissions();
         if(totalTiles >  3 && humanTurn) 
@@ -749,14 +810,7 @@ public class GameMaster : MonoBehaviour{
                                 {
                                     successFlag = true;
                                     GridTile t;
-                                    if(humanTurn)
-                                    {
-                                        t = Instantiate(tile1, transform.position, Quaternion.Euler(0, 0, 0));
-                                    }
-                                    else
-                                    {
-                                        t = Instantiate(tile1_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
-                                    }
+                                    t = Instantiate(tile1[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
@@ -791,14 +845,7 @@ public class GameMaster : MonoBehaviour{
                                 {
                                     successFlag = true;
                                     GridTile t;
-                                    if(humanTurn)
-                                    {
-                                        t = Instantiate(tile2, transform.position, Quaternion.Euler(0, 0, 0));
-                                    }
-                                    else
-                                    {
-                                        t = Instantiate(tile2_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
-                                    }
+                                    t = Instantiate(tile2[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
@@ -832,14 +879,7 @@ public class GameMaster : MonoBehaviour{
                                 {
                                     successFlag = true;
                                     GridTile t;
-                                    if(humanTurn)
-                                    {
-                                        t = Instantiate(tile3, transform.position, Quaternion.Euler(0, 0, 0));
-                                    }
-                                    else
-                                    {
-                                        t = Instantiate(tile3_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
-                                    }
+                                    t = Instantiate(tile3[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
@@ -874,14 +914,7 @@ public class GameMaster : MonoBehaviour{
                                 {
                                     successFlag = true;
                                     GridTile t;
-                                    if(humanTurn)
-                                    {
-                                        t = Instantiate(tile4, transform.position, Quaternion.Euler(0, 0, 0));
-                                    }
-                                    else
-                                    {
-                                        t = Instantiate(tile4_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
-                                    }
+                                    t = Instantiate(tile4[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
                                     t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                     t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                     t.AddObserver(TutorialController);
@@ -916,14 +949,7 @@ public class GameMaster : MonoBehaviour{
                                     {
                                         successFlag = true;
                                         GridTile t;
-                                        if(humanTurn)
-                                        {
-                                            t = Instantiate(tile5, transform.position, Quaternion.Euler(0, 0, 0));
-                                        }
-                                        else
-                                        {
-                                            t = Instantiate(tile5_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
-                                        }
+                                        t = Instantiate(tile5[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
@@ -958,14 +984,7 @@ public class GameMaster : MonoBehaviour{
                                     {
                                         successFlag = true;
                                         GridTile t;
-                                        if(humanTurn)
-                                        {
-                                            t = Instantiate(tile6, transform.position, Quaternion.Euler(0, 0, 0));
-                                        }
-                                        else
-                                        {
-                                            t = Instantiate(tile6_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
-                                        }
+                                        t = Instantiate(tile6[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
@@ -1000,14 +1019,7 @@ public class GameMaster : MonoBehaviour{
                                     {
                                         successFlag = true;
                                         GridTile t;
-                                        if(humanTurn)
-                                        {
-                                            t = Instantiate(tile7, transform.position, Quaternion.Euler(0, 0, 0));
-                                        }
-                                        else
-                                        {
-                                            t = Instantiate(tile7_alt, transform.position, Quaternion.Euler(0, 0, 0)); 
-                                        }
+                                        t = Instantiate(tile7[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
                                         t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
                                         t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
                                         t.AddObserver(TutorialController);
@@ -1087,7 +1099,8 @@ public class GameMaster : MonoBehaviour{
         GameMaster.instance.PlayerStatistics.PlayedMostTiles(GUI_Controller.instance.GetAllTiles());
         StartCoroutine(ActivateGameOverDialogue(9f, playerWin));
 
-        AccountInfo.Instance.PlayerEvent_CompletedGame(playerWin, ApplicationModel.GRID_SIZE, ApplicationModel.MAX_TILE, playerScores[0], ApplicationModel.SOLO_PLAY);
+        if(AccountInfo.Instance != null)
+            AccountInfo.Instance.PlayerEvent_CompletedGame(playerWin, ApplicationModel.GRID_SIZE, ApplicationModel.MAX_TILE, playerScores[0], ApplicationModel.SOLO_PLAY);
 
 
         GUI_Controller.instance.GameOver();

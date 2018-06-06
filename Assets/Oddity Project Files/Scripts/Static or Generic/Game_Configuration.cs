@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Game_Configuration : MonoBehaviour {
@@ -50,6 +51,9 @@ public class Game_Configuration : MonoBehaviour {
 	public int sevenTiles;
 	public int targetScore;
 
+	public int targetScore2;
+	public int targetScore3;
+
 	public int rewardCoins;
 
 	public int rewardLives;
@@ -63,10 +67,14 @@ public class Game_Configuration : MonoBehaviour {
 	public GameObject tile5;
 	public GameObject tile6;
 	public GameObject tile7;
+
+	[Header("Game Objective Items")]
 	public string objective1Code;
 	public string objective2Code;
 	public string objective3Code;
 	private List<GameObject> tiles = new List<GameObject>();
+	[Header("Star Requirement (optional)")]
+	public int starRequirement = 0;
 
 
 
@@ -108,6 +116,24 @@ public class Game_Configuration : MonoBehaviour {
 						if(objStar3 != null){objStar3.SetActive(true);}
 					else
 						if(objStar3 != null){objStar3.SetActive(false);}
+
+					if(starRequirement>(AccountInfo.beginnerStars+AccountInfo.intermediateStars+AccountInfo.advancedStars))
+					{
+						//Image[] imgs = GetComponentsInChildren<Image>();
+						Button[] btns = GetComponentsInChildren<Button>();
+						GetComponentInChildren<TextMeshProUGUI>().enableAutoSizing=true;
+						GetComponentInChildren<TextMeshProUGUI>().text="Requires " + starRequirement.ToString();
+						// foreach(Image img in imgs)
+						// {
+						// 	img.gameObject.SetActive(true);
+						// 	img.CrossFadeAlpha(0.35f, 1f, false);
+						// }
+
+						foreach(Button btn in btns)
+						{
+							btn.interactable=false;
+						}
+					}
 				}
 			}
 		}
@@ -233,6 +259,8 @@ public class Game_Configuration : MonoBehaviour {
 			MenuController.instance.StartGameAI(ai_difficulty);
 		} else {
 			ApplicationModel.TARGET = targetScore;
+			ApplicationModel.TARGET2 = targetScore2;
+			ApplicationModel.TARGET3 = targetScore3;
 			MenuController.instance.SoloPlay();
 		}
 	}
@@ -260,6 +288,8 @@ public class Game_Configuration : MonoBehaviour {
 		sixTiles = config.sixTiles;
 		sevenTiles = config.sevenTiles;
 		targetScore = config.targetScore;
+		targetScore2 = config.targetScore2;
+		targetScore3 = config.targetScore3;
 		objective1Code = config.objective1Code;
 		objective2Code = config.objective2Code;
 		objective3Code = config.objective3Code;
@@ -504,10 +534,10 @@ public class Game_Configuration : MonoBehaviour {
 				return "Finish with " + ret[1] + " errors or less";
 
 			case "ErrorsWin":
-				return "Win with  " + ret[1] + "errors or less";
+				return "Win with  " + ret[1] + " errors or less";
 
 			case "ErrorsMore":
-				return "Win with  " + ret[1] + "errors or more";
+				return "Win with  " + ret[1] + " errors or more";
 
 			case "Odd":
 				return "Win the game with an odd score";

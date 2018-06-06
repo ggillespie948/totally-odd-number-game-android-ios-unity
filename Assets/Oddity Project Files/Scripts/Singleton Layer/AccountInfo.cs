@@ -38,6 +38,15 @@ public class AccountInfo : MonoBehaviour {
 	public static string GEMS_CODE  = "PG";
 	public static string LIVES_CODE  = "PL";
 	public static string DATA_STARS  = "DS";
+	public static string CATALOG_ITEMS = "Items";
+	public static string ITEM_TILESKIN = "TileSkin";
+	public static int ITEM_COST =1;
+	public static int ITEM_PREFAB =3;
+	public static int ITEM_ICON =5;
+	public static int ITEM_STARREQ =7;
+
+	public List<ItemInstance> inv_items = new List<ItemInstance>();
+	
 	
 
 	
@@ -96,6 +105,8 @@ public class AccountInfo : MonoBehaviour {
 			GetPlayerData(result.PlayFabId);
 		}
 		GetAccountInfo(result.PlayFabId);
+		Instance.GetInventory();
+		Database.UpdateDatabase();
 		playfabId = result.PlayFabId;
 	}
 
@@ -134,6 +145,32 @@ public class AccountInfo : MonoBehaviour {
 
 		PlayFabClientAPI.GetPlayerCombinedInfo(request, OnAccountInfoSuccess, OnAPIError);
 	}
+
+	public static void GetAccountInfo()
+	{
+		GetPlayerCombinedInfoRequestParams paramInfo = new GetPlayerCombinedInfoRequestParams()
+		{
+			GetTitleData = true,
+			GetUserInventory = true,
+			GetUserAccountInfo = true,
+			GetUserVirtualCurrency = true,
+			GetPlayerProfile = true,
+			GetPlayerStatistics = true,
+			GetUserData = true,
+			GetUserReadOnlyData = true
+
+		};
+
+		GetPlayerCombinedInfoRequest request = new GetPlayerCombinedInfoRequest()
+		{
+			PlayFabId = AccountInfo.playfabId,
+			InfoRequestParameters = paramInfo
+
+		};
+
+		PlayFabClientAPI.GetPlayerCombinedInfo(request, OnAccountInfoSuccess, OnAPIError);
+	}
+
 
 	public static void OnAPIError(PlayFabError error)
 	{
@@ -335,5 +372,19 @@ public class AccountInfo : MonoBehaviour {
 		result => Debug.Log("Success"),
 		error => Debug.LogError(error.GenerateErrorReport()));
 	}
+
+	public void GetInventory() {
+		PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), OnInventorySuccess, OnAPIError);
+	}
+
+	public static void OnInventorySuccess(GetUserInventoryResult result)
+	{
+		for (int i = 0; i < result.Inventory.Count; i++)
+		{
+			Instance.inv_items.Add(result.Inventory[i]);
+		}
+	}
+
+	
 
 }

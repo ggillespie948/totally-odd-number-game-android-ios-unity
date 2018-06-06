@@ -39,20 +39,14 @@ public class GUI_Controller : MonoBehaviour, Observable {
     [SerializeField]
     public GameObject GameOverFX;
     //FX
-    public GameObject Tile1ActivateFX;
-    public GameObject Tile2ActivateFX;
-    public GameObject Tile3ActivateFX;
-    public GameObject Tile4ActivateFX;
-    public GameObject Tile5ActivateFX;
-    public GameObject Tile6ActivateFX;
-    public GameObject Tile7ActivateFX;
-    public GameObject Tile1ActivateFX_alt;
-    public GameObject Tile2ActivateFX_alt;
-    public GameObject Tile3ActivateFX_alt;
-    public GameObject Tile4ActivateFX_alt;
-    public GameObject Tile5ActivateFX_alt;
-    public GameObject Tile6ActivateFX_alt;
-    public GameObject Tile7ActivateFX_alt;
+    public GameObject[] Tile1ActivateFX;
+    public GameObject[] Tile2ActivateFX;
+    public GameObject[] Tile3ActivateFX;
+    public GameObject[] Tile4ActivateFX;
+    public GameObject[] Tile5ActivateFX;
+    public GameObject[] Tile6ActivateFX;
+    public GameObject[] Tile7ActivateFX;
+    
     public Component[] GridTiles;
 
     [Header("Game UI objects")]
@@ -86,8 +80,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GUI_Object TargetScore_Stone;
     public GUI_Object RemainingTurns_Stone;
     public GUI_Object PlayerCoins_Stone;
-    public GUI_Object PlayerLives_Stone;
-    public GUI_Object PlayerStar_Stone;
     public TextMeshProUGUI remainingTurnText;
     public TextMeshProUGUI remainingTilesText;
     public TextMeshProUGUI targetScoreText;
@@ -118,9 +110,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public NavigationBarController NavBar;
 
-
-    
-
+    public GameObject EndTurn_Btn;
+    public GameObject EndTurn_Flag;
 
     void Awake()
     {
@@ -145,6 +136,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
        
     }
 
+    
     void Start()
     {
         if(PlayerCard1 != null){PlayerCards.Add(PlayerCard1);}
@@ -189,6 +181,22 @@ public class GUI_Controller : MonoBehaviour, Observable {
         //         Screen.orientation = ScreenOrientation.LandscapeRight;
         //     }
         // }
+    }
+
+    public void SwitchEndTurnButton()
+    {
+        if(GameMaster.instance.humanTurn)
+        {
+            EndTurn_Btn.GetComponent<Button>().interactable=true;
+            EndTurn_Btn.GetComponentInChildren<TextMeshProUGUI>().text="End Turn";
+            EndTurn_Flag.SetActive(true);
+
+        } else 
+        {
+            EndTurn_Btn.GetComponent<Button>().interactable=false;
+            EndTurn_Btn.GetComponentInChildren<TextMeshProUGUI>().text="Opponent's turn";
+            EndTurn_Flag.SetActive(false);
+        }
     }
 
     public void ToggleAllSoloUI()
@@ -540,8 +548,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(!tile.isFlashing && (tile.placed || tile.placedByAI) )
             {
-                tile.GetComponent<Renderer>().material.SetEmissionRate(0f);
-                //tile.GetComponent<Renderer>().material.DisableEmission();
+                //tile.GetComponent<Renderer>().material.SetEmissionRate(0f);
+                tile.GetComponent<Renderer>().material.DisableEmission();
             }
         }
     }
@@ -579,10 +587,10 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(!tile.isFlashing)
             {
-                StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission(tile.GetComponent<Renderer>().material.color, .5f));
+                //StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission(tile.GetComponent<Renderer>().material.color, .5f));
             }
             tile.isFlashing=false;
-            if(!GameMaster.instance.gameOver)
+            if(!GameMaster.instance.gameOver || !GameMaster.instance.gridFull)
                 tile.GetComponent<Renderer>().material.EnableEmission();
             
             tile.GetComponent<Renderer>().material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
@@ -666,16 +674,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
             {
                 case 1:
                 GameObject FX = new GameObject();
-                if(GameMaster.instance.humanTurn)
-                {
-                    FX = Instantiate(Tile1ActivateFX, tile.transform.position-
-                    new Vector3(0,0,1), Tile1ActivateFX.transform.rotation);
-
-                } else 
-                {
-                    FX = Instantiate(Tile1ActivateFX_alt, tile.transform.position-
-                    new Vector3(0,0,1), Tile1ActivateFX_alt.transform.rotation);
-                }
+                FX = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
+                    new Vector3(0,0,1), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
 
                 FX.transform.localScale=AdjustFXScale();
                 Destroy(FX, 1f);
@@ -683,96 +683,48 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
                 case 2:
                 GameObject FX2 = new GameObject();
-                if(GameMaster.instance.humanTurn)
-                {
-                    FX2 = Instantiate(Tile2ActivateFX, tile.transform.position-
-                    new Vector3(0,0,1), Tile2ActivateFX.transform.rotation);
-
-                } else 
-                {
-                    FX2 = Instantiate(Tile2ActivateFX_alt, tile.transform.position-
-                    new Vector3(0,0,1), Tile2ActivateFX_alt.transform.rotation);
-                }
+                FX2 = Instantiate(Tile2ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
+                    new Vector3(0,0,1), Tile2ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX2.transform.localScale=AdjustFXScale();
                 Destroy(FX2, 1f);
                 break;
 
                 case 3:
                 GameObject FX3 = new GameObject();
-                if(GameMaster.instance.humanTurn)
-                {
-                    FX3 = Instantiate(Tile3ActivateFX, tile.transform.position-
-                    new Vector3(0,0,1), Tile3ActivateFX.transform.rotation);
-
-                } else 
-                {
-                    FX3 = Instantiate(Tile3ActivateFX_alt, tile.transform.position-
-                    new Vector3(0,0,1), Tile3ActivateFX_alt.transform.rotation);
-                }
+                FX3 = Instantiate(Tile3ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
+                    new Vector3(0,0,1), Tile3ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX3.transform.localScale=AdjustFXScale();
                 Destroy(FX3, 1f);
                 break;
 
                 case 4:
                 GameObject FX4 = new GameObject();
-                if(GameMaster.instance.humanTurn)
-                {
-                    FX4 = Instantiate(Tile4ActivateFX, tile.transform.position-
-                    new Vector3(0,0,1), Tile4ActivateFX.transform.rotation);
-
-                } else 
-                {
-                    FX4 = Instantiate(Tile1ActivateFX_alt, tile.transform.position-
-                    new Vector3(0,0,1), Tile1ActivateFX_alt.transform.rotation);
-                }
+                FX4 = Instantiate(Tile4ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
+                    new Vector3(0,0,1), Tile4ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX4.transform.localScale=AdjustFXScale();
                 Destroy(FX4, 1f);
                 break;
 
                 case 5:
                 GameObject FX5 = new GameObject();
-                if(GameMaster.instance.humanTurn)
-                {
-                    FX5 = Instantiate(Tile5ActivateFX, tile.transform.position-
-                    new Vector3(0,0,1), Tile5ActivateFX.transform.rotation);
-
-                } else 
-                {
-                    FX5 = Instantiate(Tile5ActivateFX_alt, tile.transform.position-
-                    new Vector3(0,0,1), Tile5ActivateFX_alt.transform.rotation);
-                }
+                FX5 = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
+                    new Vector3(0,0,1), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX5.transform.localScale=AdjustFXScale();
                 Destroy(FX5, 1f);
                 break;
 
                 case 6:
                 GameObject FX6 = new GameObject();
-                if(GameMaster.instance.humanTurn)
-                {
-                    FX6 = Instantiate(Tile6ActivateFX, tile.transform.position-
-                    new Vector3(0,0,1), Tile6ActivateFX.transform.rotation);
-
-                } else 
-                {
-                    FX6 = Instantiate(Tile6ActivateFX_alt, tile.transform.position-
-                    new Vector3(0,0,1), Tile6ActivateFX_alt.transform.rotation);
-                }
+                FX6 = Instantiate(Tile6ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
+                    new Vector3(0,0,1), Tile6ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX6.transform.localScale=AdjustFXScale();
                 Destroy(FX6, 1f);
                 break;
 
                 case 7:
                 GameObject FX7 = new GameObject();
-                if(GameMaster.instance.humanTurn)
-                {
-                    FX7 = Instantiate(Tile7ActivateFX, tile.transform.position-
-                    new Vector3(0,0,1), Tile7ActivateFX.transform.rotation);
-
-                } else 
-                {
-                    FX7 = Instantiate(Tile7ActivateFX_alt, tile.transform.position-
-                    new Vector3(0,0,1), Tile7ActivateFX_alt.transform.rotation);
-                }
+                FX7 = Instantiate(Tile7ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
+                    new Vector3(0,0,1), Tile7ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX7.transform.localScale=AdjustFXScale();
                 Destroy(FX7, 1f);
                 break;
@@ -781,7 +733,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         } 
     }
 
-    public void ScoreTrailEffect()
+    public void TilesScoredEffect()
     {
         //Remove duplicates
         foreach(GridTile tile in TilesScored)
@@ -792,6 +744,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 tile.isFlashing = true;
                 //tile.ScoreEffect.Play(); // temp - decided to remove effect particle colour effect
                 StartCoroutine( tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, 1.5f, true) );
+                tile.GetComponent<Animator>().enabled=true;
+                tile.GetComponent<Animator>().SetTrigger("TileScored");
             }
         }
        TilesScored.Clear();

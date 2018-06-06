@@ -18,6 +18,8 @@ public class ChallengeModeController : MonoBehaviour {
 	private List<GameObject> worldScrollViews;
 	[SerializeField]
 	private List<GameObject> worldScrollViewPanels;
+	[SerializeField]
+	private List<GameObject> worldBoxes;
 
 	public void CloseAllDialogues()
 	{
@@ -38,6 +40,7 @@ public class ChallengeModeController : MonoBehaviour {
 	public void OpenChallenegeMode()
 	{
 		worldSelector.SetActive(true);
+		LoadWorldData();
 	}
 
 	public void SelectWorld(int worldNo)
@@ -47,5 +50,11 @@ public class ChallengeModeController : MonoBehaviour {
 
 		worldScrollViews[worldNo].SetActive(true);
 		worldScrollViewPanels[worldNo].SetActive(true);
+	}
+
+	public void LoadWorldData()
+	{
+		worldBoxes[0].GetComponentInChildren<TextMeshProUGUI>().text="Beginner " + AccountInfo.beginnerStars.ToString() + "/30";
+		worldBoxes[1].GetComponentInChildren<TextMeshProUGUI>().text="Intermediate " + AccountInfo.intermediateStars.ToString() + "/30";
 	}
 }
