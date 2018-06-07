@@ -6,7 +6,7 @@
 	public static string LEVEL_CODE = "";
 	public static int GAME_DIFFICULTY = 20;  // /100
 	public static int THEME = 3;
-	public static int GRID_SIZE = 5;
+	public static int GRID_SIZE = 7;
 	public static int MAX_TILE = 8;
 	public static int PLAYERS = 2;
 	public static int TARGET = 550;

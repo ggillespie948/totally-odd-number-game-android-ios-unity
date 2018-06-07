@@ -1017,17 +1017,14 @@ public class BoardController : MonoBehaviour, Observable {
             }
 
              //Activate Score Effect for tiles
-            GUI_Controller.instance.TilesScoredEffect();
-
-            
+            GUI_Controller.instance.TilesScoredEffect(rowScore+colScore);
 
             if(GameMaster.instance.playedTiles.Count > 0)
                 GUI_Controller.instance.DisableAllEmissions();
             
-            Debug.Log("Col score: " + colScore);
-            Debug.Log("Row score: " + rowScore);
 
-            GUI_Controller.instance.SpawnTextPopup("+"+(+colScore+rowScore), Color.gray, GUI_Controller.instance.transform, (colScore+rowScore+10));
+            //GUI_Controller.instance.SpawnTextPopup("+"+(+colScore+rowScore), Color.gray, 
+                //GUI_Controller.instance.transform, (colScore+rowScore+10));
 
             //Update Player SCore
             if(GameMaster.instance.totalTiles==1)
@@ -1036,8 +1033,8 @@ public class BoardController : MonoBehaviour, Observable {
             } else {
                 GameMaster.instance.UpdatePlayerScore((rowScore + colScore), GameMaster.instance.turnIndicator);
 
-                if(GameMaster.instance.playedTiles.Count >0)
-                    NotifyObservers(this, "Event.Score."+(rowScore+colScore).ToString());
+                //if(GameMaster.instance.playedTiles.Count >0)
+                    //NotifyObservers(this, "Event.Score."+(rowScore+colScore).ToString());
 
             }
             
@@ -1049,17 +1046,15 @@ public class BoardController : MonoBehaviour, Observable {
                 }
             }
 
-
             //save last valid state before change
             GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
 
-
-            GameMaster.instance.playedTiles.Clear();
-
+           
 
             if (endTurn)
             {
-                GameMaster.instance.EndTurn();
+                StartCoroutine(GameMaster.instance.EndTurnDelay(3f));
+                //GameMaster.instance.EndTurn();
             }
 
         }
@@ -1083,13 +1078,12 @@ public class BoardController : MonoBehaviour, Observable {
                 GameMaster.instance.StateMachine.RevertToLastValidState(true);
 
             }
-
-            
-
         }
+    }
 
-
-
+    public void EventScore(int score)
+    {
+        NotifyObservers(this, "Event.Score."+(score).ToString());
 
     }
 

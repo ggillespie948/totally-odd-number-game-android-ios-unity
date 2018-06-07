@@ -74,10 +74,6 @@ public class GUI_Object : MonoBehaviour {
         }
 
         startSize = transform.localScale;
-
-        
-        
-
 		
 	}
 
@@ -105,10 +101,6 @@ public class GUI_Object : MonoBehaviour {
         if(GetState() == GUIState.inAnimation)
             return;
         
-
-
-        //this.gameObject.GetComponent<NoGravity>().enabled = false;
-        Debug.Log("pick up.");
         this.gameObject.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
         startSize = transform.localScale;
          
@@ -123,13 +115,11 @@ public class GUI_Object : MonoBehaviour {
 
     public void PutObjectDown()
     {
-        Debug.Log("Put down.");
         if(this.GetComponent<GridTile>().placed!=true)
         {
             this.gameObject.GetComponent<NoGravity>().enabled = true;
         }
 
-        Debug.Log("StartSize: " + startSize);
 
         if(startSize.x == 0)
             startSize = new Vector3(GameMaster.TILE_SCALE,GameMaster.TILE_SCALE,GameMaster.TILE_SCALE);
@@ -284,9 +274,6 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
-
-    
-
     public IEnumerator ScaleUp()
 	{
         float scaleDuration = .87f;                                //animation duration in seconds
@@ -328,6 +315,38 @@ public class GUI_Object : MonoBehaviour {
         }
 
 	}
+
+    public IEnumerator GlowToEmission()
+    {
+        Renderer rend = this.GetComponent<Renderer>();
+        float t=0f;
+
+        while (t< 1f)
+        {
+            // animate the position of the game object...
+            rend.material.SetEmissionRate(Mathf.Lerp(0, 0.6f, t));
+
+            // .. and increate the t interpolater
+            t += 2 * Time.deltaTime;
+            yield return null;
+        }
+
+        // now check if the interpolator has reached 1.0
+        // and swap maximum and minimum so game object moves
+        // in the opposite direction.
+            // if (t > 1.0f)
+            // {
+            //     float temp = maximum;
+            //     maximum = minimum;
+            //     minimum = temp;
+            //     t = 0.0f;
+            // }
+    }
+
+    public void ResetTransform()
+    {
+        this.gameObject.transform.rotation.Set(0f,0f,0f, 0f);
+    }
 
     public IEnumerator Rotate()
     {

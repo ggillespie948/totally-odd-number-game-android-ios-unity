@@ -63,17 +63,18 @@ public class NavigationBarController : MonoBehaviour {
 		{
 			activeButtonIcon=btn.GetComponentInChildren<Animator>();
 			activeButtonIcon.enabled=true;
-			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,20,0);
-			activeButtonIcon.gameObject.transform.parent.parent.GetComponent<Image>().color=enabledCol;
+			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,.2f,0);
+			activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
 			return;
 		} else 
 		{
 			activeButtonIcon.enabled=false;
-			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,-20,0);
-			activeButtonIcon.gameObject.transform.parent.parent.GetComponent<Image>().color=Color.white;
+			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,-.2f,0);
+			activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=false;
 			activeButtonIcon=btn.GetComponentInChildren<Animator>();
 			activeButtonIcon.enabled=true;
-			activeButtonIcon.gameObject.transform.parent.parent.GetComponent<Image>().color=enabledCol;
+			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,.2f,0);
+			activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
 		}
 	}
 

@@ -568,7 +568,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public void EnableAllEmissions()
     {
         if(!GameMaster.instance.gameOver)
-            StartCoroutine(EnableEM(1.5f));
+            StartCoroutine(EnableEM(1f));
     }
 
     /// <summary>
@@ -587,7 +587,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(!tile.isFlashing)
             {
-                //StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission(tile.GetComponent<Renderer>().material.color, .5f));
+                StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission());
             }
             tile.isFlashing=false;
             if(!GameMaster.instance.gameOver || !GameMaster.instance.gridFull)
@@ -733,23 +733,60 @@ public class GUI_Controller : MonoBehaviour, Observable {
         } 
     }
 
-    public void TilesScoredEffect()
+    public void TilesScoredEffect(int score)
     {
         //Remove duplicates
-        foreach(GridTile tile in TilesScored)
+    //     foreach(GridTile tile in TilesScored)
+    //     {
+    //         //perform scoring effect
+    //         if(tile != null)
+    //         {
+    //             tile.isFlashing = true;
+    //             //tile.ScoreEffect.Play(); // temp - decided to remove effect particle colour effect
+    //             StartCoroutine( tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, 2.5f, true) );
+    //             tile.GetComponent<Animator>().enabled=true;
+    //             tile.GetComponent<Animator>().SetTrigger("TileScored");
+    //         }
+    //     }
+    //  TilesScored.Clear();
+        TilesScored = TilesScored.Distinct().ToList();
+        Debug.Log("Tiles Scored Length ::::::  :::::::: " + TilesScored.Count);
+        StartCoroutine(TileScoreChain(score));
+    }
+
+    private IEnumerator TileScoreChain(int score)
+    {
+        float time = 1f/TilesScored.Count;
+        if(time>.2f)
+            time=.2f;
+
+        WaitForSeconds wait = new WaitForSeconds( time ) ;
+        for(int i=0; i<TilesScored.Count; i++)
         {
             //perform scoring effect
-            if(tile != null)
+            if(TilesScored[i] != null)
             {
-                tile.isFlashing = true;
-                //tile.ScoreEffect.Play(); // temp - decided to remove effect particle colour effect
-                StartCoroutine( tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, 1.5f, true) );
-                tile.GetComponent<Animator>().enabled=true;
-                tile.GetComponent<Animator>().SetTrigger("TileScored");
+                TilesScored[i].isFlashing = true;
+                //StartCoroutine( TilesScored[i].GetComponent<GUI_Object>().Flash(TilesScored[i].activeSkin.color, 1.5f, true) );
+                TilesScored[i].GetComponent<Renderer>().material.EnableEmission();
+                TilesScored[i].GetComponent<Animator>().enabled=true;
+                TilesScored[i].GetComponent<Animator>().SetTrigger("TileScored");
+                yield return wait;
             }
         }
+
        TilesScored.Clear();
+       GUI_Controller.instance.SpawnTextPopup("+"+(+score), Color.gray, 
+                GUI_Controller.instance.transform, (score+10));
+
+        if(GameMaster.instance.playedTiles.Count >0)
+            BoardController.instance.EventScore(score);
+
+        GameMaster.instance.playedTiles.Clear();
+
     }
+
+    
 
     /// <summary>
     /// note: referenced from GameOver() using Invoke()
@@ -904,9 +941,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         } else {
             TextPopup instance = Instantiate(POPUP_TEXT);
             instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-            instance.transform.position = location.transform.position + new Vector3(UnityEngine.Random.Range(0.05f, .07f),UnityEngine.Random.Range(0.12f, .15f),-3); 
-            if(instance.transform.position.x <= .7)
-                instance.transform.position += new Vector3(.2f,0f,0f);
+            instance.transform.position = location.transform.position; //+ new Vector3(0,UnityEngine.Random.Range(0.12f, .15f),0); 
 
             instance.SetColour(colour);
             instance.SetText(text);

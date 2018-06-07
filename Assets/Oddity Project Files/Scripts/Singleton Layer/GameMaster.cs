@@ -525,6 +525,13 @@ public class GameMaster : MonoBehaviour{
         }
     }
 
+    public IEnumerator EndTurnDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        EndTurn();
+
+    }
+
     public void EndTurn()
     {
         Debug.Log("End turn");

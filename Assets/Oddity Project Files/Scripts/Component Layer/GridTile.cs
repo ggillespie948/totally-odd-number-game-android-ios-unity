@@ -62,7 +62,6 @@ public class GridTile : MonoBehaviour {
         
         if(!pickedUp && !placed)
         {
-            Debug.Log("Pickup");
             this.GetComponent<GUI_Object>().PickUpObject();
             pickedUp = true;
         }
@@ -160,7 +159,6 @@ public class GridTile : MonoBehaviour {
         //Check if move is actually valid
         if (BoardController.instance.CheckMoveValidity(GameMaster.instance.activeCell))
         {
-            Debug.Log("Activating Player Move");
             GUI_Controller.instance.ActivateCell(GameMaster.instance.activeCell.cellTile);
             
         }
