@@ -894,6 +894,8 @@ public class BoardController : MonoBehaviour, Observable {
             int colScore = 0;
             int rowScore = 0;
 
+            GameMaster.instance.playerPlayedTiles[GameMaster.instance.turnIndicator-1] += GameMaster.instance.playedTiles.Count; // temp - move this to GameMaster method?
+
             switch (GameMaster.instance.playedTiles.Count)
             {
                 case 1:
@@ -1015,12 +1017,13 @@ public class BoardController : MonoBehaviour, Observable {
                     }
                     break;
             }
+            
+            if(GameMaster.instance.playedTiles.Count > 0)
+                GUI_Controller.instance.DisableAllEmissions();
 
              //Activate Score Effect for tiles
             GUI_Controller.instance.TilesScoredEffect(rowScore+colScore);
 
-            if(GameMaster.instance.playedTiles.Count > 0)
-                GUI_Controller.instance.DisableAllEmissions();
             
 
             //GUI_Controller.instance.SpawnTextPopup("+"+(+colScore+rowScore), Color.gray, 

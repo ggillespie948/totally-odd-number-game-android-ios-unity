@@ -46,7 +46,7 @@ public class ChallengeModeController : MonoBehaviour {
 	public void SelectWorld(int worldNo)
 	{
 		CloseAllDialogues();
-		navBar.CloseAllDialogues();
+		navBar.CloseAllDialogues(true);
 
 		worldScrollViews[worldNo].SetActive(true);
 		worldScrollViewPanels[worldNo].SetActive(true);

@@ -36,7 +36,7 @@ public class MenuController : MonoBehaviour {
 	public Game_Configuration LevelSelectionConfig;
 
 	public List<GameObject> World1Levels;
-	public List<GUI_Dialogue_Call> World2Levels;
+	public List<GameObject> World2Levels;
 	public List<GUI_Dialogue_Call> World3Levels;
 	public List<GUI_Dialogue_Call> World4Levels;
 
@@ -232,9 +232,9 @@ public class MenuController : MonoBehaviour {
 			break;
 
 			case 2:
-			foreach(GUI_Dialogue_Call Dialogue in World2Levels)
+			foreach(GameObject Dialogue in World2Levels)
 			{
-				Dialogue.Open();
+				Dialogue.SetActive(true);
 			}
 			if(AccountInfo.intermediateStars == 15)
 			fireWorks.SetActive(true);

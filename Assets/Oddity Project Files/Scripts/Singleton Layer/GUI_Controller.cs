@@ -11,6 +11,7 @@ using System.Linq;
 public class GUI_Controller : MonoBehaviour, Observable {
 
     public static GUI_Controller instance = null;
+    public List<Observer> observerList;
     public int animationCount = 0;
     public TextMeshProUGUI menuDebugTxt;
     public GameObject LastPlacedTile;
@@ -131,8 +132,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
             POPUP_CASH = Resources.Load<TextPopup>("PopupCashParent");
 
         DialogueController = this.GetComponent<GUI_Dialogue_Controller>();
-
         Time.timeScale = 1f;
+        observerList = new List<Observer>();
        
     }
 
@@ -156,31 +157,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
             GUI_Controller.instance.PlayerCards[0].SetQueuePos(1);
         }
         Time.timeScale = 1f;
-    }
-
-    /// <summary>
-    /// Method originally used to rotate the screen in local multiplayer when game was restrcited to two players
-    /// </summary>
-    public void RotateScreen()
-    {
-        // if( ApplicationModel.vsLocalMP )
-        // {
-        //     //GUI_Controller.instance.RotateScreen();
-
-        //     Debug.Log("Screen oritentation localMP " + Screen.orientation);
-        //     if(Screen.orientation == ScreenOrientation.LandscapeLeft)
-        //     {
-        //         Debug.Log("Rotate");
-        //         Screen.orientation = ScreenOrientation.LandscapeRight;
-
-        //     } else if(Screen.orientation == ScreenOrientation.LandscapeRight) {
-        //         Debug.Log("Rotate2");
-        //         Screen.orientation = ScreenOrientation.LandscapeLeft;
-        //     } else {
-        //         Debug.Log("flip");
-        //         Screen.orientation = ScreenOrientation.LandscapeRight;
-        //     }
-        // }
     }
 
     public void SwitchEndTurnButton()
@@ -266,7 +242,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(cell != null){cell.gameObject.GetComponent<BoxCollider>().enabled=true;}
         }
-
     }
 
     public void DisableGridBoxColliders()
@@ -275,13 +250,11 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(cell != null){cell.gameObject.GetComponent<BoxCollider>().enabled=false;}
         }
-
     }
 
     //IEnumerators For Animation
     public IEnumerator GridOutroAnim()
     {
-
         float scaleDuration = .87f;                                //animation duration in seconds
         Vector3 actualScale = physcialGridContainer.transform.localScale;             // scale of the object at the begining of the animation
         physcialGridContainer.transform.localScale = new Vector3(4, 4, 1);
@@ -300,7 +273,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
         }
 
         DestroyAllTiles();
-
     }
 
     public IEnumerator UpdatePlayerScore(int startScore, int newScore, int player)
@@ -548,7 +520,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(!tile.isFlashing && (tile.placed || tile.placedByAI) )
             {
-                //tile.GetComponent<Renderer>().material.SetEmissionRate(0f);
                 tile.GetComponent<Renderer>().material.DisableEmission();
             }
         }
@@ -568,7 +539,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public void EnableAllEmissions()
     {
         if(!GameMaster.instance.gameOver)
-            StartCoroutine(EnableEM(1f));
+            StartCoroutine(EnableEM(.5f));
     }
 
     /// <summary>
@@ -587,7 +558,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(!tile.isFlashing)
             {
-                StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission());
+                StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission(0,.6f,2f, false));
             }
             tile.isFlashing=false;
             if(!GameMaster.instance.gameOver || !GameMaster.instance.gridFull)
@@ -613,22 +584,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
         }
 
     } 
-
-
-    // public void RotateScreen()
-    // {
-
-    //     // Debug.Log("Screen orientation: " + Screen.orientation);
-    //     // if(Screen.orientation == ScreenOrientation.LandscapeLeft)
-    //     //     {
-    //     //         Debug.Log("Rotate");
-    //     //         Screen.orientation = ScreenOrientation.LandscapeRight;
-
-    //     //     } else {
-    //     //         Debug.Log("Rotate2");
-    //     //         Screen.orientation = ScreenOrientation.LandscapeLeft;
-    //     //     }
-    // }
 
     private IEnumerator Rotation(float rotTime, GameObject _gameObject, int rotAmount)
         {
@@ -673,7 +628,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             switch(tile.value)
             {
                 case 1:
-                GameObject FX = new GameObject();
+                GameObject FX;
                 FX = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
                     new Vector3(0,0,1), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
 
@@ -682,7 +637,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 break;
 
                 case 2:
-                GameObject FX2 = new GameObject();
+                GameObject FX2;
                 FX2 = Instantiate(Tile2ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
                     new Vector3(0,0,1), Tile2ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX2.transform.localScale=AdjustFXScale();
@@ -690,7 +645,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 break;
 
                 case 3:
-                GameObject FX3 = new GameObject();
+                GameObject FX3;
                 FX3 = Instantiate(Tile3ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
                     new Vector3(0,0,1), Tile3ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX3.transform.localScale=AdjustFXScale();
@@ -698,7 +653,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 break;
 
                 case 4:
-                GameObject FX4 = new GameObject();
+                GameObject FX4;
                 FX4 = Instantiate(Tile4ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
                     new Vector3(0,0,1), Tile4ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX4.transform.localScale=AdjustFXScale();
@@ -706,7 +661,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 break;
 
                 case 5:
-                GameObject FX5 = new GameObject();
+                GameObject FX5;
                 FX5 = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
                     new Vector3(0,0,1), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX5.transform.localScale=AdjustFXScale();
@@ -714,7 +669,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 break;
 
                 case 6:
-                GameObject FX6 = new GameObject();
+                GameObject FX6;
                 FX6 = Instantiate(Tile6ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
                     new Vector3(0,0,1), Tile6ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX6.transform.localScale=AdjustFXScale();
@@ -722,7 +677,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 break;
 
                 case 7:
-                GameObject FX7 = new GameObject();
+                GameObject FX7;
                 FX7 = Instantiate(Tile7ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
                     new Vector3(0,0,1), Tile7ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX7.transform.localScale=AdjustFXScale();
@@ -736,22 +691,39 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public void TilesScoredEffect(int score)
     {
         //Remove duplicates
-    //     foreach(GridTile tile in TilesScored)
-    //     {
-    //         //perform scoring effect
-    //         if(tile != null)
-    //         {
-    //             tile.isFlashing = true;
-    //             //tile.ScoreEffect.Play(); // temp - decided to remove effect particle colour effect
-    //             StartCoroutine( tile.GetComponent<GUI_Object>().Flash(tile.activeSkin.color, 2.5f, true) );
-    //             tile.GetComponent<Animator>().enabled=true;
-    //             tile.GetComponent<Animator>().SetTrigger("TileScored");
-    //         }
-    //     }
-    //  TilesScored.Clear();
         TilesScored = TilesScored.Distinct().ToList();
+
+        NotifyObservers(this, "Event.ScoreSound."+score);
+
+        if(TilesScored.Count < 8)
+            TileScoreFlash(score);
+        else if(TilesScored.Count < 15)
+            StartCoroutine(TileScoreFlip(score));
+        else
+            StartCoroutine(TileScoreChain(score));
+
         Debug.Log("Tiles Scored Length ::::::  :::::::: " + TilesScored.Count);
-        StartCoroutine(TileScoreChain(score));
+    }
+
+    private void TileScoreFlash(int score)
+    {
+        
+        for(int i=0; i<TilesScored.Count; i++)
+        {
+            if(TilesScored[i] != null)
+            {
+                TilesScored[i].isFlashing = true;
+                //TilesScored[i].GetComponent<Renderer>().material.EnableEmission();
+                StartCoroutine(TilesScored[i].GetComponent<GUI_Object>().Flash(TilesScored[i].GetComponent<Renderer>().material.color,2.5f, true));
+            }
+        }
+
+       TilesScored.Clear();
+       GUI_Controller.instance.SpawnTextPopup("+"+(+score), Color.gray, 
+                GUI_Controller.instance.transform, (score+10));
+        if(GameMaster.instance.playedTiles.Count >0)
+            BoardController.instance.EventScore(score);
+        GameMaster.instance.playedTiles.Clear();
     }
 
     private IEnumerator TileScoreChain(int score)
@@ -759,15 +731,12 @@ public class GUI_Controller : MonoBehaviour, Observable {
         float time = 1f/TilesScored.Count;
         if(time>.2f)
             time=.2f;
-
         WaitForSeconds wait = new WaitForSeconds( time ) ;
         for(int i=0; i<TilesScored.Count; i++)
         {
-            //perform scoring effect
             if(TilesScored[i] != null)
             {
                 TilesScored[i].isFlashing = true;
-                //StartCoroutine( TilesScored[i].GetComponent<GUI_Object>().Flash(TilesScored[i].activeSkin.color, 1.5f, true) );
                 TilesScored[i].GetComponent<Renderer>().material.EnableEmission();
                 TilesScored[i].GetComponent<Animator>().enabled=true;
                 TilesScored[i].GetComponent<Animator>().SetTrigger("TileScored");
@@ -778,15 +747,36 @@ public class GUI_Controller : MonoBehaviour, Observable {
        TilesScored.Clear();
        GUI_Controller.instance.SpawnTextPopup("+"+(+score), Color.gray, 
                 GUI_Controller.instance.transform, (score+10));
-
         if(GameMaster.instance.playedTiles.Count >0)
             BoardController.instance.EventScore(score);
-
         GameMaster.instance.playedTiles.Clear();
-
     }
 
-    
+    private IEnumerator TileScoreFlip(int score)
+    {
+        float time = 1f/TilesScored.Count;
+        if(time>.2f)
+            time=.2f;
+        WaitForSeconds wait = new WaitForSeconds( time ) ;
+        for(int i=0; i<TilesScored.Count; i++)
+        {
+            if(TilesScored[i] != null)
+            {
+                TilesScored[i].isFlashing = true;
+                TilesScored[i].GetComponent<Renderer>().material.EnableEmission();
+                TilesScored[i].GetComponent<Animator>().enabled=true;
+                TilesScored[i].GetComponent<Animator>().SetTrigger("TileScored_Flip");
+                yield return wait;
+            }
+        }
+
+       TilesScored.Clear();
+       GUI_Controller.instance.SpawnTextPopup("+"+(+score), Color.gray, 
+                GUI_Controller.instance.transform, (score+10));
+        if(GameMaster.instance.playedTiles.Count >0)
+            BoardController.instance.EventScore(score);
+        GameMaster.instance.playedTiles.Clear();
+    }
 
     /// <summary>
     /// note: referenced from GameOver() using Invoke()
@@ -1014,6 +1004,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public virtual void AddObserver(Observer ob)
     {
+        observerList.Add(ob);
 
     }
 
@@ -1024,6 +1015,10 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public virtual void NotifyObservers(MonoBehaviour _class, string _event)
     {
+        foreach (var Observer in observerList)
+        {
+            Observer.OnNotification(_class, _event);
+        }
 
     }
 

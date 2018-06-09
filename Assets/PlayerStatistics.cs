@@ -73,6 +73,9 @@ public class PlayerStatistics : MonoBehaviour {
 			case "Activate":
 				return "Activate " + ret[0] + " tiles in a single turn";
 
+			case "RunnerUp":
+				return "Finish 2nd or better in the game";
+
 			default:
 				return "404: Object code unrecognised";
 
@@ -149,6 +152,9 @@ public class PlayerStatistics : MonoBehaviour {
 				if(GameMaster.instance.playerBestTurnActivateTiles[0] >= int.Parse(ret[1])) {return true;}
 			break;
 
+			case "RunnerUp":
+				return RunnerUp(GameMaster.instance.playerScores);
+
 		}
 
 		return false;
@@ -212,6 +218,26 @@ public class PlayerStatistics : MonoBehaviour {
 			return false;
 		}
 		
+	}
+
+	public bool RunnerUp(List<int> playerScores)
+	{
+		if(!GameMaster.instance.playerWin)
+		{
+			return true;
+		} else 
+		{
+			int betterCount = 0;
+			for(int i=1; i<playerScores.Count; i++)
+				{
+					if(playerScores[i] > playerScores[0])
+						betterCount++;
+				}
+			if(betterCount <= 1)
+				return true;
+			else
+				return false;
+		}
 	}
 
 	public int WinMargin(List<int> playerScores)

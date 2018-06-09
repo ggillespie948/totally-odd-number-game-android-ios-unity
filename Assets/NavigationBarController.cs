@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.UI.Extensions;
 
 public class NavigationBarController : MonoBehaviour {
+
+	[Header("Scroll Snap")]
+	[SerializeField]
+	public HorizontalScrollSnap ScrollSnap;
 
 	[Header("Navigation Buttons")]
 	[SerializeField]
@@ -53,6 +58,25 @@ public class NavigationBarController : MonoBehaviour {
 	[SerializeField]
 	private Color enabledCol;
 
+	public void UpdateNavPos()
+	{
+		switch(ScrollSnap._currentPage)
+		{
+			case 0:
+			SetButtonIconAnim(btn_1.GetComponent<Button>());
+			break;
+
+			case 1:
+			SetButtonIconAnim(btn_2.GetComponent<Button>());
+			break;
+
+			case 2:
+			//SetButtonIconAnim(btn_3.GetComponent<Button>());
+			break;
+
+		}
+	}
+
 	/// <summary>
 	/// Function used to change the the animated button of an icon when pressed
 	/// </summary>
@@ -68,15 +92,24 @@ public class NavigationBarController : MonoBehaviour {
 			return;
 		} else 
 		{
-			activeButtonIcon.enabled=false;
-			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,-.2f,0);
-			activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+			if(activeButtonIcon==btn.GetComponentInChildren<Animator>())
+				return;
+			ClearButtonIconAnim();
 			activeButtonIcon=btn.GetComponentInChildren<Animator>();
 			activeButtonIcon.enabled=true;
 			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,.2f,0);
 			activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
 		}
 	}
+
+	public void ClearButtonIconAnim()
+	{
+		activeButtonIcon.enabled=false;
+		activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,-.2f,0);
+		activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+	}
+
+	
 
 	/// <summary>
 	/// Function which toggles the settings button menu option
@@ -104,38 +137,46 @@ public class NavigationBarController : MonoBehaviour {
 
 	public void PressHomeButton()
 	{
-		CloseAllDialogues();
-
+		ScrollSnap.gameObject.SetActive(true);
 		challengeModeDialogue.SetActive(true);
 		practiceModeDialogue.SetActive(true);
 		multiplayerDialogue.SetActive(true);
 		tutorialModeDialogue.SetActive(true);
+		unlockablesPannel.SetActive(true);
+		CloseAllDialogues(false);
+		ScrollSnap.PreviousScreen();
 	}
 
 	/// <summary>
 	/// Method which closes all of the dialogues controlled by the main navigation bar.
 	/// </summary>
-	public void CloseAllDialogues()
+	public void CloseAllDialogues(bool closeBase)
 	{
 		challengeModeDialogue.GetComponent<ChallengeModeController>().CloseAllDialogues();
-		challengeModeDialogue.SetActive(false);
-
-		practiceModeDialogue.SetActive(false);
-
-		multiplayerDialogue.SetActive(false);
-
-		tutorialModeDialogue.SetActive(false);
+		if(closeBase)
+		{
+			challengeModeDialogue.SetActive(false);
+			practiceModeDialogue.SetActive(false);
+			multiplayerDialogue.SetActive(false);
+			tutorialModeDialogue.SetActive(false);
+			unlockablesPannel.SetActive(false);
+		}
 
 		//unlockablesPannel.GetComponent<UnlockablesController>().CloseAllTabs();
-		unlockablesPannel.SetActive(false);
 
 		gameTitle.SetActive(false);
 	}
 
 	public void PressUnlockablesButton()
 	{
-		CloseAllDialogues();
+		CloseAllDialogues(false);
+		ScrollSnap.gameObject.SetActive(true);
+		challengeModeDialogue.SetActive(true);
+		practiceModeDialogue.SetActive(true);
+		multiplayerDialogue.SetActive(true);
+		tutorialModeDialogue.SetActive(true);
 		unlockablesPannel.SetActive(true);
+		ScrollSnap.NextScreen();
 	}
 
 	/// <summary>

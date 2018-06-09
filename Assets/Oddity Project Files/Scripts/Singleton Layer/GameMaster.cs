@@ -116,6 +116,8 @@ public class GameMaster : MonoBehaviour{
         playerBestScores = new List<int>();
         //init player error counters
         playerErrors = new List<int>();
+        //init player error counters
+        playerPlayedTiles = new List<int>();
 
         turnLimit=20; //default
         soloPlay = ApplicationModel.SOLO_PLAY;
@@ -416,6 +418,11 @@ public class GameMaster : MonoBehaviour{
         for(int i=0; i<MAX_TURN_INDICATOR; i++)
         {
             playerErrors.Add(0);
+        }
+
+        for(int i=0; i<MAX_TURN_INDICATOR; i++)
+        {
+            playerPlayedTiles.Add(0);
         }
 
         if(soloPlay) 

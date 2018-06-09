@@ -37,6 +37,9 @@ public class NotificationController : MonoBehaviour, Observer {
 		{
 			ProcessScoreNotification(int.Parse(ret[2]));
 
+		} else if (ret[1] == "ScoreSound")
+		{
+			ProcessScoreSoundNotification(int.Parse(ret[2]));
 		}
 
 	}
@@ -48,24 +51,46 @@ public class NotificationController : MonoBehaviour, Observer {
 		{
 			int randPhrase = Random.Range(0, Tier0_Score_Phrase.Length);
 			GUI_Controller.instance.SpawnTextPopup(Tier0_Score_Phrase[randPhrase], Color.gray, GameMaster.instance.playedTiles[0].transform, 23);
-			AudioManager.instance.Play("ScoreT0");
 
 		} else if(score > 30 && score < 40)
 		{
 			int randPhrase = Random.Range(0, Tier1_Score_Phrase.Length);
 			GUI_Controller.instance.SpawnTextPopup(Tier1_Score_Phrase[randPhrase], Color.cyan, GameMaster.instance.playedTiles[0].transform, 18);
-			AudioManager.instance.Play("ScoreT2");
 			
 		} else if (score >= 40 && score <= 60)
 		{
 			int randPhrase = Random.Range(0, Tier2_Score_Phrase.Length);
 			GUI_Controller.instance.SpawnTextPopup(Tier2_Score_Phrase[randPhrase], Color.yellow, GameMaster.instance.playedTiles[0].transform, 23);
-			AudioManager.instance.Play("ScoreT3");
 
 		} else if (score > 60)
 		{
 			int randPhrase = Random.Range(0, Tier3_Score_Phrase.Length);
 			GUI_Controller.instance.SpawnTextPopup(Tier3_Score_Phrase[randPhrase], Color.white, GameMaster.instance.playedTiles[0].transform,27);
+		}
+		
+	}
+
+	private void ProcessScoreSoundNotification(int score)
+	{
+		Debug.Log("Processing notification");
+		if(score < 5 && GameMaster.instance.totalTiles > 9)
+		{
+			int randPhrase = Random.Range(0, Tier0_Score_Phrase.Length);
+			AudioManager.instance.Play("ScoreT0");
+
+		} else if(score > 30 && score < 40)
+		{
+			int randPhrase = Random.Range(0, Tier1_Score_Phrase.Length);
+			AudioManager.instance.Play("ScoreT2");
+			
+		} else if (score >= 40 && score <= 60)
+		{
+			int randPhrase = Random.Range(0, Tier2_Score_Phrase.Length);
+			AudioManager.instance.Play("ScoreT3");
+
+		} else if (score > 60)
+		{
+			int randPhrase = Random.Range(0, Tier3_Score_Phrase.Length);
 			AudioManager.instance.Play("ScoreT4");
 		}
 		else 

@@ -268,7 +268,7 @@ public class Game_Configuration : MonoBehaviour {
 	public void LoadConfiguration(Game_Configuration config)
 	{
 		if(challengeMode)
-			GUI_Controller.instance.NavBar.CloseAllDialogues();
+			GUI_Controller.instance.NavBar.CloseAllDialogues(true);
 
 		levelCode = config.levelCode;
 		ai_difficulty = config.ai_difficulty;
@@ -547,6 +547,9 @@ public class Game_Configuration : MonoBehaviour {
 
 			case "Activate":
 				return "Activate " + ret[0] + " tiles in a single turn";
+
+			case "RunnerUp":
+				return "Finish 2nd or better in the game";
 
 			default:
 				return "404: Object code unrecognised";

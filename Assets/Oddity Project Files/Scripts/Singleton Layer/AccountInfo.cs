@@ -318,6 +318,18 @@ public class AccountInfo : MonoBehaviour {
 						}
 					}
 					beginnerStars = beginnerCounter;
+
+					int intermediateCounter = 0;
+					for(int i=0; i<5; i++)
+					{
+						worldStars[1,i] = result.Data["I"+(i+1).ToString()].Value;
+						foreach(char c in result.Data["I"+(i+1).ToString()].Value)
+						{
+							if(c=='1')
+								intermediateCounter++;
+						}
+					}
+					intermediateStars = intermediateCounter;
 				}
 			}
 		}, (error) => {

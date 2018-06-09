@@ -251,28 +251,28 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
-    public IEnumerator GlowToEmission(Color startCol, float time)
-    {
-        this.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
-        Renderer rend = this.GetComponent<Renderer>();
-        float curveTime = 0.0f;
+    // public IEnumerator GlowToEmission(Color startCol, float time)
+    // {
+    //     this.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
+    //     Renderer rend = this.GetComponent<Renderer>();
+    //     float curveTime = 0.0f;
                
-        while (curveTime <= time)
-        {
-            if(this==null)
-                yield return null; //if tile is destroyed while flashing (game over)
+    //     while (curveTime <= time)
+    //     {
+    //         if(this==null)
+    //             yield return null; //if tile is destroyed while flashing (game over)
 
-            curveTime += Time.deltaTime;
-            Material mat = rend.material;
-            float emission = TileFlashCurve.Evaluate(curveTime/time);
-            Color finalColor = startCol * Mathf.LinearToGammaSpace (emission);
-            mat.SetColor ("_EmissionColor", finalColor);
-            yield return null;
-        }
+    //         curveTime += Time.deltaTime;
+    //         Material mat = rend.material;
+    //         float emission = TileFlashCurve.Evaluate(curveTime/time);
+    //         Color finalColor = startCol * Mathf.LinearToGammaSpace (emission);
+    //         mat.SetColor ("_EmissionColor", finalColor);
+    //         yield return null;
+    //     }
 
-        rend.material.SetColor("_EmissionColor", startCol*0.6f);
+    //     rend.material.SetColor("_EmissionColor", startCol*0.6f);
 
-    }
+    // }
 
     public IEnumerator ScaleUp()
 	{
@@ -316,7 +316,7 @@ public class GUI_Object : MonoBehaviour {
 
 	}
 
-    public IEnumerator GlowToEmission()
+    public IEnumerator GlowToEmission(float min, float max, float speed, bool reset)
     {
         Renderer rend = this.GetComponent<Renderer>();
         float t=0f;
@@ -324,23 +324,17 @@ public class GUI_Object : MonoBehaviour {
         while (t< 1f)
         {
             // animate the position of the game object...
-            rend.material.SetEmissionRate(Mathf.Lerp(0, 0.6f, t));
+            rend.material.SetEmissionRate(Mathf.Lerp(min, max, t));
 
             // .. and increate the t interpolater
-            t += 2 * Time.deltaTime;
+            t += speed * Time.deltaTime;
             yield return null;
         }
 
-        // now check if the interpolator has reached 1.0
-        // and swap maximum and minimum so game object moves
-        // in the opposite direction.
-            // if (t > 1.0f)
-            // {
-            //     float temp = maximum;
-            //     maximum = minimum;
-            //     minimum = temp;
-            //     t = 0.0f;
-            // }
+        if(reset)
+        {
+            StartCoroutine(GlowToEmission(1f, .6f, 1f, false));
+        }
     }
 
     public void ResetTransform()
