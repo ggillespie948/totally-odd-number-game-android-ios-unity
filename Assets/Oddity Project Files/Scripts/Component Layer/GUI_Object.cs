@@ -7,15 +7,19 @@ public class GUI_Object : MonoBehaviour {
 
 
         //MOVE THESE TO GUI CONTROLLER SURELY
-    public AnimationCurve AnimateToLocationCurve;
-    public AnimationCurve InvalidTileCurve;
+    public AnimationCurve animateToLocationCurve;
+    public AnimationCurve invalidTileCurve;
 
-    public AnimationCurve TileFlashCurve;
+    public AnimationCurve dockCruve;
+
+    public AnimationCurve tileFlashCurve;
 
     public GameObject targetPosMarker;
 
     public Vector3 targetPos = new Vector3();
     public Vector3 startPos = new Vector3();
+
+    public Vector3 returnPos = new Vector3();
     public float Speed;
     public bool introAnim = true;
 
@@ -106,6 +110,8 @@ public class GUI_Object : MonoBehaviour {
          
         transform.localScale = (new Vector3(startSize.x*1.2f,startSize.y*1.2f,startSize.z*1.2f));
 
+        transform.position = transform.position - new Vector3(0,0,35);
+
         //  if(transform.localScale == new Vector3(0.57f, 0.57f ,0.57f))
         //      this.transform.localScale = new Vector3(.63f, .63f, .63f);
 
@@ -128,12 +134,15 @@ public class GUI_Object : MonoBehaviour {
 
         transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, GUI_Controller.instance.rotation);
 
+        transform.position = transform.position + new Vector3(0,0,35);
+
 
     }
 
     public void SetAnimationTarget(Vector3 t)
     {
         targetPos = t;
+        returnPos=t;
     }
 	
 	IEnumerator AnimateIn(float time)
@@ -150,18 +159,20 @@ public class GUI_Object : MonoBehaviour {
             //curveAmount = AnimateToLocationCurve.Evaluate(curveTime);
             //Move to Animate pos
 
-            transform.position = Vector3.Lerp(startPos, targetPos, AnimateToLocationCurve.Evaluate(curveTime/time));
+            transform.position = Vector3.Lerp(startPos, targetPos, animateToLocationCurve.Evaluate(curveTime/time));
             curveTime += Time.deltaTime;
             yield return null;
         }
 
         SetPos();
 
+        startPos=transform.position;
+
         if (collider != null)
             collider.enabled = true;        
     }
 
-    public IEnumerator AnimateTo(Vector3 pos, float time)
+    public IEnumerator  AnimateTo(Vector3 pos, float time)
     {
         //Change GUI State
         SetState(GUIState.inAnimation);
@@ -177,17 +188,25 @@ public class GUI_Object : MonoBehaviour {
         {
             if(transform != null)
                 transform.position = Vector3.Lerp(_startPos, pos, 
-                InvalidTileCurve.Evaluate(curveTime / time));
+                invalidTileCurve.Evaluate(curveTime / time));
             curveTime += Time.deltaTime;
             yield return null;
         }
 
+        if(this.GetComponent<GridTile>() != null)
+        {
+            if(this.GetComponent<GridTile>().placedByAI == true)
+            {
+                GUI_Controller.instance.ActivateCell(this.GetComponent<GridTile>());
+            }
+        } else 
+        {
+            //yield return null;
+        }
+
         if(!isMenu) //this is used as we need menus to retain their startPos unlike tiles and 
         {
-                if(this.GetComponent<GridTile>().placedByAI == true)
-                {
-                    GUI_Controller.instance.ActivateCell(this.GetComponent<GridTile>());
-                }
+                
             SetPos();   //othe game-based GUI objects
         }
 
@@ -201,6 +220,86 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
+    public IEnumerator  PreDockTile(GameObject tile, GameObject cell, float time)
+    {
+        //Disabled Object Collier While Animating
+        if(collider != null)
+            collider.enabled = false;
+
+        float curveTime = 0.0f;
+        Vector3 _startPos = transform.position;
+               
+        while (curveTime <= time)
+        {
+            if(transform != null)
+                transform.position = Vector3.Lerp(_startPos, cell.transform.position - new Vector3(0f, -.15f, 17.5f), 
+                dockCruve.Evaluate(curveTime / time));
+            curveTime += Time.deltaTime;
+            yield return null;
+        }
+
+        //Docking complete
+        StartCoroutine(DockTile(tile, cell, .25f, .1f));
+        //StartCoroutine(RotateToPos(tile, Quaternion.Euler(0,0,0), .55f));
+        //GUI_Controller.instance.RotateObjectBackward(tile, .45f, -45);
+
+
+    }
+
+    public IEnumerator  DockTile(GameObject tile, GameObject cell, float time, float delay)
+    {
+        
+        float curveTime = 0.0f;
+        Vector3 _startPos = transform.position;
+               
+        while (curveTime <= time)
+        {
+            if(transform != null)
+                transform.position = Vector3.Lerp(_startPos, cell.transform.position + new Vector3(0f, 0f, 1.5f), 
+                dockCruve.Evaluate(curveTime / time));
+            curveTime += Time.deltaTime;
+            yield return null;
+        }
+
+        //Disabled Object Collier While Animating
+        if(collider != null)
+            collider.enabled = true;
+
+        SetPos();
+        SetRot(tile);
+        
+    }
+
+    public IEnumerator RotateToPos(GameObject obj, Quaternion targetRot, float time )
+    {
+        float curveTime = 0.0f;
+        Quaternion _startRot = transform.rotation;
+               
+        while (curveTime <= time)
+        {
+            if(transform != null)
+                transform.rotation = Quaternion.Lerp(_startRot, targetRot, 
+                dockCruve.Evaluate(curveTime / time));
+            curveTime += Time.deltaTime;
+            yield return null;
+        }
+
+        //Disabled Object Collier While Animating
+        if(collider != null)
+            collider.enabled = true;
+
+        SetRot(obj);
+
+
+    }
+
+    public void SetRot(GameObject tile)
+    {
+        tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
+    }
+
+    
+
     
 
     public IEnumerator Shake(float time)
@@ -211,6 +310,7 @@ public class GUI_Object : MonoBehaviour {
 
     void SetPos()
     {
+        Debug.Log("SET POS");
         transform.position = targetPos;
         GUI_Controller.instance.animationCount--;
     }
@@ -281,19 +381,41 @@ public class GUI_Object : MonoBehaviour {
         Vector3 targetScale = new Vector3(.015f, .015f, .015f);     // scale of the object at the end of the animation     // scale of the object at the end of the animation
 
         float curveTime = 0.0f;
-        float curveAmount = InvalidTileCurve.Evaluate(curveTime);
+        float curveAmount = invalidTileCurve.Evaluate(curveTime);
 
 
         while (curveTime <= 1.0f)
         {
             curveTime += Time.deltaTime * scaleDuration;
-            curveAmount = InvalidTileCurve.Evaluate(curveTime);
+            curveAmount = invalidTileCurve.Evaluate(curveTime);
             transform.localScale = new Vector3(targetScale.x * curveAmount, targetScale.y * curveAmount, targetScale.z * curveAmount);
             //Move to Animate pos
             yield return null;
         }
-
 	}
+
+    public IEnumerator ScaleUp(float targetIncrease, float startScale)
+	{
+        float scaleDuration = 1.5f;                                //animation duration in seconds
+        Vector3 actualScale = transform.localScale;             // scale of the object at the begining of the animation
+        Vector3 targetScale = new Vector3(startScale*targetIncrease, startScale*targetIncrease, startScale*targetIncrease);     // scale of the object at the end of the animation     // scale of the object at the end of the animation
+
+        float curveTime = .5f;
+        float curveAmount = invalidTileCurve.Evaluate(curveTime);
+
+
+        while (curveTime <= 1.0f)
+        {
+            curveTime += Time.deltaTime * scaleDuration;
+            curveAmount = invalidTileCurve.Evaluate(curveTime);
+            transform.localScale = new Vector3(targetScale.x * curveAmount, targetScale.y * curveAmount, targetScale.z * curveAmount);
+            //Move to Animate pos
+            yield return null;
+        }
+	}
+
+
+    
 
 	public IEnumerator ScaleDown()
 	{
@@ -302,13 +424,13 @@ public class GUI_Object : MonoBehaviour {
         Vector3 targetScale = new Vector3(0.006f, 0.006f, 0.006f);     // scale of the object at the end of the animation     // scale of the object at the end of the animation
 
         float curveTime = 0.0f;
-        float curveAmount = InvalidTileCurve.Evaluate(curveTime);
+        float curveAmount = invalidTileCurve.Evaluate(curveTime);
 
 
         while (curveTime <= 1.0f)
         {
             curveTime += Time.deltaTime * scaleDuration;
-            curveAmount = InvalidTileCurve.Evaluate(curveTime);
+            curveAmount = invalidTileCurve.Evaluate(curveTime);
             transform.localScale = new Vector3(targetScale.x * curveAmount, targetScale.y * curveAmount, targetScale.z * curveAmount);
             //Move to Animate pos
             yield return null;
@@ -330,6 +452,9 @@ public class GUI_Object : MonoBehaviour {
             t += speed * Time.deltaTime;
             yield return null;
         }
+
+        rend.material.SetColor("_EmissionColor", GetComponent<Renderer>().material.color*0.6f);
+
 
         if(reset)
         {

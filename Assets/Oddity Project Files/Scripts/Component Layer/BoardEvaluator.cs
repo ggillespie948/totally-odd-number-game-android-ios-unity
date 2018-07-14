@@ -461,6 +461,7 @@ public class BoardEvaluator : MonoBehaviour {
 		movesCalculated=false;
         moveCombinations.Clear();
 
+        //is Player is used to differentiate between AI player move detection and end of game detection
 		if(isPlayer)
 		{
 			MoveCombinationsFromHand(Player.CurrentHand);
@@ -495,7 +496,7 @@ public class BoardEvaluator : MonoBehaviour {
 			movesCalculated = true;
 			if(validMove.Count > 0)
 			{
-				Debug.Log("VALID MOVES FOUND M9 ////////////////////");
+				Debug.Log("VALID MOVES FOUND::::::::::: count below");
 				Debug.Log(validMove.Count);
 			} else {
 				Debug.Log("No moves!!!");
@@ -958,6 +959,34 @@ public class BoardEvaluator : MonoBehaviour {
                 }
             }
 
+        }
+
+
+        //Even tile check
+        // check all the valid moves to check if an EVEN tile is required
+        // to make a valid move, if so.. indicate to Game Master to ensure player is dealt an even tile
+        bool oddTileFound = false;
+
+        foreach (AI_Move move in validMove)
+        {
+            if(!oddTileFound)
+            {
+                foreach(int i in move.tileValues)
+                {
+                    if(i %2 != 0) {oddTileFound=true; Debug.Log("ODD TILE FOUND IN VALID MOVES");}
+                }
+            } else 
+            {
+                break;
+            }
+        }
+
+        if(oddTileFound)
+        {
+            GameMaster.instance.evenTileRequired=false;
+        } else 
+        {
+            GameMaster.instance.evenTileRequired=true;
         }
 
         Debug.Log("Valid AI moves: " + validMove.Count);

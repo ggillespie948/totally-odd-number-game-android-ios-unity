@@ -55,34 +55,6 @@ public class AI_Player : MonoBehaviour {
         BoardEvaluator.EvaluateBoard();
     }
 
-    private void PlayFirstTile()
-    {
-        //find odd tile in hand
-        GridTile tile = new GridTile();
-
-        foreach(GridTile t in CurrentHand)
-        {
-            if(t.value%2!=0)
-            {
-                tile=t;
-                break;
-            }
-        }
-
-        if(tile!=null && BoardController.instance.gameGrid[BoardController.instance.GRID_CENTER,BoardController.instance.GRID_CENTER]==0)
-        {
-            //play tile
-            GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER]);
-            tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER].transform.position + new Vector3(0, 0, -1);
-            GUI_Controller.instance.AnimateTo(tile.GetComponent<GUI_Object>(), GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER].transform.position + new Vector3(0, 0, -1), .8f);
-            GUI_Controller.instance.RotateObjectBackward(tile.gameObject, .8f, 360);
-            GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER,BoardController.instance.GRID_CENTER].cellTile = tile;
-            GameMaster.instance.totalTiles++;
-            GameMaster.instance.StateMachine.SetLastValidState(2);
-        }
-
-
-    }
 
     private void LoadHand()
 	{
@@ -163,7 +135,7 @@ public class AI_Player : MonoBehaviour {
 
         if (CurrentHand.Count > 0 && noValidMoves == false)
         {
-            //Debug.Log("Recalcinng moves");
+            Debug.Log("Recalculating Possible Moves..");
             Initalise();
             yield break;
         }
@@ -183,15 +155,13 @@ public class AI_Player : MonoBehaviour {
                 BoardController.instance.CheckAITileValidity(cell.x, cell.y);
             }
 
-            if(CurrentHand.Count > 2)
+            if(CurrentHand.Count > 2 && GameMaster.instance.totalTiles>0)
             {
                 GameMaster.instance.HandExchange();
                 yield return null;
             }
-  
 
             BoardController.instance.CheckBoardValidity(true, true);
-
             
             yield break;
         } 
@@ -254,7 +224,7 @@ public class AI_Player : MonoBehaviour {
 
     void MakeMoveHorizontal(AI_Move Move)
     {
-        Debug.Log("This move consists of : " + Move.tileCount + " moves!!!!! :S :S :S");
+        Debug.Log("This move consists of : " + Move.tileCount + " moves!!!!! ");
         //temp
 		if (Move.Correction != null) {
 			Debug.Log ("HORIZONTAL CORRECTION BEING PLAYED");
@@ -350,7 +320,8 @@ public class AI_Player : MonoBehaviour {
                 {
                     tile.placed = true;
                     tile.placedByAI = true;
-                    
+                    tile.x=x;
+                    tile.y=y;
                     GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[x, y]);
                     tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[x, y].transform.position + new Vector3(0, 0, -1);
                     GUI_Controller.instance.AnimateTo(tile.GetComponent<GUI_Object>(), GameMaster.instance.objGameGrid[x, y].transform.position + new Vector3(0, 0, -1), .8f);
@@ -393,6 +364,8 @@ public class AI_Player : MonoBehaviour {
                 {
                     tile.placed = true;
                     tile.placedByAI = true;
+                    tile.x=Move.Correction.tileX;
+                    tile.y=Move.Correction.tileY;
                     BoardController.instance.gameGrid[Move.Correction.tileX, Move.Correction.tileY] = Move.Correction.tileValue;
                     GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY]);
                     tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY].transform.position + new Vector3(0, 0, -1);
@@ -435,7 +408,7 @@ public class AI_Player : MonoBehaviour {
 
     void MakeMoveVertical(AI_Move Move)
     {
-        Debug.Log("This move consists of : " + Move.tileCount + " moves!!!!! :S :S :S");
+        Debug.Log("This move consists of : " + Move.tileCount + " moves!!!!! ");
 
         //temp
 		if (Move.Correction != null) {
@@ -520,7 +493,8 @@ public class AI_Player : MonoBehaviour {
                 {
                     tile.placed = true;
                     tile.placedByAI = true;
-
+                    tile.x=x;
+                    tile.y=y;
                     GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[x, y]); 
                     tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[x, y].transform.position + new Vector3(0, 0, -1);
                     GUI_Controller.instance.AnimateTo(tile.GetComponent<GUI_Object>(), GameMaster.instance.objGameGrid[x, y].transform.position
@@ -565,6 +539,8 @@ public class AI_Player : MonoBehaviour {
                 {
                     tile.placed = true;
                     tile.placedByAI = true;
+                    tile.x=Move.Correction.tileX;
+                    tile.y=Move.Correction.tileY;
                     BoardController.instance.gameGrid[Move.Correction.tileX, Move.Correction.tileY] = Move.Correction.tileValue;
                     GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY]);
                     tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY].transform.position + new Vector3(0, 0, -1);

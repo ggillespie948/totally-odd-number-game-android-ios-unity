@@ -48,7 +48,7 @@ public class PlayerCard : MonoBehaviour {
 		{
 			Anim.Play("PlayerCard_Deactivate",0);
 			PlayAudio();
-			GetComponent<Image>().color = Color.red;
+			//GetComponentInChildren<Image>().color = Color.red;
 			Anim.enabled=false;
 			transform.rotation = Quaternion.Euler(0,0,0);
 			Active = false;
@@ -58,7 +58,7 @@ public class PlayerCard : MonoBehaviour {
 			Anim.enabled=true;
 			Anim.Play("PlayerCard_Activate",0);
 			PlayAudio();
-			GetComponent<Image>().color = Color.green;
+			//GetComponentInChildren<Image>().color = Color.green;
 			Active = true;
 			Invoke("PlayAudio", .3f);
 		}

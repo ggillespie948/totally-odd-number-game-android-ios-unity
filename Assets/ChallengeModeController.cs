@@ -9,6 +9,9 @@ public class ChallengeModeController : MonoBehaviour {
 	[SerializeField]
 	private NavigationBarController navBar;
 
+	[SerializeField]
+	private ParticleSystem selectionFX;
+
 	[Header("Challenege Mode Dialogues")]
 	[SerializeField]
 	private GameObject worldSelector;
@@ -39,8 +42,15 @@ public class ChallengeModeController : MonoBehaviour {
 
 	public void OpenChallenegeMode()
 	{
+		selectionFX.Play();
 		worldSelector.SetActive(true);
 		LoadWorldData();
+		Invoke("HidePlayerPanel", .05f);
+	}
+
+	private void HidePlayerPanel()
+	{
+		navBar.playerPanel.SetActive(false);
 	}
 
 	public void SelectWorld(int worldNo)

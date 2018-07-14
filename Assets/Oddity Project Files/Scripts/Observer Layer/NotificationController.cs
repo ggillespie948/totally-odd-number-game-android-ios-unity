@@ -27,11 +27,8 @@ public class NotificationController : MonoBehaviour, Observer {
 		//Split string into three identifiers
 		// Event.Score.24
 		// Event.Objective. something //temp add this <-
-		Debug.LogWarning("Notif recieved: " + e);
-		Debug.Log("Notifcation received");
 		string[] ret = e.Split('.');
 
-		Debug.Log(ret.Length);
 		
 		if(ret[1] == "Score")
 		{
@@ -46,7 +43,6 @@ public class NotificationController : MonoBehaviour, Observer {
 
 	private void ProcessScoreNotification(int score)
 	{
-		Debug.Log("Processing notification");
 		if(score < 5 && GameMaster.instance.totalTiles > 9)
 		{
 			int randPhrase = Random.Range(0, Tier0_Score_Phrase.Length);

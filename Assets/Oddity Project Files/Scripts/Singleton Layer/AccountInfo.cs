@@ -57,7 +57,7 @@ public class AccountInfo : MonoBehaviour {
 
 		DontDestroyOnLoad(gameObject);
 
-		worldStars = new string[4,5]; // temp - hard coded the number of worlds/levels
+		worldStars = new string[4,11]; // temp - hard coded the number of worlds/levels
 	}
 
 	/// <summary>
@@ -68,6 +68,12 @@ public class AccountInfo : MonoBehaviour {
 	{
 		Login();
 		
+	}
+
+	public static int TotalStars()
+	{
+		Debug.LogWarning("Total stars: " + (beginnerStars+intermediateStars+advancedStars));
+		return beginnerStars+intermediateStars+advancedStars;
 	}
 
 	public static void Login()
@@ -197,11 +203,13 @@ public class AccountInfo : MonoBehaviour {
 			if(Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.COINS_CODE, out res))
 			{
 				GUI_Controller.instance.CoinDialogue.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
+				GUI_Controller.instance.CurrencyUI.playerCoins=res;
 			}
 
 			if(Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.LIVES_CODE, out res))
 			{
 				GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
+				GUI_Controller.instance.CurrencyUI.playerLives=res;
 			}
 
 			GUI_Controller.instance.StarDialogue.GetComponentInChildren<TextMeshProUGUI>().text = (beginnerStars+intermediateStars+advancedStars).ToString();
@@ -220,19 +228,13 @@ public class AccountInfo : MonoBehaviour {
 	public static void SetUpAccount() {
 		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
 			Data = new Dictionary<string, string>() {
-				{"B1", "000"},
-				{"B2", "000"},
-				{"B3", "000"},
-				{"B4", "000"},
-				{"B5", "000"},
-				{"I1", "000"},
-				{"I2", "000"},
-				{"I3", "000"},
-				{"I4", "000"},
-				{"I5", "000"},
+				{"B_STARS", "000,000,000,000,000,000,000,000,000,000"},
+				{"I_STARS", "000,000,000,000,000,000,000,000,000,000"},
+				{"A_STARS", "000,000,000,000,000,000,000,000,000,000"},
+				{"M_STARS", "000,000,000,000,000,000,000,000,000,000"},
 			}
 		}, 
-		result => SetUpAccount2(),
+		result => Debug.Log("Successfully setup user data"),//SetUpAccount2(),
 		error => {
 			Debug.Log("Got error setting initial user data");
 			Debug.Log(error.GenerateErrorReport());
@@ -299,7 +301,7 @@ public class AccountInfo : MonoBehaviour {
 				Debug.Log("User Data Null");
 			else
 			{
-				if(!result.Data.ContainsKey("B1"))
+				if(!result.Data.ContainsKey("B_STARS"))
 				{
 					SetUpAccount();
 				}
@@ -307,11 +309,18 @@ public class AccountInfo : MonoBehaviour {
 				 Scene scene = SceneManager.GetActiveScene();
 				if(scene.name != "Main")
 				{
+					//Parse Beginner Stars
 					int beginnerCounter = 0;
-					for(int i=0; i<5; i++)
+					string beginnerStarString = result.Data["B_STARS"].Value;
+					//tokenize star string data and allocate each token to worldStars[]
+					// counting the total number of beginner stars during the proccessing
+					string[] tokenResult = beginnerStarString.Split(',');
+					int indx=0;
+					foreach(string token in tokenResult)
 					{
-						worldStars[0,i] = result.Data["B"+(i+1).ToString()].Value;
-						foreach(char c in result.Data["B"+(i+1).ToString()].Value)
+						worldStars[0,indx]=token;
+						indx++;
+						foreach(char c in token)
 						{
 							if(c=='1')
 								beginnerCounter++;
@@ -319,17 +328,40 @@ public class AccountInfo : MonoBehaviour {
 					}
 					beginnerStars = beginnerCounter;
 
+					//Parse Intermediate Stars
 					int intermediateCounter = 0;
-					for(int i=0; i<5; i++)
+					string intermediateStarString = result.Data["I_STARS"].Value;
+					string[] tokenResult2 = intermediateStarString.Split(',');
+					int indx2=0;
+					foreach(string token in tokenResult2)
 					{
-						worldStars[1,i] = result.Data["I"+(i+1).ToString()].Value;
-						foreach(char c in result.Data["I"+(i+1).ToString()].Value)
+						worldStars[1,indx2]=token;
+						indx2++;
+						foreach(char c in token)
 						{
 							if(c=='1')
 								intermediateCounter++;
 						}
 					}
 					intermediateStars = intermediateCounter;
+
+					//Parse Advanced Stars
+					int advancedCounter = 0;
+					string advancedStarString = result.Data["A_STARS"].Value;
+					string[] tokenResult3 = advancedStarString.Split(',');
+					int indx3=0;
+					foreach(string token in tokenResult3)
+					{
+						worldStars[2,indx3]=token;
+						indx3++;
+						foreach(char c in token)
+						{
+							if(c=='1')
+								advancedCounter++;
+						}
+					}
+					advancedStars = advancedCounter;
+					
 				}
 			}
 		}, (error) => {
@@ -353,10 +385,12 @@ public class AccountInfo : MonoBehaviour {
 
 		if(improved)
 		{
+			//PArse new star string
+			worldStars[worldNo,levelNo]=starString;
 			Debug.Log("Updating player star info.." + new string(sString));
 			PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
-				Data = new Dictionary<string, string>() {
-					{levelCode, new string(sString)}
+			Data = new Dictionary<string, string>() {
+					{levelCode[0]+"_STARS", GenerateStarString(worldNo)}
 				}
 			}, 
 			result => Debug.Log("Successfully updated player star data"),
@@ -369,7 +403,12 @@ public class AccountInfo : MonoBehaviour {
 		}
 	}
 
-	public void PlayerEvent_CompletedGame(bool playerWin, int gridSize, int maxTile, int score, bool targetMode)
+	public string GenerateStarString(int worldNo)
+	{
+		return worldStars[worldNo,0]+","+worldStars[worldNo,1]+","+worldStars[worldNo,2]+","+worldStars[worldNo,3]+","+worldStars[worldNo,4]+","+worldStars[worldNo,5]+","+worldStars[worldNo,6]+","+worldStars[worldNo,7]+","+worldStars[worldNo,8]+","+worldStars[worldNo,9];
+	}
+
+	public void PlayerEvent_CompletedGame(bool playerWin, int gridSize, int maxTile, int score, bool targetMode)							
 	{
 		PlayFabClientAPI.WritePlayerEvent(new WriteClientPlayerEventRequest() {
         Body = new Dictionary<string, object>() {
@@ -395,6 +434,25 @@ public class AccountInfo : MonoBehaviour {
 		{
 			Instance.inv_items.Add(result.Inventory[i]);
 		}
+	}
+
+	public void SetDisplayName(string name)
+	{
+		PlayFabClientAPI.UpdateUserTitleDisplayName(new UpdateUserTitleDisplayNameRequest() {
+			DisplayName = name
+			}, 
+			result => OnNameSetComplete(),
+			error => {
+				Debug.Log("Got error setting player name");
+				Debug.Log(error.GenerateErrorReport());
+		});
+	}
+
+	public void OnNameSetComplete()
+	{
+		Debug.Log("Successfully updated player name");
+		MenuController.instance.OpenMainMenu();
+
 	}
 
 	

@@ -72,7 +72,7 @@ public class Database : MonoBehaviour {
 			}
 		}
 
-		GUI_Controller.instance.NavBar.unlockablesPannel.GetComponent<UnlockablesController>().LoadTileStore();
+		MenuController.instance.NavBar.unlockablesPannel.GetComponent<UnlockablesController>().LoadTileStore();
 	}
 
 	public static ShopItemTile CreateTileShopItem(CatalogItem item, int i)

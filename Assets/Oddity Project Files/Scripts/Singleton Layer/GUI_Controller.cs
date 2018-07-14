@@ -47,11 +47,14 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GameObject[] Tile5ActivateFX;
     public GameObject[] Tile6ActivateFX;
     public GameObject[] Tile7ActivateFX;
+    public GameObject[] Tile8ActivateFX;
+    public GameObject[] Tile9ActivateFX;
     
     public Component[] GridTiles;
 
     [Header("Game UI objects")]
     public GameObject Rotate_Tiles_Btn;
+    public GameObject Submit_Button;
 
     [Header("Active Player Cards")]
     public PlayerCard PlayerCard1;
@@ -77,6 +80,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     private static TextPopup POPUP_CASH;
 
     [Header("GUI Effect Listener")]
+    [SerializeField]
     public List<GridTile> TilesScored = new List<GridTile>(); //this is a list of tiles that are involved an a round of player moves, used to activate score trail effect
     public GUI_Object TargetScore_Stone;
     public GUI_Object RemainingTurns_Stone;
@@ -109,10 +113,15 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GameObject GridCompleteAnim;
     public GameObject NoMovesAnim;
 
-    public NavigationBarController NavBar;
+    public CurrenyBarController CurrencyUI;
+
+    
 
     public GameObject EndTurn_Btn;
     public GameObject EndTurn_Flag;
+
+    public GameObject confirmPurchasePanel;
+    public GameObject confirmPurchasePanelTarget;
 
     void Awake()
     {
@@ -126,7 +135,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             POPUP_TEXT = Resources.Load<TextPopup>("PopupTextParent");
 
         if(!POPUP_SCORE)
-            POPUP_SCORE = Resources.Load<TextPopup>("PopupScoreParent");
+            POPUP_SCORE = Resources.Load<TextPopup>("PopupTextParent");
 
         if(!POPUP_CASH)
             POPUP_CASH = Resources.Load<TextPopup>("PopupCashParent");
@@ -374,7 +383,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         if(GameMaster.instance.PlayerStatistics.OBJECTIVE_1)
         {
             StartCoroutine(SpawnCashPopup("+100", Color.green, 
-            DialogueController.ActiveDialogue.objectiveStar1.transform, (i)+1.5f, "")); 
+            DialogueController.ActiveDialogue.objectiveStar1.transform, (i)+.15f, "")); 
             cashReward+=100;
             i++;
         }
@@ -382,7 +391,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         if(GameMaster.instance.PlayerStatistics.OBJECTIVE_2)
         {
             StartCoroutine(SpawnCashPopup("+100", Color.green, 
-            DialogueController.ActiveDialogue.objectiveStar2.transform, (i)+1.5f, "")); 
+            DialogueController.ActiveDialogue.objectiveStar2.transform, (i)+.15f, "")); 
             cashReward+=100;
             i++;
         }
@@ -390,7 +399,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         if(GameMaster.instance.PlayerStatistics.OBJECTIVE_3)
         {
             StartCoroutine(SpawnCashPopup("+100", Color.green, 
-            DialogueController.ActiveDialogue.objectiveStar3.transform, (i)+1.5f, "")); 
+            DialogueController.ActiveDialogue.objectiveStar3.transform, (i)+.15f, "")); 
             cashReward+=100;
             i++;
         }
@@ -552,7 +561,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
         if(GameMaster.instance.gameOver)
             yield return null;
 
-        Debug.LogWarning("Enable ALL emissions :(");
         GridTiles = GetComponentsInChildren<GridTile>();
         foreach (GridTile tile in GridTiles)
         {
@@ -629,8 +637,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
             {
                 case 1:
                 GameObject FX;
-                FX = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
-                    new Vector3(0,0,1), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
 
                 FX.transform.localScale=AdjustFXScale();
                 Destroy(FX, 1f);
@@ -638,50 +646,66 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
                 case 2:
                 GameObject FX2;
-                FX2 = Instantiate(Tile2ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
-                    new Vector3(0,0,1), Tile2ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX2 = Instantiate(Tile2ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5), Tile2ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX2.transform.localScale=AdjustFXScale();
                 Destroy(FX2, 1f);
                 break;
 
                 case 3:
                 GameObject FX3;
-                FX3 = Instantiate(Tile3ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
-                    new Vector3(0,0,1), Tile3ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX3 = Instantiate(Tile3ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5), Tile3ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX3.transform.localScale=AdjustFXScale();
                 Destroy(FX3, 1f);
                 break;
 
                 case 4:
                 GameObject FX4;
-                FX4 = Instantiate(Tile4ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
-                    new Vector3(0,0,1), Tile4ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX4 = Instantiate(Tile4ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5), Tile4ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX4.transform.localScale=AdjustFXScale();
                 Destroy(FX4, 1f);
                 break;
 
                 case 5:
                 GameObject FX5;
-                FX5 = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
-                    new Vector3(0,0,1), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX5 = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX5.transform.localScale=AdjustFXScale();
                 Destroy(FX5, 1f);
                 break;
 
                 case 6:
                 GameObject FX6;
-                FX6 = Instantiate(Tile6ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
-                    new Vector3(0,0,1), Tile6ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX6 = Instantiate(Tile6ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5), Tile6ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX6.transform.localScale=AdjustFXScale();
                 Destroy(FX6, 1f);
                 break;
 
                 case 7:
                 GameObject FX7;
-                FX7 = Instantiate(Tile7ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
-                    new Vector3(0,0,1), Tile7ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX7 = Instantiate(Tile7ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5), Tile7ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
                 FX7.transform.localScale=AdjustFXScale();
                 Destroy(FX7, 1f);
+                break;
+
+                case 8:
+                GameObject FX8;
+                FX8 = Instantiate(Tile8ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5), Tile8ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX8.transform.localScale=AdjustFXScale();
+                Destroy(FX8, 1f);
+                break;
+
+                case 9:
+                GameObject FX9;
+                FX9 = Instantiate(Tile9ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
+                    new Vector3(0,0,5), Tile9ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                FX9.transform.localScale=AdjustFXScale();
+                Destroy(FX9, 1f);
                 break;
             }
             tile.activated = true;
@@ -702,7 +726,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
         else
             StartCoroutine(TileScoreChain(score));
 
-        Debug.Log("Tiles Scored Length ::::::  :::::::: " + TilesScored.Count);
     }
 
     private void TileScoreFlash(int score)
@@ -819,10 +842,10 @@ public class GUI_Controller : MonoBehaviour, Observable {
             return new Vector3(0,0,0);
 
             case 1:
-            return new Vector3(0.2f,0.2f,0.2f);
+            return new Vector3(0.4f,0.4f,0.4f);
 
             case 2:
-            return new Vector3(0.4f,0.4f,0.4f);
+            return new Vector3(0.5f,0.5f,0.5f);
 
             case 3:
             return new Vector3(0.6f,0.6f,0.6f);
@@ -859,6 +882,13 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
              if(card.Active)
                  card.ToggleCard();
+        }
+
+        if(GameMaster.instance.humanTurn)
+        {
+            Submit_Button.GetComponent<Animator>().SetTrigger("PlayerTurn");
+        } else{
+            Submit_Button.GetComponent<Animator>().SetTrigger("Opponent");
         }
 
         //Activate Current Card
@@ -905,6 +935,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
         if(size>100)
             size=100;
 
+        
+
         Debug.Log("Spawning notif");
         if(text=="+0")
             return;
@@ -916,23 +948,29 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(text[1]=='0')
                 return;
-            TextPopup instance = Instantiate(POPUP_TEXT);
+
+            //Spawn Score Notifcaiton
+            
+            TextPopup instance = Instantiate(POPUP_SCORE);
             instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-            instance.transform.position = location.transform.position - 
-                        new Vector3(UnityEngine.Random.Range(0.03f, .05f),UnityEngine.Random.Range(0.05f, .05f),-3);
+            instance.transform.position = location.transform.position;
+                        //new Vector3(UnityEngine.Random.Range(0.03f, .05f),UnityEngine.Random.Range(0.05f, .05f),-3);
             
             // if(instance.transform.position.x <= .7)
             //     instance.transform.position += new Vector3(.2f,0f,0f);
+
+            if(size<45)
+            size=45;
 
             instance.SetText(text);
             instance.SetSize(size);
             instance.SetFont(orangeGlow);
             instance.gameObject.SetActive(true);
         } else {
+            //Spawn Text Notification
             TextPopup instance = Instantiate(POPUP_TEXT);
             instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-            instance.transform.position = location.transform.position; //+ new Vector3(0,UnityEngine.Random.Range(0.12f, .15f),0); 
-
+            instance.transform.position = new Vector3(0,instance.transform.position.y+.5f,instance.transform.position.z - 35); //+ new Vector3(0,UnityEngine.Random.Range(0.12f, .15f),0); 
             instance.SetColour(colour);
             instance.SetText(text);
             instance.SetSize(size);

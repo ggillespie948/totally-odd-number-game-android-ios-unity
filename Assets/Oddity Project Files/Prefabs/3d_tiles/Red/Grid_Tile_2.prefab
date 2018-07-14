@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 114869276046047942}
   - component: {fileID: 114441360770102312}
   - component: {fileID: 50190436423159784}
+  - component: {fileID: 114010923814854518}
   m_Layer: 0
   m_Name: Grid_Tile_2
   m_TagString: GridTile
@@ -245,6 +246,23 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &114010923814854518
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1134747603456312}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 0.13448276, a: 0.347}
+  outlineWidth: 0.1
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!114 &114438156072580248
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -268,6 +286,9 @@ MonoBehaviour:
   location: {x: 0, y: 0, z: 0}
   activated: 0
   isFlashing: 0
+  x: 0
+  y: 0
+  locked: 0
 --- !u!114 &114441360770102312
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -296,87 +317,70 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d51eea21056b5bc48aaa45dcf0bb4512, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimateToLocationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 2
-      time: 0.0041666627
-      value: -0.0053037405
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.5174343
-      value: 0.15516186
-      inSlope: 0.83476305
-      outSlope: 0.83476305
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.64168
-      value: 0.9727131
-      inSlope: -4.138086
-      outSlope: -4.138086
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.86700755
-      value: 0.8034796
-      inSlope: 0.29623508
-      outSlope: 0.29623508
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1.0041566
-      value: 0.99469674
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1.0050453
-      value: 0.9696864
-      inSlope: 5.5006385
-      outSlope: 5.5006385
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  InvalidTileCurve:
+  animateToLocationCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 1
+      outSlope: 1
       tangentMode: 0
     - serializedVersion: 2
       time: 1
       value: 1
-      inSlope: 2
-      outSlope: 2
+      inSlope: 1
+      outSlope: 1
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
-  TileFlashCurve:
+  invalidTileCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
       time: 0
       value: 0
-      inSlope: 1
-      outSlope: 1
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
     - serializedVersion: 2
-      time: 0.6083374
-      value: 0.61249924
-      inSlope: 1
-      outSlope: 1
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+  dockCruve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  tileFlashCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   targetPosMarker: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
   startPos: {x: 0, y: 0, z: 0}
+  returnPos: {x: 0, y: 0, z: 0}
   Speed: 2.5
   introAnim: 0
   isMenu: 0

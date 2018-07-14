@@ -10,20 +10,18 @@ public class GridCell : MonoBehaviour {
     public GridTile cellTile;
 
     public Color highlightColour;
+    public Outline Outline;
 
 
     void Awake()
     {
         rend = GetComponent<Renderer>();
-
-
-
-        
     }
 
     void Start()
     {
         GameMaster.instance.objGameGrid[x, y] = this;
+        Outline=GetComponent<Outline>();
         
     }
 
@@ -31,6 +29,8 @@ public class GridCell : MonoBehaviour {
     {
 
         GameMaster.instance.activeCell = this;
+        if(GameMaster.instance.selectedTile != null)
+            GameMaster.instance.activeCell.Outline.enabled=true;
         //rend.material.color = Color.green;
         int centre = BoardController.instance.GRID_SIZE-1;
         centre = (centre/2);
@@ -53,6 +53,7 @@ public class GridCell : MonoBehaviour {
 
         if(GameMaster.instance.activeCell != null)
         {
+            GameMaster.instance.activeCell.Outline.enabled=false;
             GameMaster.instance.activeCell = null;
 
         }

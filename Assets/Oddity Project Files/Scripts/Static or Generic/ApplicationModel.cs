@@ -7,7 +7,7 @@
 	public static int GAME_DIFFICULTY = 20;  // /100
 	public static int THEME = 3;
 	public static int GRID_SIZE = 7;
-	public static int MAX_TILE = 8;
+	public static int MAX_TILE = 10;
 	public static int PLAYERS = 2;
 	public static int TARGET = 550;
 	public static int TARGET2 = 600;
@@ -27,6 +27,8 @@
 	public static int FIVE_TILES = 15;
 	public static int SIX_TILES = 15;
 	public static int SEVEN_TILES = 15;
+	public static int EIGHT_TILES = 15;
+	public static int NINE_TILES = 15;
 	public static int RETURN_TO_WORLD =-1;
 	public static int TILESKIN = 0;
 	public static bool MIRROR_TILESKIN = false;
@@ -34,4 +36,9 @@
 	public static string Objective1Code = "WinBy.10";
 	public static string Objective2Code = "Score.175";
 	public static string Objective3Code = "Errors.0"; //less than
+
+	public static string AI_NAME_1 = "AI Sam";
+	public static string AI_NAME_2 = "AI Joe";
+	public static string AI_NAME_3 = "AI Erin";
+	
 }

@@ -47,7 +47,7 @@ public class StateMachine : MonoBehaviour {
 
 	public void RevertToLastValidState(bool endTurn)
     {
-        Debug.Log("REVERT TO LAST STATE");
+        Debug.LogWarning("REVERT TO LAST STATE");
         if(endTurn)
         {
             AudioManager.instance.Play("Oops");
@@ -64,14 +64,13 @@ public class StateMachine : MonoBehaviour {
         GUI_Controller.instance.TilesScored.Clear();
         GUI_Controller.instance.TilesScored.AddRange(lastValidScoreTiles);
 
-
-        foreach(GridCell Cell in GameMaster.instance.playedTiles)
-        {
-            if(Cell.cellTile.placed == true)
-            {
-                GUI_Controller.instance.ActivateCell(Cell.cellTile);
-            }
-        }
+        // foreach(GridCell Cell in GameMaster.instance.playedTiles)
+        // {
+        //     if(Cell.cellTile.placed == true)
+        //     {
+        //         GUI_Controller.instance.ActivateCell(Cell.cellTile);
+        //     }
+        // }
         LastValidHand();
         GameMaster.instance.invalidTilesInplay = false;
         CameraShaker.Instance.ShakeOnce(2f, .2f, .3f, .5f);
@@ -82,6 +81,18 @@ public class StateMachine : MonoBehaviour {
         {
             GameMaster.instance.EndTurn();
         }
+    }
+
+    public void SetLastStaticState()
+    {
+        for (int i = 0; i <BoardController.instance.GRID_SIZE; i++)
+        {
+            for (int o = 0; o < BoardController.instance.GRID_SIZE; o++)
+            {
+                BoardController.instance.staticgameGrid[i, o] = BoardController.instance.gameGrid[i, o];
+            }
+        }
+
     }
 
     public void SetLastValidState(int player)
@@ -132,7 +143,7 @@ public class StateMachine : MonoBehaviour {
             if(Tile == null)
                 return;
             Tile.placed = false;
-            GUI_Controller.instance.AnimateTo(Tile.GetComponent<GUI_Object>(), Tile.GetComponent<GUI_Object>().targetPos, .7f);
+            //GUI_Controller.instance.AnimateTo(Tile.GetComponent<GUI_Object>(), Tile.GetComponent<GUI_Object>().targetPos, .7f);
             GUI_Controller.instance.DeactivateTileSkin(Tile);
             Tile.gameObject.GetComponent<NoGravity>().enabled = true;
             Tile.GetComponent<GUI_Object>().PutObjectDown();

@@ -185,18 +185,17 @@ public class BoardController : MonoBehaviour, Observable {
     {
         if(GameMaster.instance.totalTiles == 0 && gameGrid[GRID_CENTER,GRID_CENTER] == 0)
         {
+            // first tile must be played in centre
             GUI_Controller.instance.SpawnTextPopup("Place first tile in center", Color.yellow, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
             GameMaster.instance.StateMachine.RevertToLastValidState(false);
             return false;
         } else if(GameMaster.instance.totalTiles==0 && gameGrid[GRID_CENTER,GRID_CENTER] != 0 && cell.cellTile.value % 2 != 0)
         {
-            AudioManager.instance.Play("play1");
+            AudioManager.instance.Play("play11");
         } else if(GameMaster.instance.totalTiles==0 && gameGrid[GRID_CENTER,GRID_CENTER] != 0 && cell.cellTile.value % 2 == 0)
         {
             GUI_Controller.instance.SpawnTextPopup("Not odd!", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
             GameMaster.instance.StateMachine.RevertToLastValidState(false);
-
-
             return false;
         }
 
@@ -348,11 +347,8 @@ public class BoardController : MonoBehaviour, Observable {
             {
                 //Debug.Log("EVEN COL TOTAL");
                 validity = false;
-
             }
-
         }
-
 
         xList.Add(gameGrid[cell.x, cell.y]);
         //traverse left until 0 found,adding nubers to list
@@ -446,20 +442,17 @@ public class BoardController : MonoBehaviour, Observable {
                 }
                 break;
         }
-        
 
         colTot = 0;
         rowTot = 0;
 
+        Debug.Log("check mvoe v increase");
         GameMaster.instance.totalTiles++;
-
-
+        GameMaster.instance.lblHandPrint2.text = "total tiles: " + GameMaster.instance.totalTiles;
 
         if (GameMaster.instance.invalidTilesInplay == true)
         {
             //check the row and cols of every placed tile this turn,
-            //List<GridCell> InvalidTiles = new List<GridCell>();
-            //InvalidTiles.Clear();
             bool valFlag = true;
             foreach (GridCell Cell in GameMaster.instance.playedTiles)
             {
@@ -467,11 +460,8 @@ public class BoardController : MonoBehaviour, Observable {
                 if (CheckTileValidity(Cell, false) == false)
                 {
                     valFlag = false;
-
                     //InvalidTiles.Add(Cell);
-
                 }
-
             }
 
             //If all are valid
@@ -479,20 +469,19 @@ public class BoardController : MonoBehaviour, Observable {
             {
                 GameMaster.instance.invalidTilesInplay = false;
                 GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
-
             }
-
-        }
-
-        //Last Tile Check
-        if (GameMaster.instance.CheckRemainingTiles() == false)
-        {
-            CheckBoardValidity(true, false);
         }
         
         return validity;
     }
 
+    /// <summary>
+    ///  Method which ensures tiles are connect to existing neighbours on the LAST VALID grid (this ensures all tiles are connected)
+    ///  but must stillbe used in conjsution with STATIC neighbour
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
     public bool CheckForExistingNeighbours(int x, int y)
     {
         bool hasNeighbours = true;
@@ -538,6 +527,67 @@ public class BoardController : MonoBehaviour, Observable {
         if (x != GRID_SIZE-1)
         {
             MR = lastValidGameGrid[x + 1, y];
+        }
+        else
+        {
+            MR = 0;
+        }
+        if ((TM == 0) && (BM == 0) && (ML == 0) && (MR == 0) && (GameMaster.instance.totalTiles > 1)) //ADD PIECES > 1
+        {
+            //Debug.Log("NO NEEEEEEBS :(");
+            hasNeighbours = false; //no  existing neighbours
+        }
+
+        return hasNeighbours;
+
+    }
+
+    /// <summary>
+    /// This metho is used to determine if a tile is connected to a tile on the last static grid, this ensures that
+    /// at least one tile each round is connected to tiles from the previous round of playing
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public bool CheckForExistingStaticNeighbours(int x, int y)
+    {
+        bool hasNeighbours = true;
+        
+        int TM;
+        if (y != 0)
+        {
+            //TM = staticgameGrid[x, y - 1];
+            TM = staticgameGrid[x, y - 1];
+        }
+        else
+        {
+            TM = 0;
+        }
+
+        int BM;
+        if (y != GRID_SIZE-1)
+        {
+            BM = staticgameGrid[x, y + 1];
+        }
+        else
+        {
+            BM = 0;
+        }
+
+        int ML;
+        if (x != 0)
+        {
+            ML = staticgameGrid[x - 1, y];
+        }
+        else
+        {
+            ML = 0;
+        }
+
+        int MR;
+        if (x != GRID_SIZE-1)
+        {
+            MR = staticgameGrid[x + 1, y];
         }
         else
         {
@@ -862,12 +912,16 @@ public class BoardController : MonoBehaviour, Observable {
 
     }
 
-    public void CheckBoardValidity(bool endTurn, bool isAI) //temp
+    public bool CheckBoardValidity(bool endTurn, bool isAI) //temp
     {
         Debug.Log("Checking board validity..");
         //check the row and cols of every placed tile this turn,
         List<GridCell> InvalidTiles = new List<GridCell>();
         InvalidTiles.Clear();
+
+        Debug.LogWarning("Played tiles count: " + GameMaster.instance.playedTiles.Count);
+
+        bool staticNeighbourCheck = false;
 
         foreach (GridCell Cell in GameMaster.instance.playedTiles)
         {
@@ -879,17 +933,35 @@ public class BoardController : MonoBehaviour, Observable {
 
             } else
             {
-                BoardController.instance.FindEffectedTiles(Cell);
                 
+            }
+
+            if(GameMaster.instance.totalTiles>3)
+            {
+                if(!staticNeighbourCheck && CheckForExistingStaticNeighbours(Cell.x, Cell.y))
+                {
+                    staticNeighbourCheck=true;
+                    Debug.LogWarning("Tile Has Static Neebs");
+                }
+            } else 
+            {
+                staticNeighbourCheck=true;
             }
 
             //GUI_Controller.instance.ScoreTextSpawnLoc = Cell.gameObject.transform.position; //- new Vector3 (0,0,15);
 
         }
+        Debug.LogWarning("static need check: " + staticNeighbourCheck);
 
         //If all are valid, end turn
-        if (InvalidTiles.Count == 0)
+        if (InvalidTiles.Count == 0 && endTurn && staticNeighbourCheck)
         {
+            foreach(GridCell cell in GameMaster.instance.playedTiles)
+            {
+                BoardController.instance.FindEffectedTiles(cell);
+            }
+
+
             //foreach temp tile, check if they exist in the same column opr row, and score accordingly
             int colScore = 0;
             int rowScore = 0;
@@ -903,8 +975,6 @@ public class BoardController : MonoBehaviour, Observable {
                     //SCORE THAT TILE
                     colScore = ScoreTileCol(GameMaster.instance.playedTiles[0]);
                     rowScore = ScoreTileRow(GameMaster.instance.playedTiles[0]);
-
-                    //rowScore -= GameMaster.instance.playedTiles[0].cellTile.value;
 
                     break;
 
@@ -1024,13 +1094,11 @@ public class BoardController : MonoBehaviour, Observable {
              //Activate Score Effect for tiles
             GUI_Controller.instance.TilesScoredEffect(rowScore+colScore);
 
-            
-
             //GUI_Controller.instance.SpawnTextPopup("+"+(+colScore+rowScore), Color.gray, 
                 //GUI_Controller.instance.transform, (colScore+rowScore+10));
 
             //Update Player SCore
-            if(GameMaster.instance.totalTiles==1)
+            if(GameMaster.instance.totalTiles==1 && GameMaster.instance.playedTiles.Count >0)
             {
                 GameMaster.instance.UpdatePlayerScore(GameMaster.instance.playedTiles[0].cellTile.value, GameMaster.instance.turnIndicator);
             } else {
@@ -1052,36 +1120,66 @@ public class BoardController : MonoBehaviour, Observable {
             //save last valid state before change
             GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
 
-           
-
             if (endTurn)
             {
+                foreach(GridTile tile in GUI_Controller.instance.GetAllTiles())
+                {
+                    if(tile.placed==true)
+                        tile.locked=true;
+                }
                 StartCoroutine(GameMaster.instance.EndTurnDelay(3f));
                 //GameMaster.instance.EndTurn();
             }
 
         }
-        else
+        else // else end turn ==false or invalid tiles
         {
             foreach(GridCell cell in InvalidTiles)
             {
-                GUI_Controller.instance.SpawnTextPopup("Not odd!", Color.red, cell.cellTile.transform, 23);
+                //GUI_Controller.instance.SpawnTextPopup("Not odd!", Color.red, cell.cellTile.transform, 23);
                 GameMaster.instance.playerErrors[GameMaster.instance.turnIndicator-1]++;
                 GameMaster.instance.errorsMade++;
+                if(cell.cellTile != null && cell.cellTile.activated)
+                {
+                    GUI_Controller.instance.DeactivateTileSkin(cell.cellTile);
+                    cell.cellTile.gameObject.GetComponent<NoGravity>().enabled = true;
+                }
             }
-
 
             //if there are unvalid tiles, return grid to last valdi state, return invalid nodes to starpos
-            if(GameMaster.instance.TurnTimer.timeLeft > 0.01)
-            {
-                GameMaster.instance.StateMachine.RevertToLastValidState(false);
+            // if(GameMaster.instance.TurnTimer.timeLeft > 0.01)
+            // {
+            //     GameMaster.instance.StateMachine.RevertToLastValidState(false);
+            // } else
+            // {
+            //     GameMaster.instance.StateMachine.RevertToLastValidState(true);
+            // }
 
-            } else
+        }
+
+        if(GameMaster.instance.totalTiles==1 &&  gameGrid[GRID_CENTER,GRID_CENTER] % 2 != 0)
+        {
+            Debug.LogWarning("Check board validity: true");
+                GameMaster.instance.invalidTilesInplay=true;
+                GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
+                return true;
+        }
+
+            if(InvalidTiles.Count == 0)
             {
-                GameMaster.instance.StateMachine.RevertToLastValidState(true);
+                Debug.LogWarning("Check board validity: true");
+                GameMaster.instance.invalidTilesInplay=false;
+                GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning("Check board validity: false");
+                GameMaster.instance.invalidTilesInplay=true;
+                return false;
 
             }
-        }
+        
     }
 
     public void EventScore(int score)
@@ -1154,7 +1252,9 @@ public class BoardController : MonoBehaviour, Observable {
             if(GameMaster.instance.totalTiles > 1)
             {
                 validity = false; //no neighbours
-                GUI_Controller.instance.SpawnTextPopup("Not connected!", Color.red, cell.cellTile.transform, 23);
+
+                //GUI_Controller.instance.SpawnTextPopup("Not connected!", Color.red, cell.cellTile.transform, 23);
+
                 GameMaster.instance.errorsMade++;
                 GameMaster.instance.playerErrors[GameMaster.instance.turnIndicator-1]++;
             }
@@ -1322,8 +1422,8 @@ public class BoardController : MonoBehaviour, Observable {
 
             if(rowValidity == true && colValidity == true)
             {
-                Debug.Log("ROW VALDITIY: " + rowValidity);
-                Debug.Log("COL VALDITIY: " + colValidity);
+                //Debug.Log("ROW VALDITIY: " + rowValidity);
+                //Debug.Log("COL VALDITIY: " + colValidity);
             } else
             {
                 // GUI_Controller.instance.SpawnTextPopup("Not Odd!", Color.red, cell.cellTile.transform);

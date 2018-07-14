@@ -36,7 +36,6 @@ public class LoadingText : MonoBehaviour {
 		{
 			if(elipses<3)
 			{
-				Debug.LogWarning("o shit");
 				ui_text.text+=".";
 				elipses++;
 			} else {

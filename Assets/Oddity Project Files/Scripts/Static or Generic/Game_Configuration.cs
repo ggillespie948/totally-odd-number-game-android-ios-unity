@@ -49,6 +49,8 @@ public class Game_Configuration : MonoBehaviour {
 	public int fiveTiles;
 	public int sixTiles;
 	public int sevenTiles;
+	public int eightTiles;
+	public int nineTiles;
 	public int targetScore;
 
 	public int targetScore2;
@@ -101,6 +103,11 @@ public class Game_Configuration : MonoBehaviour {
 					Debug.Log("wordl no  " + worldNo);
 					Debug.Log("level no  " + levelNo);
 					Debug.LogWarning("wordlstars level,world:  " + AccountInfo.worldStars[worldNo,levelNo]);
+
+					if(AccountInfo.worldStars[worldNo,levelNo]=="111")
+					{
+						GetComponentInChildren<GUI_Dialogue>().gameObject.GetComponentInChildren<Image>().color=Color.yellow;
+					}
 					
 					if(AccountInfo.worldStars[worldNo, levelNo][0]=='1')
 						if(objStar1 != null){objStar1.SetActive(true);}
@@ -121,6 +128,7 @@ public class Game_Configuration : MonoBehaviour {
 					{
 						//Image[] imgs = GetComponentsInChildren<Image>();
 						Button[] btns = GetComponentsInChildren<Button>();
+						GetComponentInChildren<TextMeshProUGUI>().GetComponentInChildren<SpriteRenderer>().enabled=true;
 						GetComponentInChildren<TextMeshProUGUI>().enableAutoSizing=true;
 						GetComponentInChildren<TextMeshProUGUI>().text="Requires " + starRequirement.ToString();
 						// foreach(Image img in imgs)
@@ -227,8 +235,9 @@ public class Game_Configuration : MonoBehaviour {
 		objStar3.SetActive(false);
 	}
 
-	public void StartLevel()
+	public IEnumerator _StartLevel()
 	{
+		yield return new WaitForSeconds(3f);
 		ApplicationModel.LEVEL_NO = levelNo;
 		ApplicationModel.WORLD_NO = worldNo;
 		ApplicationModel.LEVEL_CODE = levelCode;
@@ -239,6 +248,8 @@ public class Game_Configuration : MonoBehaviour {
 		ApplicationModel.FIVE_TILES = fiveTiles;
 		ApplicationModel.SIX_TILES = sixTiles;
 		ApplicationModel.SEVEN_TILES = sevenTiles;
+		ApplicationModel.EIGHT_TILES = eightTiles;
+		ApplicationModel.NINE_TILES = nineTiles;
 		ApplicationModel.AI_PLAYERS=ai_opponents;
 		ApplicationModel.HUMAN_PLAYERS=1;
 		ApplicationModel.GRID_SIZE=gridSize;
@@ -254,6 +265,8 @@ public class Game_Configuration : MonoBehaviour {
 		else
 			ApplicationModel.RETURN_TO_WORLD=-1;
 
+		MenuController.instance.NavBar.gameObject.SetActive(false);
+
 		if(targetScore ==0)
 		{
 			MenuController.instance.StartGameAI(ai_difficulty);
@@ -263,12 +276,19 @@ public class Game_Configuration : MonoBehaviour {
 			ApplicationModel.TARGET3 = targetScore3;
 			MenuController.instance.SoloPlay();
 		}
+		
+		
+	}
+
+	public void StartLevel()
+	{
+		StartCoroutine(_StartLevel());
 	}
 
 	public void LoadConfiguration(Game_Configuration config)
 	{
 		if(challengeMode)
-			GUI_Controller.instance.NavBar.CloseAllDialogues(true);
+			MenuController.instance.NavBar.CloseAllDialogues(true);
 
 		levelCode = config.levelCode;
 		ai_difficulty = config.ai_difficulty;
@@ -494,7 +514,7 @@ public class Game_Configuration : MonoBehaviour {
 
 	public void ReturnToWorldSelection()
 	{
-		GUI_Controller.instance.NavBar.challengeModeDialogue.GetComponent<ChallengeModeController>().SelectWorld(worldNo);
+		MenuController.instance.NavBar.challengeModeDialogue.GetComponent<ChallengeModeController>().SelectWorld(worldNo);
 	}
 
 	public string GenerateObjectiveText(string objCode)

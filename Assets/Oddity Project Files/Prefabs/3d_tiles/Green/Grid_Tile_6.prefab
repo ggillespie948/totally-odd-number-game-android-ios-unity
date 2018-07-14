@@ -268,6 +268,9 @@ MonoBehaviour:
   location: {x: 0, y: 0, z: 0}
   activated: 0
   isFlashing: 0
+  x: 0
+  y: 0
+  locked: 0
 --- !u!114 &114620912259074034
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -279,49 +282,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d51eea21056b5bc48aaa45dcf0bb4512, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimateToLocationCurve:
+  animateToLocationCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
-      time: 0.0041666627
-      value: -0.0053037405
-      inSlope: 0
-      outSlope: 0
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
       tangentMode: 0
     - serializedVersion: 2
-      time: 0.5174343
-      value: 0.15516186
-      inSlope: 0.83476305
-      outSlope: 0.83476305
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.64168
-      value: 0.9727131
-      inSlope: -4.138086
-      outSlope: -4.138086
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.86700755
-      value: 0.8034796
-      inSlope: 0.29623508
-      outSlope: 0.29623508
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1.0041566
-      value: 0.99469674
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1.0050453
-      value: 0.9696864
-      inSlope: 5.5006385
-      outSlope: 5.5006385
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
-  InvalidTileCurve:
+  invalidTileCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  dockCruve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
@@ -333,33 +330,22 @@ MonoBehaviour:
     - serializedVersion: 2
       time: 1
       value: 1
-      inSlope: 2
-      outSlope: 2
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
-  TileFlashCurve:
+  tileFlashCurve:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 2
-      time: 0
-      value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.6083374
-      value: 0.61249924
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
+    m_RotationOrder: 4
   targetPosMarker: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
   startPos: {x: 0, y: 0, z: 0}
+  returnPos: {x: 0, y: 0, z: 0}
   Speed: 2.5
   introAnim: 0
   isMenu: 0

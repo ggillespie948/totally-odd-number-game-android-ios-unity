@@ -21,6 +21,8 @@ public class NavigationBarController : MonoBehaviour {
 	[SerializeField]
 	private Button btn_4;
 
+	[SerializeField]
+	public int active_btn = 3;
 	[Header("Home Dialogues")]
 	[SerializeField]
 	public GameObject challengeModeDialogue;
@@ -30,6 +32,40 @@ public class NavigationBarController : MonoBehaviour {
 	private GameObject tutorialModeDialogue;
 	[SerializeField]
 	private GameObject multiplayerDialogue;
+
+	[Header("Player Panel")]
+	[SerializeField]
+	public GameObject playerPanel;
+
+	[Header("Unlock Panel")]
+	[SerializeField]
+	public GameObject unlockPanel;
+
+	[Header("Shop Panel")]
+	[SerializeField]
+	public GameObject shopPanel;
+
+	[Header("Extra Panel")]
+	[SerializeField]
+	public GameObject extraPanel;
+
+	
+	[Header("Confirm Purchase Panel")]
+	
+	[SerializeField]
+	private GameObject confirmPurchasePanel;
+	[SerializeField]
+	public GameObject tileSkinParent;
+	public TextMeshProUGUI shopItemTitle;
+	public TextMeshProUGUI priceText;
+	[Header("Currently Inspected Item")]
+	[SerializeField]
+	public GameObject activeTileBox;
+
+	[Header("Inspected Item Preview Items")]
+	[SerializeField]
+	public GameObject[] previewItems;
+	
 
 	[SerializeField]
 	private GameObject gameTitle;
@@ -53,28 +89,42 @@ public class NavigationBarController : MonoBehaviour {
 	[SerializeField]
 	private GameObject devButton;
 
-	private Animator activeButtonIcon;
+	private Button activeButtonIcon;
 
 	[SerializeField]
 	private Color enabledCol;
+
+	/// <summary>
+	/// Update is called every frame, if the MonoBehaviour is enabled.
+	/// </summary>
+	
 
 	public void UpdateNavPos()
 	{
 		switch(ScrollSnap._currentPage)
 		{
 			case 0:
-			SetButtonIconAnim(btn_1.GetComponent<Button>());
+			PressExtraButton();
 			break;
 
 			case 1:
-			SetButtonIconAnim(btn_2.GetComponent<Button>());
+			PressShopButton();
 			break;
 
-			case 2:
-			//SetButtonIconAnim(btn_3.GetComponent<Button>());
+			case 3:
+			PressPlayButton();
+			break;
+
+			case 4:
+			PressUnlockablesButton();
 			break;
 
 		}
+	}
+
+	public void UninspectTileBox()
+	{
+		activeTileBox.GetComponent<TileBox>().UninspectItem();
 	}
 
 	/// <summary>
@@ -83,31 +133,28 @@ public class NavigationBarController : MonoBehaviour {
 	/// <param name="btn"></param>
 	public void SetButtonIconAnim(Button btn)
 	{
+		Debug.Log("Set Button Icon");
 		if(activeButtonIcon==null)
 		{
-			activeButtonIcon=btn.GetComponentInChildren<Animator>();
-			activeButtonIcon.enabled=true;
-			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,.2f,0);
-			activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
+			activeButtonIcon=btn;
+			btn.GetComponentInChildren<SpriteRenderer>().transform.position+=new Vector3(0,.2f,0);
 			return;
 		} else 
 		{
-			if(activeButtonIcon==btn.GetComponentInChildren<Animator>())
+			if(activeButtonIcon==btn)
 				return;
+			activeButtonIcon=btn;
+			btn.GetComponentInChildren<SpriteRenderer>().transform.position+=new Vector3(0,.2f,0);
 			ClearButtonIconAnim();
-			activeButtonIcon=btn.GetComponentInChildren<Animator>();
-			activeButtonIcon.enabled=true;
-			activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,.2f,0);
-			activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
+			
 		}
 	}
 
 	public void ClearButtonIconAnim()
 	{
-		activeButtonIcon.enabled=false;
-		activeButtonIcon.transform.position = activeButtonIcon.transform.position+new Vector3(0,-.2f,0);
-		activeButtonIcon.gameObject.transform.parent.GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+		activeButtonIcon.GetComponentInChildren<SpriteRenderer>().transform.position-=new Vector3(0,.2f,0);
 	}
+
 
 	
 
@@ -135,16 +182,80 @@ public class NavigationBarController : MonoBehaviour {
 		devButton.SetActive(!devButton.gameObject.activeInHierarchy);
 	}
 
-	public void PressHomeButton()
+	public void ToggleBaseMenu()
 	{
 		ScrollSnap.gameObject.SetActive(true);
-		challengeModeDialogue.SetActive(true);
-		practiceModeDialogue.SetActive(true);
-		multiplayerDialogue.SetActive(true);
-		tutorialModeDialogue.SetActive(true);
+		//challengeModeDialogue.SetActive(true);
+		//practiceModeDialogue.SetActive(true);
+		//multiplayerDialogue.SetActive(true);
+		//tutorialModeDialogue.SetActive(true);
 		unlockablesPannel.SetActive(true);
+		playerPanel.SetActive(true);
+		unlockPanel.SetActive(true);
+		shopPanel.SetActive(true);
+		extraPanel.SetActive(true);
+	}
+
+	public void PressExtraButton()
+	{
+		UnselectActiveButton();
+		btn_1.transform.position+=new Vector3(0,.1f,0);
+		active_btn=1;
+		btn_1.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
 		CloseAllDialogues(false);
-		ScrollSnap.PreviousScreen();
+		ScrollSnap.GoToScreen(0);
+	}
+
+	public void PressPlayButton()
+	{
+		UnselectActiveButton();
+		btn_3.transform.position+=new Vector3(0,.1f,0);
+		active_btn=3;
+		btn_3.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
+		ToggleBaseMenu();
+		CloseAllDialogues(false);
+		ScrollSnap.GoToScreen(2);
+	}
+
+	public void PressShopButton()
+	{
+		UnselectActiveButton();
+		btn_2.transform.position+=new Vector3(0,.1f,0);
+		active_btn=2;
+		btn_2.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
+		ToggleBaseMenu();
+		CloseAllDialogues(false);
+		ScrollSnap.GoToScreen(1);
+	}
+
+	
+
+	public void UnselectActiveButton()
+	{
+		switch(active_btn)
+		{
+			case 1:
+				btn_1.transform.position-=new Vector3(0,.1f,0);
+				btn_1.GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+			break;
+
+			case 2:
+				btn_2.transform.position-=new Vector3(0,.1f,0);
+				btn_2.GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+			break;
+
+			case 3:
+				btn_3.transform.position-=new Vector3(0,.1f,0);
+				btn_3.GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+			break;
+
+			case 4:
+				btn_4.transform.position-=new Vector3(0,.1f,0);
+				btn_4.GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+			break;
+		}
+
+
 	}
 
 	/// <summary>
@@ -155,28 +266,28 @@ public class NavigationBarController : MonoBehaviour {
 		challengeModeDialogue.GetComponent<ChallengeModeController>().CloseAllDialogues();
 		if(closeBase)
 		{
-			challengeModeDialogue.SetActive(false);
+			//challengeModeDialogue.SetActive(false);
 			practiceModeDialogue.SetActive(false);
 			multiplayerDialogue.SetActive(false);
 			tutorialModeDialogue.SetActive(false);
 			unlockablesPannel.SetActive(false);
+			playerPanel.SetActive(false);
+			unlockPanel.SetActive(false);
+			shopPanel.SetActive(false);
+			extraPanel.SetActive(false);
 		}
 
-		//unlockablesPannel.GetComponent<UnlockablesController>().CloseAllTabs();
-
-		gameTitle.SetActive(false);
 	}
 
 	public void PressUnlockablesButton()
 	{
+		UnselectActiveButton();
+		btn_4.transform.position+=new Vector3(0,.1f,0);
+		active_btn=4;
+		btn_4.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
 		CloseAllDialogues(false);
-		ScrollSnap.gameObject.SetActive(true);
-		challengeModeDialogue.SetActive(true);
-		practiceModeDialogue.SetActive(true);
-		multiplayerDialogue.SetActive(true);
-		tutorialModeDialogue.SetActive(true);
-		unlockablesPannel.SetActive(true);
-		ScrollSnap.NextScreen();
+		ToggleBaseMenu();
+		ScrollSnap.GoToScreen(3);
 	}
 
 	/// <summary>

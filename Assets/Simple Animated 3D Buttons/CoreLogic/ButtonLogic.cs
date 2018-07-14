@@ -65,7 +65,6 @@ public class ButtonLogic : MonoBehaviour {
 	}
 	public void ButtonNoLongerPressed()
 	{
-		Debug.Log("Check");
 		if(buttonMeshObject != null)
 		{
 			StartCoroutine("AnimateButtonUp");
