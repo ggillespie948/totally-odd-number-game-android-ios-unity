@@ -4,10 +4,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
+using PlayFab;
+using UnityEngine.UI.Extensions;
 
 public class MenuController : MonoBehaviour {
 
 	public static MenuController instance = null;
+
+	[SerializeField]
+	public Game_Configuration activeGameConfig;
 
     [SerializeField]
     private LevelChanger levelChanger;
@@ -15,6 +20,40 @@ public class MenuController : MonoBehaviour {
     [Header("Player Account")]
     [SerializeField]
     private AccountInfo Account;
+    public NavigationBarController NavBar;
+
+	public GameObject textInfoBar; //top information bar which displays scrolling (and stationary) text;
+
+	
+	[Header("In-Game Store Controllers")]
+	[SerializeField]
+	public UnlockablesController UnlockablesController;
+	[SerializeField]
+	public InAppPurchasesController InAppPurchasesController;
+
+	
+	[Header("Daily Challenge")]
+	[SerializeField]
+	private TextMeshProUGUI dailyChallengeTitleText;
+	[SerializeField]
+	private TextMeshProUGUI dailyChallengeValueText;
+	[SerializeField]
+	//private Progress
+	private Slider progressBar;
+
+	public void SetInfoPanelText(string text, bool scrolling)
+	{
+		if(!scrolling)
+		{
+			textInfoBar.GetComponentInChildren<TextMeshProUGUI>().text=text;
+			return;
+		} else 
+		{
+
+		}
+
+	}
+
 
     [Header("Other Panels")]
 	public GameObject fireWorks;
@@ -26,27 +65,60 @@ public class MenuController : MonoBehaviour {
 
 	public GameObject navHighlight;
 
-    public NavigationBarController NavBar;
 	
 	[Header("Level Selection Dialogues")]
-	public GUI_Dialogue_Call WorldSelectionDialogue;
+	public GameObject WorldSelectionDialogue;
 	public GUI_Dialogue_Call LevelSelectionDialogue;
 	public Game_Configuration LevelSelectionConfig;
 
-	public List<GameObject> World1Levels;
-	public List<GameObject> World2Levels;
-	public List<GUI_Dialogue_Call> World3Levels;
-	public List<GUI_Dialogue_Call> World4Levels;
+	public List<GameObject> World1Levels; //beginner
+	public List<GameObject> World2Levels; //novice
+	public List<GameObject> World3Levels; //intermediate
+	public List<GameObject> World4Levels; //advanced
+	public List<GameObject> World5Levels; //master
+	public List<GameObject> World6Levels; //grand master
 
 	public GUI_Dialogue_Call UnlockablesPanel_Dialogue;
 
-	public GUI_Dialogue_Call Home_Dialogue;
-
-	public TextMeshProUGUI InfoPanelText;
+	public LeaderboardController leaderboardController;
 
 	
-	[SerializeField]
-	private ThemeController ThemeController;
+	[Header("Confirm Purchase Panel")]
+	
+
+	public GameObject confirmPurchaseBtn;
+	public ParticleSystem coinEmitter;
+	public CurrenyBarController CurrencyUI;
+
+	public TextMeshProUGUI playerNameText;
+
+	/// <summary>
+	/// Method which is called on the success of AccountInfo.DeductEnergy()
+	/// </summary>
+	/// <param name="result"></param>
+	public void StartActiveGameConfiguration()
+	{
+		if(activeGameConfig!=null)
+			activeGameConfig.StartLevel();
+		
+	}
+
+	public void NavTransitionTrigger()
+	{
+		//textInfoBar.GetComponentInChildren<Animator>().SetTrigger("fadeOut");
+	}
+
+	public void NavTransitionTriggerEnd()
+	{
+		AudioManager.instance.Play("MenuWoosh");
+		NavBar.UpdateNavPos();
+		//textInfoBar.GetComponentInChildren<Animator>().SetTrigger("fadeIn");
+	}
+
+	public void GoTo(int screen)
+	{
+		NavBar.ScrollSnap.GoToScreen(screen);
+	}
 
 	void Start()
 	{
@@ -58,6 +130,11 @@ public class MenuController : MonoBehaviour {
 		StartCoroutine(LoadIntro(0f));
 	}
 
+	public void RetryConnection()
+	{
+		AccountInfo.RetryLogin();
+	}
+
 	private IEnumerator LoadIntro(float time)
 	{
 		yield return new WaitForSeconds(time);
@@ -65,10 +142,11 @@ public class MenuController : MonoBehaviour {
 		{
 			if(Account.isActiveAndEnabled == false)
             {
-                //Loading Screen, Get Playfab Account Shit
-                Account.gameObject.SetActive(true);
+                //Loading Screen, Get Playfab Account
+				Debug.Log("activate loading panel");
                 loadingScreen.SetActive(true);
-                StartCoroutine(LoadIntro(5.5f));
+                Account.gameObject.SetActive(true);
+                StartCoroutine(LoadIntro(7.5f));
             } else 
             {
                 //Load Main Menu, Press PlayButton
@@ -78,17 +156,65 @@ public class MenuController : MonoBehaviour {
                     nameSelector.SetActive(true);
                 else
                 {
+					playerNameText.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
                     OpenMainMenu();
                 }
 
-
             }
-            
-
+         
 		} else {
+
+			//															 //
+			// LOAD INTRO RETURNING FROM SINGLEPLAYER / MULTIPLAYER GAME //
+			//	
+			
+			Debug.LogError("RETURN FROM GAME CODE ");
+																	 //
+			playerNameText.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
+			MenuController.instance.navHighlight.SetActive(true);
+			AccountInfo.Instance.LoadLeaderboard("Wins");
 			AccountInfo.GetAccountInfo();
-			SelectWorld(ApplicationModel.RETURN_TO_WORLD+1);
+			AccountInfo.GetPlayerData(AccountInfo.playfabId);
+			AccountInfo.Instance.GetInventory();
+			MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().LoadTileStore();
+			MenuController.instance.InAppPurchasesController.LoadStore();
+			MenuController.instance.NavBar.challengeModeDialogue.GetComponent<ChallengeModeController>().SelectWorld(ApplicationModel.RETURN_TO_WORLD);
+			MenuController.instance.NavBar.gameObject.SetActive(true);
+			AccountInfo.UpdateDailyChallengeValue();
+			//Invoke("CheckForUnlock", 2.5f);
 		}
+	}
+
+	private void CheckForUnlock()
+	{
+		NavBar.unlockPanel.GetComponent<UnlockablesController>().CheckForItemUnlock();
+		NavBar.challengeModeDialogue.GetComponent<ChallengeModeController>().CheckWorldForStarImprovement();
+
+	}
+
+	/// <summary>
+	/// Method which updates the value of challenge bar progressO#
+	/// </summary>
+	/// <param name="val"></param>
+	public void UpdateDailyChallengeUI(int val)
+	{
+		Debug.Log("update val: " + val);
+		progressBar.value=val;
+	}
+
+	/// <summary>
+	/// This method is an overload, which is called when the daily challenge is reset or loaded for first time
+	/// </summary>
+	/// <param name="title"></param>
+	/// <param name="val"></param>
+	public void UpdateDailyChallengeUI(string title, int val, int maxVal)
+	{
+		Debug.Log("overload update val: " + val);
+		dailyChallengeTitleText.text=title;
+		progressBar.minValue=0;
+		progressBar.maxValue=maxVal;
+		progressBar.value=val;
+		dailyChallengeValueText.text=(val+"/"+maxVal);
 	}
 
     public void OpenMainMenu()
@@ -140,7 +266,7 @@ public class MenuController : MonoBehaviour {
 	public void OpenWorldSelector()
 	{
 		CloseAllMenus(true);
-		WorldSelectionDialogue.Open();
+		WorldSelectionDialogue.SetActive(true);
 		// InfoPanelText.text = "Select World";
 		// InfoPanel_Dialogue.SetActive(true);
 	}
@@ -148,6 +274,7 @@ public class MenuController : MonoBehaviour {
 	public void SelectWorld(int worldNo)
 	{
 		NavBar.CloseAllDialogues(true);
+		navHighlight.SetActive(true);
 		GUI_Controller.instance.CoinDialogue.SetActive(true);
         NavBar.gameObject.SetActive(true);
         mainMenuContainer.SetActive(true);
@@ -158,7 +285,7 @@ public class MenuController : MonoBehaviour {
 			{
 				Dialogue.SetActive(true);
 			}
-			if(AccountInfo.beginnerStars == 15)
+			if(AccountInfo.beginnerStars == 30)
 			fireWorks.SetActive(true);
 			break;
 
@@ -167,22 +294,44 @@ public class MenuController : MonoBehaviour {
 			{
 				Dialogue.SetActive(true);
 			}
-			if(AccountInfo.intermediateStars == 15)
+			if(AccountInfo.noviceStars == 30)
 			fireWorks.SetActive(true);
 			break;
 
 			case 3:
-			foreach(GUI_Dialogue_Call Dialogue in World3Levels)
+			foreach(GameObject Dialogue in World3Levels)
 			{
-				Dialogue.Open();
+				Dialogue.SetActive(true);
 			}
+			if(AccountInfo.intermediateStars == 30)
+			fireWorks.SetActive(true);
 			break;
 
 			case 4:
-			foreach(GUI_Dialogue_Call Dialogue in World4Levels)
+			foreach(GameObject Dialogue in World4Levels)
 			{
-				Dialogue.Open();
+				Dialogue.SetActive(true);
 			}
+			if(AccountInfo.advancedStars == 30)
+			fireWorks.SetActive(true);
+			break;
+
+			case 5:
+			foreach(GameObject Dialogue in World5Levels)
+			{
+				Dialogue.SetActive(true);
+			}
+			if(AccountInfo.masterStars == 30)
+			fireWorks.SetActive(true);
+			break;
+
+			case 6:
+			foreach(GameObject Dialogue in World6Levels)
+			{
+				Dialogue.SetActive(true);
+			}
+			if(AccountInfo.grandMasterStars == 30)
+			fireWorks.SetActive(true);
 			break;
 
 		}
@@ -243,9 +392,7 @@ public class MenuController : MonoBehaviour {
 		//ApplicationModel.theme = 1;
         NavBar.CloseAllDialogues(true);
 		levelChanger.FadeToLevel("Main");
-
 	}
-
 
 
 	public void ToggleDialogueInteractions(List<GUI_Dialogue_Call> Dialogues, bool open)
@@ -278,7 +425,85 @@ public class MenuController : MonoBehaviour {
 		ApplicationModel.TUTORIAL_MODE = false;
 	}
 
+	private void PurchaseSelectedTileSkin()
+	{
+		NavBar.unlockablesPanel.GetComponent<UnlockablesController>().LockShopButtons();
+		if(AccountInfo.Instance.InventoryContains(NavBar.activeTileBox.GetComponent<TileBox>().item))
+		{
+			NavBar.activeTileBox.GetComponent<TileBox>().EquipTileSkin();
+		} else 
+		{
+			uint price=0;
+			if(NavBar.activeTileBox.GetComponent<TileBox>().item.VirtualCurrencyPrices.TryGetValue(AccountInfo.COINS_CODE, out price))
+			{
+				if(price != 0 && price <=  GUI_Controller.instance.CurrencyUI.playerCoins)
+				{
+					confirmPurchaseBtn.GetComponent<Animator>().enabled=true;
+					confirmPurchaseBtn.GetComponent<Animator>().SetTrigger("pressPurchase");
+					NavBar.activeTileBox.GetComponent<TileBox>().PurchaseWithCoins();
+				} else
+				{
+					Debug.LogError("FAILED TO GET PRICE OR NOT ENOUGH GOLD");
+					NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
+				}
+			}
+		}
+	}
 
+	public void PurchaseActiveItem()
+	{
+		if(NavBar.activeTileBox!=null)
+			PurchaseSelectedTileSkin();
+		else if(NavBar.activeShopItem!=null)
+			PurchaseSelectedIAP();
+	}
+
+	private void PurchaseSelectedIAP()
+	{
+		ShopItem selectedItem = NavBar.activeShopItem.GetComponent<ShopItem>();
+
+		if(selectedItem==null)
+		{
+			Debug.LogError("Selected Item Null");
+			return;
+		}
+		
+		MenuController.instance.InAppPurchasesController.LockShopButtons();
+		switch(selectedItem.item.ItemClass)
+		{
+			case "Life Refill":
+				
+					uint price=0;
+					if(selectedItem.item.VirtualCurrencyPrices.TryGetValue(AccountInfo.COINS_CODE, out price))
+					{
+						if(price != 0 && price <=  GUI_Controller.instance.CurrencyUI.playerCoins)
+						{
+							confirmPurchaseBtn.GetComponent<Animator>().enabled=true;
+							confirmPurchaseBtn.GetComponent<Animator>().SetTrigger("pressPurchase");
+							selectedItem.PurchaseWithCoins();
+						} else
+						{
+							Debug.LogError("FAILED TO GET PRICE OR NOT ENOUGH GOLD");
+							NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
+						}
+					}
+
+			break;
+
+			case "Energy Pass":
+			break;
+
+			case "Coin Bundle":
+			break;
+
+			case "Full Game Level Pack":
+			break;
+
+			default:
+			Debug.LogError("IAP CLASS NOT FOUND");
+			break;
+		}		
+	}
 
 
 	public void CloseAllMenus(bool closeInfo)

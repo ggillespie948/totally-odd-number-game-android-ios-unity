@@ -11,6 +11,8 @@ public class ShopItemTile {
 	[SerializeField]
 	private string name;
 	[SerializeField]
+	private string description;
+	[SerializeField]
 	private int cost;
 	[SerializeField]
 	private int starReq;
@@ -21,11 +23,12 @@ public class ShopItemTile {
 	[SerializeField]
 	private string itemID;
 
-	public ShopItemTile(int _index, string _name, int _cost, int starReq, Image _icon, TileSkin _prefab, string _itemID)
+	public ShopItemTile(int _index, string _name, int _cost, int _starReq, Image _icon, TileSkin _prefab, string _itemID)
 	{
 		index=_index;
 		name=_name;
 		cost=_cost;
+		starReq=_starReq;
 		icon=_icon;
 		prefab=_prefab;
 		itemID=_itemID;

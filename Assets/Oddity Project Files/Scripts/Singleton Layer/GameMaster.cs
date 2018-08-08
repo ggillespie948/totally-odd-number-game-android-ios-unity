@@ -47,7 +47,7 @@ public class GameMaster : MonoBehaviour{
     public GridTile selectedTile;    public GridCell activeCell;
     public List<GridTile> currentHand = new List<GridTile>();
     public List<bool> turnIdentifier = new List<bool>(); //method of telling if its a human or ai turn...
-    public bool humanTurn{get; private set;}
+    public bool humanTurn{get; set;}
     public int turnIndicator {get; private set;}
     public bool invalidTilesInplay {get; set;}
 
@@ -94,6 +94,8 @@ public class GameMaster : MonoBehaviour{
     public bool gridFull {get; set;}
 
     public bool evenTileRequired{get; set;}
+
+    public bool turnOver {get; private set;}
 
 
     [Header("Debugging")]
@@ -151,20 +153,24 @@ public class GameMaster : MonoBehaviour{
     {
         if(MAX_TURN_INDICATOR ==4)
         {
-            GUI_Controller.instance.PlayerCard1=GUI_Controller.instance.PlayerCard8;
-            GUI_Controller.instance.PlayerCard2=GUI_Controller.instance.PlayerCard9;
-            GUI_Controller.instance.PlayerCard3=GUI_Controller.instance.PlayerCard10;
-            GUI_Controller.instance.PlayerCard4=GUI_Controller.instance.PlayerCard11;
             GUI_Controller.instance.PlayerCard1.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard1.GetComponent<PlayerCard>().portraitImage.enabled=false;
+            GUI_Controller.instance.PlayerCard1.GetComponent<PlayerCard>().portraitRing.enabled=false;
+
             GUI_Controller.instance.PlayerCard2.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard2.GetComponent<PlayerCard>().portraitImage.enabled=false;
+            GUI_Controller.instance.PlayerCard2.GetComponent<PlayerCard>().portraitRing.enabled=false;
+            
             GUI_Controller.instance.PlayerCard3.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard3.GetComponent<PlayerCard>().portraitImage.enabled=false;
+            GUI_Controller.instance.PlayerCard3.GetComponent<PlayerCard>().portraitRing.enabled=false;
+
             GUI_Controller.instance.PlayerCard4.gameObject.SetActive(true);
+            GUI_Controller.instance.PlayerCard4.GetComponent<PlayerCard>().portraitImage.enabled=false;
+            GUI_Controller.instance.PlayerCard4.GetComponent<PlayerCard>().portraitRing.enabled=false;
 
         } else if (MAX_TURN_INDICATOR ==3)
         {
-            GUI_Controller.instance.PlayerCard1=GUI_Controller.instance.PlayerCard5;
-            GUI_Controller.instance.PlayerCard2=GUI_Controller.instance.PlayerCard6;
-            GUI_Controller.instance.PlayerCard3=GUI_Controller.instance.PlayerCard7;
             GUI_Controller.instance.PlayerCard4=null;
             GUI_Controller.instance.PlayerCard1.gameObject.SetActive(true);
             GUI_Controller.instance.PlayerCard2.gameObject.SetActive(true);
@@ -176,7 +182,17 @@ public class GameMaster : MonoBehaviour{
             GUI_Controller.instance.PlayerCard2.gameObject.SetActive(true);
             GUI_Controller.instance.PlayerCard3=null;
             GUI_Controller.instance.PlayerCard4=null;
-        }       
+        }
+
+        if(!soloPlay) // vs mode
+        {
+            GUI_Controller.instance.PlayerCard1.gameObject.GetComponentInParent<HorizontalLayoutGroup>().enabled=true; 
+            GUI_Controller.instance.remainingTilesText.gameObject.transform.parent.gameObject.SetActive(true);      
+        } else //target mode
+        {
+            GUI_Controller.instance.PlayerCard1.gameObject.GetComponentInParent<HorizontalLayoutGroup>().enabled=false; 
+            GUI_Controller.instance.remainingTilesText.gameObject.transform.parent.gameObject.SetActive(false);
+        }
 
         Time.timeScale = 1f;
         errorsMade = 0;
@@ -195,6 +211,8 @@ public class GameMaster : MonoBehaviour{
         if(BoardController.instance.GRID_SIZE == 9)
         {
             GUI_Controller.instance.physcialGridContainer = GUI_Controller.instance.GameGrid_9x9;
+            GUI_Controller.instance.physicalGridBG = GUI_Controller.instance.GameGridBG_9x9;
+            GUI_Controller.instance.physicalGridDivider = GUI_Controller.instance.GameGrid_9x9_MainBG;
             GUI_Controller.instance.GameGrid_9x9.SetActive(true);
             GRID_SCALE = .8f;
             TILE_SCALE=0.33f;
@@ -203,12 +221,16 @@ public class GameMaster : MonoBehaviour{
         else if(BoardController.instance.GRID_SIZE == 5)
         {
             GUI_Controller.instance.physcialGridContainer = GUI_Controller.instance.GameGrid_5x5;
+            GUI_Controller.instance.physicalGridBG = GUI_Controller.instance.GameGridBG_5x5;
+            GUI_Controller.instance.physicalGridDivider = GUI_Controller.instance.GameGrid_5x5_MainBG;
             GUI_Controller.instance.GameGrid_5x5.SetActive(true);
             GRID_SCALE = 1.3f;
             TILE_SCALE=0.55f;
         } else if(BoardController.instance.GRID_SIZE == 7)
         {
             GUI_Controller.instance.physcialGridContainer = GUI_Controller.instance.GameGrid_7x7;
+            GUI_Controller.instance.physicalGridBG = GUI_Controller.instance.GameGridBG_7x7;
+            GUI_Controller.instance.physicalGridDivider = GUI_Controller.instance.GameGrid_7x7_MainBG;
             GUI_Controller.instance.GameGrid_7x7.SetActive(true);
             GRID_SCALE = 1f;
             TILE_SCALE = .45f;
@@ -224,18 +246,13 @@ public class GameMaster : MonoBehaviour{
 
         if(soloPlay)        //Refactor solo play as child of game master temp
         {
-            GUI_Controller.instance.PlayerCard2.gameObject.SetActive(false);
-            GUI_Controller.instance.RemainingTurns_Stone.gameObject.SetActive(true);
-            Destroy(GUI_Controller.instance.TimerUI.gameObject);
+            GUI_Controller.instance.SoloTargetCard.gameObject.transform.parent.gameObject.SetActive(true);
+            //Destroy(GUI_Controller.instance.TimerUI.gameObject);
         } else {
-            GUI_Controller.instance.RemainingTurns_Stone.gameObject.SetActive(false);
-            //GUI_Controller.instance.TargetScore_Stone.gameObject.SetActive(false);
+            GUI_Controller.instance.SoloTargetCard.gameObject.transform.parent.gameObject.SetActive(false);
             GUI_Controller.instance.SoloTargetCard.gameObject.SetActive(false);
             GUI_Controller.instance.SoloScoreCard.gameObject.SetActive(false);
         }
-
-        if(!ApplicationModel.VS_LOCAL_MP)
-            Destroy(GUI_Controller.instance.Rotate_Tiles_Btn.gameObject);
 
         SetTheme();
         StartCoroutine(GUI_Controller.instance.GridIntroAnim());
@@ -249,6 +266,32 @@ public class GameMaster : MonoBehaviour{
 
         GUI_Controller.instance.directionalLight.intensity=currentTheme.SunLightIntensity;
         RenderSettings.skybox = currentTheme.Skybox;
+
+        //Enable / Disabled sky box rotation
+        if(!currentTheme.skyBoxRotationEnabled)
+            GUI_Controller.instance.gameObject.GetComponent<SkyboxRotator>().enabled=false;
+
+        
+        //enable/dsiabled gradient BG which masks skybox
+        if(!currentTheme.gradientBgEnabled)
+        {
+            GUI_Controller.instance.UI_GRADIENT_BG.SetActive(false);
+        } else 
+        {
+            GUI_Controller.instance.UI_GRADIENT_BG.GetComponent<UnityEngine.UI.Extensions.Gradient>().vertex1=currentTheme.GradientVertext1;
+            GUI_Controller.instance.UI_GRADIENT_BG.GetComponent<UnityEngine.UI.Extensions.Gradient>().vertex2=currentTheme.GradientVertext2;
+        }
+
+        //Enable / Disable Visible Cell Dividers
+        if(!currentTheme.gridDividerEnabled)
+        {
+            GUI_Controller.instance.physicalGridDivider.gameObject.SetActive(false);
+        } else 
+        {
+            GUI_Controller.instance.physicalGridDivider.GetComponent<Renderer>().material=currentTheme.GridDivider;
+        }
+
+        //Initialise player tile models
         tile1=new GridTile[MAX_TURN_INDICATOR];
         tile2=new GridTile[MAX_TURN_INDICATOR];
         tile3=new GridTile[MAX_TURN_INDICATOR];
@@ -337,27 +380,12 @@ public class GameMaster : MonoBehaviour{
                 GUI_Controller.instance.Tile7ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile7FX;
                 GUI_Controller.instance.Tile8ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile8FX;
                 GUI_Controller.instance.Tile9ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile9FX;
+
             }
+
+            
         }
 
-        // GUI_Controller.instance.Tile1ActivateFX=currentTheme.Tile1FX;
-        // GUI_Controller.instance.Tile2ActivateFX=currentTheme.Tile2FX;
-        // GUI_Controller.instance.Tile3ActivateFX=currentTheme.Tile3FX;
-        // GUI_Controller.instance.Tile4ActivateFX=currentTheme.Tile4FX;
-        // GUI_Controller.instance.Tile5ActivateFX=currentTheme.Tile5FX;
-        // GUI_Controller.instance.Tile6ActivateFX=currentTheme.Tile6FX;
-        // GUI_Controller.instance.Tile7ActivateFX=currentTheme.Tile7FX;
-
-        // GUI_Controller.instance.Tile1ActivateFX_alt=altTheme.Tile1FX;
-        // GUI_Controller.instance.Tile2ActivateFX_alt=altTheme.Tile2FX;
-        // GUI_Controller.instance.Tile3ActivateFX_alt=altTheme.Tile3FX;
-        // GUI_Controller.instance.Tile4ActivateFX_alt=altTheme.Tile4FX;
-        // GUI_Controller.instance.Tile5ActivateFX_alt=altTheme.Tile5FX;
-        // GUI_Controller.instance.Tile6ActivateFX_alt=altTheme.Tile6FX;
-        // GUI_Controller.instance.Tile7ActivateFX_alt=altTheme.Tile7FX;
-
-
-        
         //assign materials
         GridCell[] GridCells =
             GUI_Controller.instance.physcialGridContainer
@@ -397,8 +425,12 @@ public class GameMaster : MonoBehaviour{
                 cell.GetComponent<Renderer>().material = currentTheme.GridCell;
             }
         }
-        
 
+        foreach(GameObject obj in GUI_Controller.instance.physicalGridBG)
+        {
+            obj.GetComponent<Renderer>().material=currentTheme.GridOutline;
+        }
+        
         tileModels.Add(tile1);
         tileModels.Add(tile2);
         tileModels.Add(tile3);
@@ -456,6 +488,7 @@ public class GameMaster : MonoBehaviour{
             targetScore_3Star = (ApplicationModel.TARGET3);  
             targetScore1_1Star = (ApplicationModel.TARGET);
             targetScore2_2Star = (ApplicationModel.TARGET2);
+            GUI_Controller.instance.remainingTilesIndicatorText.text="Target Stars";
         }
 
         turnLimit = ApplicationModel.GRID_SIZE*3;
@@ -471,46 +504,55 @@ public class GameMaster : MonoBehaviour{
 
         for(int i = 0; i<START_ONE_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=2;
             OddTiles.Add(1);
         }
 
         for(int i = 0; i<START_TWO_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=3;
             EvenTiles.Add(2);
         }
 
         for(int i = 0; i<START_THREE_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=4;
             OddTiles.Add(3);
         }
 
         for(int i = 0; i<START_FOUR_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=5;
             EvenTiles.Add(4);
         }
 
         for(int i = 0; i<START_FIVE_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=6;
             OddTiles.Add(5);
         }
 
         for(int i = 0; i<START_SIX_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=7;
             EvenTiles.Add(6);
         }
 
         for(int i = 0; i<START_SEVEN_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=8;
             OddTiles.Add(7);
         }
 
         for(int i = 0; i<START_EIGHT_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=9;
             EvenTiles.Add(8);
         }
 
         for(int i = 0; i<START_NINE_TILES; i++)
         {
+            ApplicationModel.MAX_TILE=10;
             OddTiles.Add(9);
         }
 
@@ -538,6 +580,9 @@ public class GameMaster : MonoBehaviour{
         }
         StartCoroutine(Debuger());
         EndTurn();
+
+        if(soloPlay)
+            TurnTimer.StartTurn();
     }
 
     public IEnumerator WaitingForBoardEvaluator()
@@ -558,8 +603,8 @@ public class GameMaster : MonoBehaviour{
             }
             if(tileCount >= BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE)
             {
-                GUI_Controller.instance.GridCompleteAnim.SetActive(true);
-
+                
+                
                 BoardController.instance.boardFull=true;
             } else {
                 //GUI_Controller.instance.SpawnTextPopup("No Moves!", Color.red, GUI_Controller.instance.gameObject.transform, 38);
@@ -575,6 +620,7 @@ public class GameMaster : MonoBehaviour{
 
     public IEnumerator EndTurnDelay(float delay)
     {
+        turnOver=true;
         yield return new WaitForSeconds(delay);
         EndTurn();
 
@@ -583,11 +629,18 @@ public class GameMaster : MonoBehaviour{
     public void EndTurn()
     {
         StopCoroutine("WaitingForBoardEvaluator");
+        if(GameMaster.instance.isGridComplete())
+        {
+            GUI_Controller.instance.GridCompleteAnim.SetActive(true);
+            gridFull=true;
+            GameOver();
+        }
         if(gameOver) {return;}
         if(!soloPlay) {turnCounter++;}
         if(vsAi){AI_PLAYER.StopAllCoroutines();}
         BoardEvaluator.StopAllCoroutines();
-        if(TurnTimer != null)
+        if(TurnTimer!=null) {TurnTimer.enabled=true;}
+        if(TurnTimer != null && !soloPlay)
         {
             TurnTimer.StartTurn();
         }
@@ -605,6 +658,8 @@ public class GameMaster : MonoBehaviour{
         if(!TUTORIAL_MODE) {ShowPlayerTiles();}
         playedTiles.Clear();
         DealPlayerTiles(turnIndicator);
+
+        turnOver=false; //bool to stop Times Up calling CheckBoardVAlidity() when the player submits just before time hits 0
         
         if(soloPlay){EndTurn_SoloMode();} 
 
@@ -619,6 +674,7 @@ public class GameMaster : MonoBehaviour{
 
         } else
         {
+            GUI_Controller.instance.EnableGridBoxColliders();
             ToggleBoxColliders(true);
         }
     }
@@ -754,16 +810,14 @@ public class GameMaster : MonoBehaviour{
     {
         GUI_Controller.instance.PauseGame();
         HidePlayerTiles();
-        AccountInfo.Login();
     }
 
     public void ResumeGame()
     {
-        GUI_Controller.instance.UnpauseGame();
         ShowPlayerTiles();
     }
 
-    private void ToggleBoxColliders(bool Toggle) 
+    public void ToggleBoxColliders(bool Toggle) 
     {
         foreach (GridTile tile in currentHand)
         {
@@ -773,12 +827,22 @@ public class GameMaster : MonoBehaviour{
         }
     }
 
+    public void ToggleBoxColliders(bool toggle, bool toggleEmission) 
+    {
+        foreach (GridTile tile in currentHand)
+        {
+            tile.GetComponent<BoxCollider2D>().enabled = toggle;
+            if(toggleEmission)
+                DisableTileEmission(tile);
+        }
+    }
+
     private void DisableTileEmission(GridTile tile)
     {
         tile.GetComponent<Renderer>().material.SetColor("_EmissionColor", tile.activeSkin.color*0f);
     }
 
-    void HidePlayerTiles()
+    public void HidePlayerTiles()
     {
         foreach (GridTile tile in currentHand)
         {
@@ -816,6 +880,8 @@ public class GameMaster : MonoBehaviour{
         foreach (GridTile tile in currentHand)
         {
             tile.gameObject.SetActive(true);
+            if(humanTurn)
+                tile.GetComponent<BoxCollider2D>().enabled=true;
         }
     }
 
@@ -849,6 +915,8 @@ public class GameMaster : MonoBehaviour{
                     }
                 }
 
+                //Debug.Log("Dealing... Even tile reqiured: " + evenTileRequired);
+                //Debug.Log("current rng tile val: " + tileVal);
                 if(evenTileRequired && EvenTiles.Count> 0)
                 {
                     while(tileVal %2 !=0)
@@ -856,7 +924,11 @@ public class GameMaster : MonoBehaviour{
                         tileVal = Random.Range(1, ApplicationModel.MAX_TILE);
                     }
 
+                    //Debug.Log("NEW tile val:" + tileVal);
                     evenTileRequired=false;
+                } else if(EvenTiles.Count == 0)
+                {
+                    //Debug.Log("Even tile required but count = 0!");
                 }
 
                 bool successFlag = false;
@@ -874,10 +946,12 @@ public class GameMaster : MonoBehaviour{
                     safeCount++; //this code SMELLS
                     if (safeCount > 20)
                     {
+                        //Debug.LogWarning("TILE DEALING SAFETY MEASURE REACHED");
                         if (tileVal == ApplicationModel.MAX_TILE-1)
                             tileVal = 1;
                         else
                             tileVal++;
+
                     }
 
                     switch (tileVal)
@@ -908,6 +982,7 @@ public class GameMaster : MonoBehaviour{
                                         }
                                     }
                                     t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                    t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                     t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                     currentHand.Add(t);
                                 } else
@@ -943,6 +1018,7 @@ public class GameMaster : MonoBehaviour{
                                         }
                                     }
                                     t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                    t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                     t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                     currentHand.Add(t);
                                 } else
@@ -977,6 +1053,7 @@ public class GameMaster : MonoBehaviour{
                                         }
                                     }
                                     t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                    t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                     t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                     currentHand.Add(t);
                                 } else
@@ -1012,6 +1089,7 @@ public class GameMaster : MonoBehaviour{
                                         }
                                     }
                                     t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                    t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                     t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                     currentHand.Add(t);
                                 } else
@@ -1047,6 +1125,7 @@ public class GameMaster : MonoBehaviour{
                                             }
                                         }
                                         t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                         t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                         currentHand.Add(t);
                                     } else
@@ -1082,6 +1161,7 @@ public class GameMaster : MonoBehaviour{
                                             }
                                         }
                                         t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                         t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                         currentHand.Add(t);
                                     } else
@@ -1117,6 +1197,7 @@ public class GameMaster : MonoBehaviour{
                                             }
                                         }
                                         t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                         t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                         currentHand.Add(t);
                                     } else
@@ -1152,6 +1233,7 @@ public class GameMaster : MonoBehaviour{
                                             }
                                         }
                                         t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                         t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                         currentHand.Add(t);
                                     } else
@@ -1187,6 +1269,7 @@ public class GameMaster : MonoBehaviour{
                                             }
                                         }
                                         t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
                                         t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
                                         currentHand.Add(t);
                                     } else
@@ -1208,7 +1291,8 @@ public class GameMaster : MonoBehaviour{
         
         totalRemainingTiles = OddTiles.Count + EvenTiles.Count;
         Debug.Log("Total Remaining Tiles: " + totalRemainingTiles);
-        GUI_Controller.instance.remainingTilesText.text = totalRemainingTiles.ToString();
+        if(!soloPlay)
+            GUI_Controller.instance.remainingTilesText.text = totalRemainingTiles.ToString();
 
         ToggleBoxColliders(true);
     }
@@ -1244,12 +1328,13 @@ public class GameMaster : MonoBehaviour{
         } 
 
         if(TurnTimer != null)
-            TurnTimer.StopAllCoroutines();
+            TurnTimer.enabled=false;
+
             
         BoardController.instance.StopAllCoroutines();
 
         GameMaster.instance.PlayerStatistics.PlayedMostTiles(GUI_Controller.instance.GetAllTiles());
-        StartCoroutine(ActivateGameOverDialogue(9f, playerWin));
+        
 
         if(AccountInfo.Instance != null)
             AccountInfo.Instance.PlayerEvent_CompletedGame(playerWin, ApplicationModel.GRID_SIZE, ApplicationModel.MAX_TILE, playerScores[0], ApplicationModel.SOLO_PLAY);
@@ -1259,11 +1344,13 @@ public class GameMaster : MonoBehaviour{
         
     }
 
-    public IEnumerator ActivateGameOverDialogue(float time, bool playerWin)
+    public IEnumerator ActivateGameOverDialogue(float time, bool playerWin, int currencyTotal)
     {
         Debug.Log("Activate game over.");
         yield return new WaitForSeconds(time);
-
+        GUI_Controller.instance.CurrencyUI.gameObject.SetActive(true);
+        GUI_Controller.instance.CurrencyUI.AddCurrency(currencyTotal);
+        
         if(ApplicationModel.VS_LOCAL_MP)
         {
 
@@ -1289,6 +1376,13 @@ public class GameMaster : MonoBehaviour{
         } else {
             //*-GUI_Controller.instance.DialogueController.LoadDialogue("Win", player1Score, player2Score, averageTurnTime, targetScore);
             GUI_Controller.instance.DialogueController.LoadDialogue("Win", playerScores, playerBestScores, playerErrors, targetScore_3Star); //temp - make a local mp game over screen with summary data
+        }
+
+
+        yield return new WaitForSeconds(1.25f);
+        if(AccountInfo.Instance!= null)
+        {
+            AccountInfo.GetPlayerData(AccountInfo.playfabId);
         }
 
     }
@@ -1440,6 +1534,30 @@ public class GameMaster : MonoBehaviour{
 
         BoardController.instance.CheckBoardValidity(false, false);
         HandExchange();
+    }
+
+    /// <summary>
+    /// Method which returns true if every grid cell in the gamegrid is populated by a tile and the board is in a valid state
+    /// </summary>
+    /// <param name="thread"></param>
+    /// <returns></returns>
+    public bool isGridComplete()
+    {
+        foreach(GridCell cell in objGameGrid)
+        {
+            if(cell != null)
+            {
+                if(cell.cellTile==null)
+                    return false;
+            }
+        }
+        if(BoardController.instance.CheckBoardValidity(false,false))
+        {
+            return true;
+        } else 
+        {
+            return false;
+        }
     }
 
     /// <summary>

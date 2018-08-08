@@ -64,13 +64,6 @@ public class StateMachine : MonoBehaviour {
         GUI_Controller.instance.TilesScored.Clear();
         GUI_Controller.instance.TilesScored.AddRange(lastValidScoreTiles);
 
-        // foreach(GridCell Cell in GameMaster.instance.playedTiles)
-        // {
-        //     if(Cell.cellTile.placed == true)
-        //     {
-        //         GUI_Controller.instance.ActivateCell(Cell.cellTile);
-        //     }
-        // }
         LastValidHand();
         GameMaster.instance.invalidTilesInplay = false;
         CameraShaker.Instance.ShakeOnce(2f, .2f, .3f, .5f);

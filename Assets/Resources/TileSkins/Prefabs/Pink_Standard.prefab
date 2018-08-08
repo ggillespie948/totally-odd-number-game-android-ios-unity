@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1740433337511300}
+  m_IsPrefabParent: 1
+--- !u!1 &1740433337511300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4150291137129578}
+  - component: {fileID: 114725234505795654}
+  m_Layer: 0
+  m_Name: Pink_Standard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4150291137129578
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1740433337511300}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.032278404, y: -0.027448116, z: 318.13965}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114725234505795654
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1740433337511300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88c0b7e3c6b117443a2ef44d4a16245c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Tile1: {fileID: 114387593445856230, guid: 31c5c40a1a5303f4899fed0833377f07, type: 2}
+  Tile2: {fileID: 114247273672754836, guid: d1bec5a4858d208448606bfbf3a73c9f, type: 2}
+  Tile3: {fileID: 114475287137800900, guid: 036570ceff2536c48b7ecc80327c2f6b, type: 2}
+  Tile4: {fileID: 114488648312902470, guid: f7e69980f260c3844893337a7ffb0acc, type: 2}
+  Tile5: {fileID: 114404995023276030, guid: 9dc7a9e0d60de1e43aeed69be0556fc9, type: 2}
+  Tile6: {fileID: 114724587461398978, guid: 8fff69100b317b14c9537201bebfc3db, type: 2}
+  Tile7: {fileID: 114768649176395486, guid: 02e1d1ddb305b034c9dafe02cdb706d0, type: 2}
+  Tile8: {fileID: 114035473768698800, guid: bf1942cbbdc48ef4caca1b8be9944138, type: 2}
+  Tile9: {fileID: 114842472002452962, guid: 6420bee4ab2016c46a87f82b90bc0992, type: 2}
+  Tile1FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  Tile2FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  Tile3FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  Tile4FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  Tile5FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  Tile6FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  Tile7FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  Tile8FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  Tile9FX: {fileID: 1822870466997192, guid: a0fb4cb3435e3ec47809f7dd8c1f373a, type: 2}
+  tileSkinCol: {r: 1, g: 0.65172416, b: 0.9839793, a: 1}
+  icon: {fileID: 114628471009752190, guid: b327a947e03473f489394d314f4aa1fc, type: 2}

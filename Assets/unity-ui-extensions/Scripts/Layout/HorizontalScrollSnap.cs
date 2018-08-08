@@ -21,6 +21,7 @@ namespace UnityEngine.UI.Extensions
 
         void Update()
         {
+            
             if (!_lerp && _scroll_rect.velocity == Vector2.zero)
             {
                 if (!_settled && !_pointerDown)
@@ -199,6 +200,7 @@ namespace UnityEngine.UI.Extensions
         /// <param name="eventData"></param>
         public void OnEndDrag(PointerEventData eventData)
         {
+            //Debug.Log("snap on end drag");
             _pointerDown = false;
 
             if (_scroll_rect.horizontal)

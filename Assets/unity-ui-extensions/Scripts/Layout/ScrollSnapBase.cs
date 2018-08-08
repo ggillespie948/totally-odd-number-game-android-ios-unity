@@ -417,6 +417,7 @@ namespace UnityEngine.UI.Extensions
         public void OnDrag(PointerEventData eventData)
         {
             _lerp = false;
+            _pointerDown=false;
         }
 
         #endregion

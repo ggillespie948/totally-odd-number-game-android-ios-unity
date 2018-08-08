@@ -69,5 +69,5 @@ MonoBehaviour:
   Tile7FX: {fileID: 1199182477202062, guid: c0c19ecdb9f89184caf36a75c677871e, type: 2}
   Tile8FX: {fileID: 1199182477202062, guid: c0c19ecdb9f89184caf36a75c677871e, type: 2}
   Tile9FX: {fileID: 1199182477202062, guid: c0c19ecdb9f89184caf36a75c677871e, type: 2}
-  tileSkinCol: {r: 0, g: 1, b: 0.029411793, a: 0}
+  tileSkinCol: {r: 0, g: 1, b: 0.029411793, a: 1}
   icon: {fileID: 0}

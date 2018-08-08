@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class PlayerCard : MonoBehaviour {
 
+	public Image portraitRing;
+	public Image portraitImage;
 	public GUI_Object ActivePlayerCard;
 	public TextMeshProUGUI ScoreText;
 	public TextMeshProUGUI ActiveNameTag;
@@ -25,6 +27,21 @@ public class PlayerCard : MonoBehaviour {
 	void Start()
 	{
 		Anim = this.GetComponent<Animator>();
+	}
+
+	public void SetRingCol(int i)
+	{
+		if(GameMaster.instance.soloPlay)
+		return;
+
+		if(i<GameMaster.instance.tileSkins.Length)
+		{
+			if(portraitRing!= null && (GameMaster.instance.tileSkins.Length>ApplicationModel.TILESKIN+i))
+			portraitRing.color=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+i].tileSkinCol;
+		}
+
+		
+
 	}
 
 	public void SetQueuePos(int pos)

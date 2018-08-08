@@ -73,7 +73,6 @@ public class TileSpawner : MonoBehaviour {
 		
 		}
 	}
-	
 
 	public void AddToPool(GameObject instance)
 	{

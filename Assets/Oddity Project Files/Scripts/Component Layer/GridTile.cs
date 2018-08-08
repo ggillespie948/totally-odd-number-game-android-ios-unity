@@ -193,7 +193,7 @@ public class GridTile : MonoBehaviour {
         //Check if move is actually valid
         if (BoardController.instance.CheckMoveValidity(GameMaster.instance.activeCell))
         {
-            GUI_Controller.instance.ActivateCell(GameMaster.instance.activeCell.cellTile);
+            GUI_Controller.instance.ActivateTile(GameMaster.instance.activeCell.cellTile);
         }
 
         if(GameMaster.instance.TUTORIAL_MODE && GameMaster.instance.TutorialController.clear5 && GameMaster.instance.currentHand.Count >= 1 && GameMaster.instance.currentHand.Count <3) 

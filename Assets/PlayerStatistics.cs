@@ -10,15 +10,38 @@ public class PlayerStatistics : MonoBehaviour {
 	public bool OBJECTIVE_3 = false;
 
 	//Exact Score indicators
-	public bool BestTurnObjective = false;
-	public bool BestTurnObjectiveMet = false;
+	public int exactScore = 0;
+	public bool turnScoreExactMet = false;
 
-	int p1Tiles = 0;
-	int p2Tiles = 0;
-	int p3Tiles = 0;
-	int p4Tiles = 0;
+	public int p1Tiles = 0;
+	public int p2Tiles = 0;
+	public int p3Tiles = 0;
+	public int p4Tiles = 0;
 
 	public List<int> playedTiles;
+
+	/// <summary>
+	/// Start is called on the frame when a script is enabled just before
+	/// any of the Update methods is called the first time.
+	/// </summary>
+	void Start()
+	{
+		TurnScoreExactInit(ApplicationModel.Objective1Code);
+		TurnScoreExactInit(ApplicationModel.Objective2Code);
+		TurnScoreExactInit(ApplicationModel.Objective3Code);
+		 
+	}
+
+	private void TurnScoreExactInit(string objective)
+	{
+		string[] ret = objective.Split('.');
+
+		if(ret[0]=="TurnScoreExact")
+		{
+			Debug.LogWarning("TURN SCORE EXACT SET");
+			exactScore=int.Parse(ret[1]);
+		}
+	}
 
 
 
@@ -36,6 +59,9 @@ public class PlayerStatistics : MonoBehaviour {
 
 			case "Fill":
 				return "Fill the game grid completely";
+
+			case "FillWin":
+				return "Fill the game grid and win";
 
 			case "BestTurnScore":
 				return "Finish with the best turn score";
@@ -107,6 +133,10 @@ public class PlayerStatistics : MonoBehaviour {
 			case "Fill":
 				return GameMaster.instance.gridFull;
 
+			case "FillWin":
+				if(GameMaster.instance.playerWin && GameMaster.instance.gridFull) {return true;}
+			break;
+
 			case "BestTurnScore":
 				return BestTurnScore(GameMaster.instance.playerBestScores);
 
@@ -115,7 +145,7 @@ public class PlayerStatistics : MonoBehaviour {
 			break;
 
 			case "TurnScoreExact":
-				return BestTurnObjectiveMet;
+				return turnScoreExactMet;
 
 			case "MostTiles":
 				return PlayedMostTiles(GUI_Controller.instance.GetAllTiles());
@@ -141,11 +171,11 @@ public class PlayerStatistics : MonoBehaviour {
 			break;
 
 			case "Odd":
-				if(GameMaster.instance.playerScores[0] %2 != 0) {return true;} 
+				if(GameMaster.instance.playerWin && GameMaster.instance.playerScores[0] %2 != 0) {return true;} 
 			break;
 
 			case "Even":
-				if(GameMaster.instance.playerScores[0] %2 == 0) {return true;} 
+				if( GameMaster.instance.playerWin && GameMaster.instance.playerScores[0] %2 == 0) {return true;} 
 			break;
 
 			case "Activate":

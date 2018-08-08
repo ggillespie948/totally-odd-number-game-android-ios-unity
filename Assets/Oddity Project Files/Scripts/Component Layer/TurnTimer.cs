@@ -33,23 +33,54 @@ public class TurnTimer : MonoBehaviour {
 
     void Start()
     {
-        pauseFlag = false;
+        pauseFlag = true;
         fillerImage.fillAmount = 1f;
     }
 
     void Update()
     {
-        if(GameMaster.instance.TUTORIAL_MODE)
+        if(GameMaster.instance.TUTORIAL_MODE || pauseFlag)
             return;
 
         fillerImage.fillAmount = 1f * timeLeft/startTime;
-        if(timeLeft<10)
-            timerText.text = ("00:0" + Mathf.Round(timeLeft -= Time.deltaTime)).ToString();
-        else
-            timerText.text = ("00:" + Mathf.Round(timeLeft -= Time.deltaTime)).ToString();
+        float totalTimeSec = Mathf.Floor(totalTimeSec=timeLeft-=Time.deltaTime);
+        timerText.text=(totalTimeSec / 60 ).ToString("00")  + ":" + (totalTimeSec%60).ToString("00");
+
+        
         
         if(timeLeft < 0.001f)
-            BoardController.instance.CheckBoardValidity(true,false);
+        {
+            Debug.LogError("Time < 0000.0");
+            GUI_Controller.instance.NotifyObservers(GUI_Controller.instance, "Event.TimesUp");
+            if(GameMaster.instance.selectedTile != null)
+            {
+                Debug.Log("Selected tile not null.. disbaling box collider 2d.");
+                GameMaster.instance.humanTurn=false;
+                GameMaster.instance.selectedTile.GetComponent<GUI_Object>().PutObjectDown();
+                GUI_Controller.instance.AnimateTo(GameMaster.instance.selectedTile.GetComponent<GUI_Object>(), GameMaster.instance.selectedTile.startPos, 1.25f);
+            }
+            if(GameMaster.instance.soloPlay)
+            {
+                pauseFlag=true;
+                timerText.text="00:00"; 
+                GameMaster.instance.GameOver();
+
+            } else{
+                  
+                pauseFlag=true;
+                timerText.text="00:00";
+
+                Debug.LogError("Time left < 0.1.. Check board validity?");
+                Debug.LogError("turn over:: " + GameMaster.instance.turnOver);
+
+                if(!GameMaster.instance.turnOver)
+                    BoardController.instance.CheckBoardValidity(true,false);
+
+
+
+
+            }
+        }
 
         if(timeLeft < 5)
         {
@@ -65,6 +96,7 @@ public class TurnTimer : MonoBehaviour {
     public void StartTurn()
     {
         timeLeft = ApplicationModel.TURN_TIME;
+        pauseFlag=false;
     }
 
 
@@ -91,9 +123,12 @@ public class TurnTimer : MonoBehaviour {
             yield return null;
 
         }
-        GUI_Controller.instance.SpawnTextPopup("Times up!", Color.red, GUI_Controller.instance.gameObject.transform, 38);
-        EndTurn();
-        ResetTimerBars();
+
+
+        Debug.Log("TIMES UP!!!!");
+        
+
+
         
     }
 

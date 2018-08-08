@@ -7,10 +7,12 @@ using UnityEngine.UI;
 using System.Linq;
  //using UnityEditor;
  using EZCameraShake;
+ using TMPro.Examples;
 
 public class GUI_Controller : MonoBehaviour, Observable {
 
     public static GUI_Controller instance = null;
+    
     public List<Observer> observerList;
     public int animationCount = 0;
     public TextMeshProUGUI menuDebugTxt;
@@ -22,19 +24,30 @@ public class GUI_Controller : MonoBehaviour, Observable {
     [Header("Grid Options")]
     public GameObject NotificationParent;
     //GUI Gameobjects
-    public GameObject statusBar;
     public GameObject buttons;
     [Header("UI Text")]
     public GameObject ScoreText;
+    [Header("Active GAme Grid")]
     public GameObject physcialGridContainer;
+    public GameObject[] physicalGridBG;
+    public GameObject physicalGridDivider;
+    
     public AnimationCurve ElasticCurve;
     public AnimationCurve RotationCurve;
     [Header("Portrait Anchors")]
     public GameObject[] InactiveCardPositions;
     [Header("Grid Options")]
+    public GameObject UI_GRADIENT_BG;
     public GameObject GameGrid_5x5;
+    public GameObject[] GameGridBG_5x5;
+    public GameObject GameGrid_5x5_MainBG;
     public GameObject GameGrid_7x7;
+    public GameObject[] GameGridBG_7x7;
+    public GameObject GameGrid_7x7_MainBG;
     public GameObject GameGrid_9x9;
+    public GameObject[] GameGridBG_9x9;
+
+    public GameObject GameGrid_9x9_MainBG;
     [SerializeField]
     public Vector3 Grid_Scale;
     [SerializeField]
@@ -61,17 +74,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public PlayerCard PlayerCard2;
     public PlayerCard PlayerCard3;
     public PlayerCard PlayerCard4;
-
-    [Header("3 Player Cards")]
-    public PlayerCard PlayerCard5;
-    public PlayerCard PlayerCard6;
-    public PlayerCard PlayerCard7;
-
-    [Header("4 Player Cards")]
-    public PlayerCard PlayerCard8;
-    public PlayerCard PlayerCard9;
-    public PlayerCard PlayerCard10;
-    public PlayerCard PlayerCard11;
+    
 
     public List<PlayerCard> PlayerCards = new List<PlayerCard>();
     public Light directionalLight;
@@ -87,6 +90,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GUI_Object PlayerCoins_Stone;
     public TextMeshProUGUI remainingTurnText;
     public TextMeshProUGUI remainingTilesText;
+    public TextMeshProUGUI remainingTilesIndicatorText;
     public TextMeshProUGUI targetScoreText;
     public GameObject SoloTargetCard;
     public GameObject SoloScoreCard;
@@ -101,7 +105,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GameObject TargetStar3FX;
     public Sprite ActiveStar;
     public GameObject ActionButtons;
-    public GUI_Dialogue_Call PauseMenu;
+    public GameObject PauseMenu;
     public GameObject SettingsButton;
     public GameObject SoundButton;
     public GameObject MusicButton;
@@ -115,6 +119,11 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public CurrenyBarController CurrencyUI;
 
+    [Header("Pause Menu Objective Text")]
+    public TextMeshProUGUI pauseObjective1;
+    public TextMeshProUGUI pauseObjective2;
+    public TextMeshProUGUI pauseObjective3;
+
     
 
     public GameObject EndTurn_Btn;
@@ -122,6 +131,14 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public GameObject confirmPurchasePanel;
     public GameObject confirmPurchasePanelTarget;
+
+
+    [Header("Currency Reward Panel")]
+    [SerializeField]
+    private GameOverSequenceController GameOverPanelController;
+
+    
+
 
     void Awake()
     {
@@ -164,6 +181,12 @@ public class GUI_Controller : MonoBehaviour, Observable {
                     GUI_Controller.instance.PlayerCards[i].UpdateName("AI " + (i+1));
             }
             GUI_Controller.instance.PlayerCards[0].SetQueuePos(1);
+            int indx=0;
+            foreach(PlayerCard p in GUI_Controller.instance.PlayerCards)
+            {
+                p.SetRingCol(indx);
+                indx++;
+            }
         }
         Time.timeScale = 1f;
     }
@@ -172,41 +195,22 @@ public class GUI_Controller : MonoBehaviour, Observable {
     {
         if(GameMaster.instance.humanTurn)
         {
-            EndTurn_Btn.GetComponent<Button>().interactable=true;
-            EndTurn_Btn.GetComponentInChildren<TextMeshProUGUI>().text="End Turn";
-            EndTurn_Flag.SetActive(true);
+            //EndTurn_Btn.GetComponentInChildren<TextMeshProUGUI>().text="End Turn";
 
         } else 
         {
-            EndTurn_Btn.GetComponent<Button>().interactable=false;
-            EndTurn_Btn.GetComponentInChildren<TextMeshProUGUI>().text="Opponent's turn";
-            EndTurn_Flag.SetActive(false);
+            //EndTurn_Btn.GetComponent<Button>().interactable=false;
+            //EndTurn_Btn.GetComponentInChildren<TextMeshProUGUI>().text="Opponent's turn";
         }
     }
 
-    public void ToggleAllSoloUI()
-    {
-        RemainingTurns_Stone.gameObject.SetActive(!RemainingTurns_Stone.gameObject.activeSelf);
-        ToggleActionButtons();
-    }
-
-    public void ToggleSettingsButton(bool state)
-    {
-        SettingsButton.SetActive(state);
-    }
 
     public void ToggleCurrencyUI(bool state)
     {
         CoinDialogue.SetActive(state);
         LivesDialogue.SetActive(state);
     }
-
-    public void ToggleSettingsOptions()
-    {
-        Debug.Log("TOGGLE");
-        SoundButton.SetActive(!SoundButton.activeSelf);
-        MusicButton.SetActive(!MusicButton.activeSelf);
-    }
+    
 
     public void ToggleAllVsAiUI()
     {
@@ -214,15 +218,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
         if(PlayerCard2 != null) { PlayerCard2.gameObject.SetActive(PlayerCard1.gameObject.activeSelf); }
         if(PlayerCard3 != null) { PlayerCard3.gameObject.SetActive(PlayerCard1.gameObject.activeSelf); }
         if(PlayerCard4 != null) { PlayerCard4.gameObject.SetActive(PlayerCard1.gameObject.activeSelf); }
-        ToggleActionButtons();
     }
 
-    private void ToggleActionButtons()
-    {
-        // EndTurn_Btn.gameObject.SetActive(!EndTurn_Btn.gameObject.activeSelf);
-        // ExchangeTile_Btn.gameObject.SetActive(!ExchangeTile_Btn.gameObject.activeSelf);
-        // Menu_Btn.gameObject.SetActive(!Menu_Btn.gameObject.activeSelf);
-    }
+    
 
     //IEnumerators For Animation        //temp - could refactor into scale object ?
     public IEnumerator GridIntroAnim()
@@ -255,6 +253,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public void DisableGridBoxColliders()
     {
+        Debug.LogError("Disable Grid Box Colliders");
         foreach(GridCell cell in GameMaster.instance.objGameGrid)
         {
             if(cell != null){cell.gameObject.GetComponent<BoxCollider>().enabled=false;}
@@ -264,6 +263,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     //IEnumerators For Animation
     public IEnumerator GridOutroAnim()
     {
+        yield return new WaitForSeconds(1.7f);
         float scaleDuration = .87f;                                //animation duration in seconds
         Vector3 actualScale = physcialGridContainer.transform.localScale;             // scale of the object at the begining of the animation
         physcialGridContainer.transform.localScale = new Vector3(4, 4, 1);
@@ -326,6 +326,10 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
         text.text = prefix + " " + newScore.ToString();
 
+        yield return new WaitForSeconds(1.5f);
+
+        if(GameMaster.instance.gameOver)
+            GameOverPanelController.GameResultCallBack();
 
     }
 
@@ -374,90 +378,105 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     }
 
-    public void CashRewardAnim()
+    public void StarRewardAnim(string starString)
     {
-        int cashReward = 0;
+        int starReward = 0;
         int i =0;
+
+        if(AccountInfo.Instance==null)
+        {
+            Debug.LogError("Account info is null: CALL ALWAYS ONLINE");
+            return;
+        }
+
+        Debug.LogError("Begining star reward animation");
         
-
-        if(GameMaster.instance.PlayerStatistics.OBJECTIVE_1)
-        {
-            StartCoroutine(SpawnCashPopup("+100", Color.green, 
-            DialogueController.ActiveDialogue.objectiveStar1.transform, (i)+.15f, "")); 
-            cashReward+=100;
-            i++;
-        }
-
-        if(GameMaster.instance.PlayerStatistics.OBJECTIVE_2)
-        {
-            StartCoroutine(SpawnCashPopup("+100", Color.green, 
-            DialogueController.ActiveDialogue.objectiveStar2.transform, (i)+.15f, "")); 
-            cashReward+=100;
-            i++;
-        }
-
-        if(GameMaster.instance.PlayerStatistics.OBJECTIVE_3)
-        {
-            StartCoroutine(SpawnCashPopup("+100", Color.green, 
-            DialogueController.ActiveDialogue.objectiveStar3.transform, (i)+.15f, "")); 
-            cashReward+=100;
-            i++;
-        }
-
+        char[] sString = AccountInfo.worldStars[ApplicationModel.WORLD_NO, ApplicationModel.LEVEL_NO].ToCharArray();
         
+        Debug.LogError("sString: (existing) " + AccountInfo.worldStars[ApplicationModel.WORLD_NO, ApplicationModel.LEVEL_NO]);
+        Debug.LogError("starString (from level)" + starString);
+
+		for(int il=0; il<3; il++)
+		{
+			if(sString[il]=='0'&&starString[il]=='1')
+			{
+                Debug.Log("Improvement");
+                i++;
+
+                switch(il)
+                {
+                    case 0:
+                    Debug.LogError("Spawn star 1");
+                    StartCoroutine(SpawnCashPopup("+1", Color.yellow, 
+                    DialogueController.ActiveDialogue.objectiveStar1.transform, (i)+.15f, "")); 
+                    starReward+=1;
+                    break;
+
+                    case 1:
+                    Debug.LogError("Spawn star 2");
+                    StartCoroutine(SpawnCashPopup("+1", Color.yellow, 
+                    DialogueController.ActiveDialogue.objectiveStar2.transform, (i)+.15f, "")); 
+                    starReward+=1;
+                    break;
+
+                    case 2:
+                    Debug.LogError("Spawn star 3");
+                    StartCoroutine(SpawnCashPopup("+1", Color.yellow, 
+                    DialogueController.ActiveDialogue.objectiveStar3.transform, (i)+.15f, "")); 
+                    starReward+=1;
+                    break;
+
+                }
 
 
-        // if(GameMaster.instance.errorsMade == 0)
-        // {
-            
-        //     StartCoroutine(SpawnCashPopup("+20", Color.green, 
-        //     DialogueController.ActiveDialogue.playerErrorsTxt.transform, 5f, "Error bonus!")); 
-        //     cashReward+=20;
-        // }
-        int res=-1;
-        if(AccountInfo.playfabId != null)
-        {
-            if(AccountInfo.Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.COINS_CODE, out res))
+				
+			} else 
             {
-                StartCoroutine(UpdateUIScore(res, cashReward+res, PlayerCoins_Stone.GetComponentInChildren<TextMeshProUGUI>()));
-                AccountInfo.AddInGameCurrency(cashReward);
+                Debug.LogError("No improvement");
             }
-        }
+		}
+
+        // if(starReward>0)
+        // {
+        //     CurrencyUI.AddStar(starReward);
+        // }
+        
+        
     }
 
     public void PauseGame()
     {
-        ActionButtons.SetActive(false);
-        PauseMenu.Open();
+        //ActionButtons.SetActive(false);
+        PauseMenu.SetActive(true);
+        PauseMenu.GetComponent<Image>().enabled=true;
+        pauseObjective1.text= GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective1Code);
+        pauseObjective2.text= GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective2Code);
+        pauseObjective3.text= GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective3Code);
         Time.timeScale = 0f;
         if(GameMaster.instance.vsAi || ApplicationModel.VS_LOCAL_MP)
         {
             ToggleAllVsAiUI();
 
-        } else 
-        {
-            ToggleAllSoloUI();
-
-        }
-        ToggleSettingsButton(true);
+        } 
     }
 
     public void UnpauseGame()
     {
-        if(ActionButtons != null)
-            ActionButtons.SetActive(true);
-
+        PauseMenu.GetComponentInChildren<Animator>().SetTrigger("hide");
+        PauseMenu.GetComponent<Image>().enabled=false;
         if(GameMaster.instance.vsAi || ApplicationModel.VS_LOCAL_MP)
         {
             ToggleAllVsAiUI();
 
-        } else 
-        {
-            ToggleAllSoloUI();
-
         }
-        ToggleSettingsButton(false);
         Time.timeScale = 1f;
+        GameMaster.instance.ResumeGame();
+        Invoke("UnpauseInvoke",1.5f);
+    }
+
+    private void UnpauseInvoke()
+    {
+        PauseMenu.SetActive(false);
     }
 
     public void  GameOver()
@@ -470,19 +489,15 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public void EndGame()
     {
-        if(GameMaster.instance.playerWin)
-        {
-            AudioManager.instance.Play("YouWinCheer");
-            if(GameMaster.instance.starCount > 1)
-                GUI_Controller.instance.Confetti.SetActive(true);
-        }
+        Debug.LogError("GUI CONTROL GAME OVER!");
+        LoadGameOverPanel(); // this also enables win/lose text after a timer
 
         if(GameMaster.instance.vsAi || ApplicationModel.VS_LOCAL_MP)
         {
             ToggleAllVsAiUI();
         } else 
         {
-            ToggleAllSoloUI();
+            //ToggleAllSoloUI();
         }
 
         Time.timeScale = 1.0f;
@@ -494,32 +509,45 @@ public class GUI_Controller : MonoBehaviour, Observable {
             Destroy(tile.gameObject,3f);
         }
         DestroyAllTiles();
-        Invoke("GridOutro",1.7f); // temp - don't use invoke
-        GUI_Controller.instance.ToggleActionButtons();
+        StartCoroutine(GridOutroAnim());
         if(PlayerCard1 != null){Destroy(PlayerCard1.gameObject);}
         if(PlayerCard2 != null){Destroy(PlayerCard2.gameObject);}
         if(PlayerCard3 != null){Destroy(PlayerCard3.gameObject);}
         if(PlayerCard4 != null){Destroy(PlayerCard4.gameObject);}
-        if(statusBar.gameObject!=null){Destroy(statusBar.gameObject);}
-        if(SoloTargetCard.gameObject!=null){Destroy(SoloTargetCard.gameObject);}
+        if(SoloTargetCard.gameObject.transform.parent!=null){Destroy(SoloTargetCard.gameObject.transform.parent.gameObject);}
         Destroy(TimerUI);
-        PlayerCoins_Stone.gameObject.SetActive(true);
-       
+        
+        int res=-1;
+        if(AccountInfo.playfabId != null)
+        {
+            if(AccountInfo.Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.COINS_CODE, out res))
+			{
+				GUI_Controller.instance.CoinDialogue.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
+				GUI_Controller.instance.CurrencyUI.playerCoins=res;
+			}
 
+			if(AccountInfo.Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.LIVES_CODE, out res))
+			{
+				GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
+				GUI_Controller.instance.CurrencyUI.playerLives=res;
+			}
+
+			GUI_Controller.instance.StarDialogue.GetComponentInChildren<TextMeshProUGUI>().text = (AccountInfo.beginnerStars+AccountInfo.noviceStars+AccountInfo.intermediateStars+AccountInfo.advancedStars+AccountInfo.masterStars+AccountInfo.grandMasterStars).ToString();
+        }
     }
 
-    private void GridOutro()
+    public void LoadGameOverPanel()
     {
-        StartCoroutine(GridOutroAnim());
+        GameOverPanelController.GetComponent<IntroPanelController>().enabled=false;
+        GameOverPanelController.enabled=true;
+        GameOverPanelController.GetComponent<Animator>().Rebind();
+        GameOverPanelController.gameObject.SetActive(true);
     }
 
     public GridTile[] GetAllTiles()
     {
         return GetComponentsInChildren<GridTile>();
-        
     }
-
-     
 
     public void DisableAllEmissions()
     {
@@ -626,10 +654,11 @@ public class GUI_Controller : MonoBehaviour, Observable {
             }
         }
 
-    public void ActivateCell(GridTile tile) 
+    public void ActivateTile(GridTile tile) 
     {
         if (tile != null && !tile.activated )
         {
+            AudioManager.instance.Play("play1");
             tile.ActiveTileSkin();
             tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
             tile.GetComponent<NoGravity>().enabled = false;
@@ -741,7 +770,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             }
         }
 
-       TilesScored.Clear();
+       //TilesScored.Clear();
        GUI_Controller.instance.SpawnTextPopup("+"+(+score), Color.gray, 
                 GUI_Controller.instance.transform, (score+10));
         if(GameMaster.instance.playedTiles.Count >0)
@@ -767,7 +796,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             }
         }
 
-       TilesScored.Clear();
+       //TilesScored.Clear();
        GUI_Controller.instance.SpawnTextPopup("+"+(+score), Color.gray, 
                 GUI_Controller.instance.transform, (score+10));
         if(GameMaster.instance.playedTiles.Count >0)
@@ -793,12 +822,13 @@ public class GUI_Controller : MonoBehaviour, Observable {
             }
         }
 
-       TilesScored.Clear();
+       //ilesScored.Clear();
        GUI_Controller.instance.SpawnTextPopup("+"+(+score), Color.gray, 
                 GUI_Controller.instance.transform, (score+10));
         if(GameMaster.instance.playedTiles.Count >0)
             BoardController.instance.EventScore(score);
         GameMaster.instance.playedTiles.Clear();
+        
     }
 
     /// <summary>
@@ -914,28 +944,12 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     }
 
-    public void SpawnScoreNotif(int score) // not currently in use
-    {
-        if (LastPlacedTile == null)
-            return;
-
-        GameObject TextObj = Instantiate(ScoreText, NotificationParent.transform.position, ScoreText.transform.rotation);
-        TextObj.GetComponent<TextMeshProUGUI>().text = "+" + score.ToString();
-        
-        TextObj.gameObject.transform.SetParent(this.gameObject.transform);
-        TextObj.transform.localScale = new Vector3(1,1,1);
-        TextObj.transform.position = NotificationParent.transform.position+new Vector3(0,0,-10);
-        
-        TextObj.GetComponent<Animator>().enabled = true;
-        Destroy(TextObj, 3f);
-    }
-
     public void SpawnTextPopup(string text, Color colour, Transform location, int size)
     {
         if(size>100)
             size=100;
 
-        
+        int notificationLocation = BoardController.instance.FindNotificationPosition();
 
         Debug.Log("Spawning notif");
         if(text=="+0")
@@ -953,11 +967,10 @@ public class GUI_Controller : MonoBehaviour, Observable {
             
             TextPopup instance = Instantiate(POPUP_SCORE);
             instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-            instance.transform.position = location.transform.position;
+            //location.transform.position;
                         //new Vector3(UnityEngine.Random.Range(0.03f, .05f),UnityEngine.Random.Range(0.05f, .05f),-3);
             
-            // if(instance.transform.position.x <= .7)
-            //     instance.transform.position += new Vector3(.2f,0f,0f);
+            instance.transform.position =GameMaster.instance.objGameGrid[2,notificationLocation].transform.position;
 
             if(size<45)
             size=45;
@@ -966,11 +979,19 @@ public class GUI_Controller : MonoBehaviour, Observable {
             instance.SetSize(size);
             instance.SetFont(orangeGlow);
             instance.gameObject.SetActive(true);
+
         } else {
             //Spawn Text Notification
+            Debug.Log("Spawning notif text size: " + size);
+
+
             TextPopup instance = Instantiate(POPUP_TEXT);
             instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-            instance.transform.position = new Vector3(0,instance.transform.position.y+.5f,instance.transform.position.z - 35); //+ new Vector3(0,UnityEngine.Random.Range(0.12f, .15f),0); 
+
+            instance.transform.position = instance.transform.position =GameMaster.instance.objGameGrid[2,notificationLocation].transform.position;
+                     //- new Vector3(0,GameMaster.instance.objGameGrid[2,notificationLocation].transform.position.y+.5f,
+                     //GameMaster.instance.objGameGrid[2,notificationLocation].transform.position.z - 35); //+ new Vector3(0,UnityEngine.Random.Range(0.12f, .15f),0); 
+
             instance.SetColour(colour);
             instance.SetText(text);
             instance.SetSize(size);
@@ -980,13 +1001,115 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     }
 
-    public IEnumerator SpawnScorePopup(string text, Color colour, Transform location, float delay)
+    /// <summary>
+    /// Spawn text popup with a custom TM PRo font material preset (used for in game text notifcaitons (not score!))
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="colour"></param>
+    /// <param name="location"></param>
+    /// <param name="size"></param>
+    /// <param name="fontMaterial"></param>
+    public void SpawnTextPopup(string text, Color colour, Transform location, int size, Material fontMaterial)
     {
-        yield return new WaitForSeconds(delay);
-        TextPopup instance = Instantiate(POPUP_SCORE);
+        if(size>100)
+            size=100;
+
+        int notificationLocation = BoardController.instance.FindNotificationPosition();//Mathf.RoundToInt(UnityEngine.Random.Range(0,4)); // finds area with least lit tiles for notifcation location
+
+        if(notificationLocation==ApplicationModel.GRID_SIZE-1)
+        {
+            notificationLocation++;
+        } else
+        {
+            notificationLocation--;
+        }
+
+
+
+
+        Debug.Log("Spawning notif");
+        if(text=="+0")
+            return;
+
+        if(location == null)
+            return;
+
+        if(text[0]=='+')
+        {
+            if(text[1]=='0')
+                return;
+
+            //Spawn Score Notifcaiton
+            
+            TextPopup instance = Instantiate(POPUP_SCORE);
             instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-            instance.transform.position = location.transform.position;
+            //location.transform.position;
+                        //new Vector3(UnityEngine.Random.Range(0.03f, .05f),UnityEngine.Random.Range(0.05f, .05f),-3);
+
+            int Xindex =0;
+
+            //adjust notification X pos based on grid value
+            switch(ApplicationModel.GRID_SIZE)
+            {
+                case 5:
+                Xindex=1;
+                break;
+
+                case 7:
+                Xindex=4;
+                break;
+
+                case 9:
+                Xindex=3;
+                break;
+            }
+            
+            instance.transform.position =GameMaster.instance.objGameGrid[Xindex,notificationLocation].transform.position;
+
+            if(size<45)
+            size=45;
+
             instance.SetText(text);
+            instance.SetSize(size);
+            instance.SetFont(orangeGlow);
+            
+            instance.gameObject.SetActive(true);
+        } else {
+            //Spawn Text Notification
+            TextPopup instance = Instantiate(POPUP_TEXT);
+            instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
+
+
+            int Xindex =0;
+
+            //adjust notification X pos based on grid value
+            switch(ApplicationModel.GRID_SIZE)
+            {
+                case 5:
+                Xindex=2;
+                break;
+
+                case 7:
+                Xindex=2;
+                break;
+
+                case 9:
+                Xindex=6;
+                break;
+            }
+            
+
+            instance.transform.position =GameMaster.instance.objGameGrid[Xindex,notificationLocation].transform.position - new Vector3(0, .25f, 0);
+            instance.popupText.enableVertexGradient=false;
+
+            instance.SetColour(colour);
+            instance.SetText(text);
+            instance.SetSize(size);
+            instance.SetFontMaterial(fontMaterial);
+            if(text != "+0")
+                instance.gameObject.SetActive(true);
+        }
+
     }
 
     public IEnumerator SpawnCashPopup(string text, Color colour, Transform location, float delay, string popup)
@@ -994,7 +1117,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         yield return new WaitForSeconds(delay);
         TextPopup instance = Instantiate(POPUP_CASH);
         instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
-        instance.transform.position = location.transform.position + new Vector3(+10,+1,+20);
+        instance.transform.position = location.transform.position;// + new Vector3(0,0,20);
         instance.SetText(text);
 
         if(popup != "")

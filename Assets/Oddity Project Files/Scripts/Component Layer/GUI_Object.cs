@@ -119,6 +119,9 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// Method specific to Oddity where the scale of the object is decreased to a hardcoded value and the attached NoGrav is enabled
+    /// </summary>
     public void PutObjectDown()
     {
         if(this.GetComponent<GridTile>().placed!=true)
@@ -139,6 +142,10 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// Set the target position value of this GUI_Obejct toa  given Vector 3 position
+    /// </summary>
+    /// <param name="t"></param>
     public void SetAnimationTarget(Vector3 t)
     {
         targetPos = t;
@@ -172,6 +179,12 @@ public class GUI_Object : MonoBehaviour {
             collider.enabled = true;        
     }
 
+    /// <summary>
+    /// Method which interpolates from the current position of the attached gameObject to a given Vector 3 Position over a given time period
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="time"></param>
+    /// <returns></returns>
     public IEnumerator  AnimateTo(Vector3 pos, float time)
     {
         //Change GUI State
@@ -197,7 +210,7 @@ public class GUI_Object : MonoBehaviour {
         {
             if(this.GetComponent<GridTile>().placedByAI == true)
             {
-                GUI_Controller.instance.ActivateCell(this.GetComponent<GridTile>());
+                GUI_Controller.instance.ActivateTile(this.GetComponent<GridTile>());
             }
         } else 
         {
@@ -220,6 +233,14 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// Method 1 which produces the "Dock tiling effect" where a tile will smoothly move towards the selected cell 
+    /// Method has been included in this class as it has the potential to be used in other generic scenarios
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <param name="cell"></param>
+    /// <param name="time"></param>
+    /// <returns></returns>
     public IEnumerator  PreDockTile(GameObject tile, GameObject cell, float time)
     {
         //Disabled Object Collier While Animating
@@ -246,6 +267,15 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// Method 2 (*See PreDockTile() for further info ) which produces the "Dock tiling effect" where a tile will smoothly move towards the selected cell 
+    /// Method has been included in this class as it has the potential to be used in other generic scenarios
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <param name="cell"></param>
+    /// <param name="time"></param>
+    /// <param name="delay"></param>
+    /// <returns></returns>
     public IEnumerator  DockTile(GameObject tile, GameObject cell, float time, float delay)
     {
         
@@ -266,7 +296,7 @@ public class GUI_Object : MonoBehaviour {
             collider.enabled = true;
 
         SetPos();
-        SetRot(tile);
+        ResetRotation(tile);
         
     }
 
@@ -288,34 +318,41 @@ public class GUI_Object : MonoBehaviour {
         if(collider != null)
             collider.enabled = true;
 
-        SetRot(obj);
+        ResetRotation(obj);
 
 
     }
 
-    public void SetRot(GameObject tile)
+    /// <summary>
+    /// Resets the rotation of a given gameobject
+    /// </summary>
+    /// <param name="tile"></param>
+    public void ResetRotation(GameObject tile)
     {
         tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
     }
 
-    
-
-    
-
-    public IEnumerator Shake(float time)
-    {
-
-        yield return null;
-    }
-
+    /// <summary>
+    /// Sets the target position of the GUI Object to the transforms current position
+    /// </summary>
     void SetPos()
     {
-        Debug.Log("SET POS");
         transform.position = targetPos;
         GUI_Controller.instance.animationCount--;
     }
 
 
+    /// <summary>
+    /// Method which will Mathf.PingPong the emission value of the attached gameObjects current material b
+    /// NOTE: The floor / ceiling of these values is currently hardcoded 
+    /// </summary>
+    /// <param name="startCol"></param>
+    ///  original color of gameobjects material (used for default emission value)
+    /// <param name="time"></param>
+    /// the duration of the flashing
+    /// <param name="enableEmission"></param>
+    /// whether or not the emission value of the material should be enabled or disabled following the flashing
+    /// <returns></returns>
     public IEnumerator Flash(Color startCol, float time, bool enableEmission)
     {
         this.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
@@ -351,49 +388,14 @@ public class GUI_Object : MonoBehaviour {
 
     }
 
-    // public IEnumerator GlowToEmission(Color startCol, float time)
-    // {
-    //     this.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");  
-    //     Renderer rend = this.GetComponent<Renderer>();
-    //     float curveTime = 0.0f;
-               
-    //     while (curveTime <= time)
-    //     {
-    //         if(this==null)
-    //             yield return null; //if tile is destroyed while flashing (game over)
-
-    //         curveTime += Time.deltaTime;
-    //         Material mat = rend.material;
-    //         float emission = TileFlashCurve.Evaluate(curveTime/time);
-    //         Color finalColor = startCol * Mathf.LinearToGammaSpace (emission);
-    //         mat.SetColor ("_EmissionColor", finalColor);
-    //         yield return null;
-    //     }
-
-    //     rend.material.SetColor("_EmissionColor", startCol*0.6f);
-
-    // }
-
-    public IEnumerator ScaleUp()
-	{
-        float scaleDuration = .87f;                                //animation duration in seconds
-        Vector3 actualScale = transform.localScale;             // scale of the object at the begining of the animation
-        Vector3 targetScale = new Vector3(.015f, .015f, .015f);     // scale of the object at the end of the animation     // scale of the object at the end of the animation
-
-        float curveTime = 0.0f;
-        float curveAmount = invalidTileCurve.Evaluate(curveTime);
-
-
-        while (curveTime <= 1.0f)
-        {
-            curveTime += Time.deltaTime * scaleDuration;
-            curveAmount = invalidTileCurve.Evaluate(curveTime);
-            transform.localScale = new Vector3(targetScale.x * curveAmount, targetScale.y * curveAmount, targetScale.z * curveAmount);
-            //Move to Animate pos
-            yield return null;
-        }
-	}
-
+    /// <summary>
+    /// Method which increases the transform.Local scale of the attached gameObject from a set amount to a given amount 
+    /// </summary>
+    /// <param name="targetIncrease"></param>
+    /// e.g. x1.39  increases the scale by 39%
+    /// <param name="startScale"></param>
+    /// e.g x1.00
+    /// <returns></returns>
     public IEnumerator ScaleUp(float targetIncrease, float startScale)
 	{
         float scaleDuration = 1.5f;                                //animation duration in seconds
@@ -414,30 +416,15 @@ public class GUI_Object : MonoBehaviour {
         }
 	}
 
-
-    
-
-	public IEnumerator ScaleDown()
-	{
-        float scaleDuration = .87f;                                //animation duration in seconds
-        Vector3 actualScale = transform.localScale;             // scale of the object at the begining of the animation
-        Vector3 targetScale = new Vector3(0.006f, 0.006f, 0.006f);     // scale of the object at the end of the animation     // scale of the object at the end of the animation
-
-        float curveTime = 0.0f;
-        float curveAmount = invalidTileCurve.Evaluate(curveTime);
-
-
-        while (curveTime <= 1.0f)
-        {
-            curveTime += Time.deltaTime * scaleDuration;
-            curveAmount = invalidTileCurve.Evaluate(curveTime);
-            transform.localScale = new Vector3(targetScale.x * curveAmount, targetScale.y * curveAmount, targetScale.z * curveAmount);
-            //Move to Animate pos
-            yield return null;
-        }
-
-	}
-
+    /// <summary>
+    /// Method which interpolates between between two emission values at a given speed.
+    /// The effect produced is a smooth transition between mateiral emission values (brightness)
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="speed"></param>
+    /// <param name="reset"></param>
+    /// <returns></returns>
     public IEnumerator GlowToEmission(float min, float max, float speed, bool reset)
     {
         Renderer rend = this.GetComponent<Renderer>();
@@ -466,17 +453,5 @@ public class GUI_Object : MonoBehaviour {
     {
         this.gameObject.transform.rotation.Set(0f,0f,0f, 0f);
     }
-
-    public IEnumerator Rotate()
-    {
-        yield return null;
-    }
-
-    
-
-
-
-
-
     
 }

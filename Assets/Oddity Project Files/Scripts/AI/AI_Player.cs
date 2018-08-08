@@ -236,12 +236,12 @@ public class AI_Player : MonoBehaviour {
 			Debug.Log ("correction null");
 		}
 
-        Debug.Log("Move.Criteria.rowColNo :" + Move.Criteria.rowcolNo);
-        Debug.Log("Move.Criteria.Spaces :" + Move.Criteria.spaces);
-        Debug.Log("Move.Criteria.startDir :" + Move.Criteria.startDirection);
-        Debug.Log("Move.Criteria.isEven" + Move.Criteria.isEven);
-        Debug.Log("Move.MoveValue" + Move.moveValue);
-        Debug.Log("Move.tileValues" + Move.tileValues);
+        // Debug.Log("Move.Criteria.rowColNo :" + Move.Criteria.rowcolNo);
+        // Debug.Log("Move.Criteria.Spaces :" + Move.Criteria.spaces);
+        // Debug.Log("Move.Criteria.startDir :" + Move.Criteria.startDirection);
+        // Debug.Log("Move.Criteria.isEven" + Move.Criteria.isEven);
+        // Debug.Log("Move.MoveValue" + Move.moveValue);
+        // Debug.Log("Move.tileValues" + Move.tileValues);
         
 
 
@@ -336,8 +336,8 @@ public class AI_Player : MonoBehaviour {
                 }
 
             }
-            Debug.Log("Removal list count: " + RemovalList.Count);
-            Debug.Log("HandCount count: " + CurrentHand.Count);
+            //Debug.Log("Removal list count: " + RemovalList.Count);
+            //Debug.Log("HandCount count: " + CurrentHand.Count);
 
             foreach (GridTile i in RemovalList)
             {
@@ -388,8 +388,7 @@ public class AI_Player : MonoBehaviour {
             //GameMaster.instance.StateMachine.SetLastValidState(2);
 			noValidMoves = true;
 		    
-			Debug.Log ("Byeeeee");
-			Debug.Log (CurrentHand.Count);
+			//Debug.Log (CurrentHand.Count);
 
         }
 

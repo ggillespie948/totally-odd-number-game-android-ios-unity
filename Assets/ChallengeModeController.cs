@@ -10,7 +10,7 @@ public class ChallengeModeController : MonoBehaviour {
 	private NavigationBarController navBar;
 
 	[SerializeField]
-	private ParticleSystem selectionFX;
+	public ParticleSystem selectionFX;
 
 	[Header("Challenege Mode Dialogues")]
 	[SerializeField]
@@ -18,7 +18,7 @@ public class ChallengeModeController : MonoBehaviour {
 	[SerializeField]
 	private GameObject levelSelector;
 	[SerializeField]
-	private List<GameObject> worldScrollViews;
+	public List<GameObject> worldScrollViews;
 	[SerializeField]
 	private List<GameObject> worldScrollViewPanels;
 	[SerializeField]
@@ -40,8 +40,22 @@ public class ChallengeModeController : MonoBehaviour {
 		levelSelector.SetActive(false);
 	}
 
+	public void CheckWorldForStarImprovement()
+	{
+		Debug.Log("Checking for star improvement.. ");
+		foreach(GameObject g in worldScrollViews)
+		{
+			Component[] configs =g.GetComponentsInChildren<Game_Configuration>();
+			foreach(Game_Configuration config in configs)
+			{
+				config.CheckStarReq();
+			}
+		}
+	}
+
 	public void OpenChallenegeMode()
 	{
+		CloseAllDialogues();
 		selectionFX.Play();
 		worldSelector.SetActive(true);
 		LoadWorldData();
@@ -65,6 +79,10 @@ public class ChallengeModeController : MonoBehaviour {
 	public void LoadWorldData()
 	{
 		worldBoxes[0].GetComponentInChildren<TextMeshProUGUI>().text="Beginner " + AccountInfo.beginnerStars.ToString() + "/30";
-		worldBoxes[1].GetComponentInChildren<TextMeshProUGUI>().text="Intermediate " + AccountInfo.intermediateStars.ToString() + "/30";
+		worldBoxes[1].GetComponentInChildren<TextMeshProUGUI>().text="Novice " + AccountInfo.noviceStars.ToString() + "/30";
+		worldBoxes[2].GetComponentInChildren<TextMeshProUGUI>().text="Intermediate " + AccountInfo.intermediateStars.ToString() + "/30";
+		worldBoxes[3].GetComponentInChildren<TextMeshProUGUI>().text="Advanced " + AccountInfo.advancedStars.ToString() + "/30";
+		worldBoxes[4].GetComponentInChildren<TextMeshProUGUI>().text="Master " + AccountInfo.masterStars.ToString() + "/30";
+		worldBoxes[5].GetComponentInChildren<TextMeshProUGUI>().text="Grand Master " + AccountInfo.grandMasterStars.ToString() + "/30";
 	}
 }

@@ -33,6 +33,9 @@ public class NavigationBarController : MonoBehaviour {
 	[SerializeField]
 	private GameObject multiplayerDialogue;
 
+	[SerializeField]
+	private StatisticsPanel statisticsPanel;
+
 	[Header("Player Panel")]
 	[SerializeField]
 	public GameObject playerPanel;
@@ -55,12 +58,16 @@ public class NavigationBarController : MonoBehaviour {
 	[SerializeField]
 	private GameObject confirmPurchasePanel;
 	[SerializeField]
+	public GameObject inspectedItemParent; //a reference of each inspected is required as the parent of the inspected itme is temporarily set ot the confirm purchase panel
+	[SerializeField]
 	public GameObject tileSkinParent;
 	public TextMeshProUGUI shopItemTitle;
 	public TextMeshProUGUI priceText;
+	public Image coinIcon;
 	[Header("Currently Inspected Item")]
 	[SerializeField]
 	public GameObject activeTileBox;
+	public GameObject activeShopItem;
 
 	[Header("Inspected Item Preview Items")]
 	[SerializeField]
@@ -72,7 +79,7 @@ public class NavigationBarController : MonoBehaviour {
 
 	[Header("Unlockables Dialogue")]
 	[SerializeField]
-	public GameObject unlockablesPannel;
+	public GameObject unlockablesPanel;
 	[SerializeField]
 	private TextMeshProUGUI unlockablesPannelNotifTxt;
 
@@ -98,34 +105,43 @@ public class NavigationBarController : MonoBehaviour {
 	/// Update is called every frame, if the MonoBehaviour is enabled.
 	/// </summary>
 	
-
 	public void UpdateNavPos()
 	{
+		if(!ScrollSnap._lerp)
+				ScrollSnap.ScrollToClosestElement();
+				
 		switch(ScrollSnap._currentPage)
 		{
 			case 0:
-			PressExtraButton();
+			PressShopButton();
+			
 			break;
 
 			case 1:
-			PressShopButton();
+			PressSocialButton();
+			break;
+
+			case 2:
+			PressPlayButton();
+			
 			break;
 
 			case 3:
-			PressPlayButton();
-			break;
-
-			case 4:
 			PressUnlockablesButton();
 			break;
 
 		}
 	}
 
-	public void UninspectTileBox()
+	public void UninspectActiveItem()
 	{
-		activeTileBox.GetComponent<TileBox>().UninspectItem();
+		if(activeTileBox!=null)
+			activeTileBox.GetComponent<TileBox>().UninspectItem();
+		else if(activeShopItem!=null)
+			activeShopItem.GetComponent<ShopItem>().UninspectItem();
 	}
+
+	
 
 	/// <summary>
 	/// Function used to change the the animated button of an icon when pressed
@@ -189,45 +205,66 @@ public class NavigationBarController : MonoBehaviour {
 		//practiceModeDialogue.SetActive(true);
 		//multiplayerDialogue.SetActive(true);
 		//tutorialModeDialogue.SetActive(true);
-		unlockablesPannel.SetActive(true);
+		unlockablesPanel.SetActive(true);
 		playerPanel.SetActive(true);
 		unlockPanel.SetActive(true);
 		shopPanel.SetActive(true);
 		extraPanel.SetActive(true);
 	}
 
-	public void PressExtraButton()
+	public void PressShopButton()
 	{
+		MenuController.instance.SetInfoPanelText("Shop", false);
 		UnselectActiveButton();
 		btn_1.transform.position+=new Vector3(0,.1f,0);
 		active_btn=1;
 		btn_1.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
 		CloseAllDialogues(false);
-		ScrollSnap.GoToScreen(0);
+
+		if(ScrollSnap._currentPage!=0)
+			ScrollSnap.GoToScreen(0);
 	}
 
 	public void PressPlayButton()
 	{
+		MenuController.instance.SetInfoPanelText("Play", false);
 		UnselectActiveButton();
 		btn_3.transform.position+=new Vector3(0,.1f,0);
 		active_btn=3;
 		btn_3.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
 		ToggleBaseMenu();
 		CloseAllDialogues(false);
-		ScrollSnap.GoToScreen(2);
+		if(ScrollSnap._currentPage!=2)
+			ScrollSnap.GoToScreen(2);
 	}
 
-	public void PressShopButton()
+	public void PressSocialButton()
 	{
+		MenuController.instance.SetInfoPanelText("Social", false);
 		UnselectActiveButton();
 		btn_2.transform.position+=new Vector3(0,.1f,0);
 		active_btn=2;
 		btn_2.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
 		ToggleBaseMenu();
 		CloseAllDialogues(false);
+
+		if(ScrollSnap._currentPage!=1)
 		ScrollSnap.GoToScreen(1);
 	}
 
+	public void PressUnlockablesButton()
+	{
+		MenuController.instance.SetInfoPanelText("Unlockables", false);
+		UnselectActiveButton();
+		btn_4.transform.position+=new Vector3(0,.1f,0);
+		active_btn=4;
+		btn_4.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
+		CloseAllDialogues(false);
+		ToggleBaseMenu();
+
+		if(ScrollSnap._currentPage!=3)
+			ScrollSnap.GoToScreen(3);
+	}
 	
 
 	public void UnselectActiveButton()
@@ -270,7 +307,7 @@ public class NavigationBarController : MonoBehaviour {
 			practiceModeDialogue.SetActive(false);
 			multiplayerDialogue.SetActive(false);
 			tutorialModeDialogue.SetActive(false);
-			unlockablesPannel.SetActive(false);
+			unlockablesPanel.SetActive(false);
 			playerPanel.SetActive(false);
 			unlockPanel.SetActive(false);
 			shopPanel.SetActive(false);
@@ -279,16 +316,6 @@ public class NavigationBarController : MonoBehaviour {
 
 	}
 
-	public void PressUnlockablesButton()
-	{
-		UnselectActiveButton();
-		btn_4.transform.position+=new Vector3(0,.1f,0);
-		active_btn=4;
-		btn_4.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
-		CloseAllDialogues(false);
-		ToggleBaseMenu();
-		ScrollSnap.GoToScreen(3);
-	}
 
 	/// <summary>
 	/// Method which sets the value of the notification object for the unlockables menu option

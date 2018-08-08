@@ -48,15 +48,6 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 	public void Open() {
 		isOpen=true;
         gameObject.GetComponentInChildren<GUI_Dialogue>().Open();
-
-		if(beginnerText != null)
-			beginnerText.text = "Beginner "+AccountInfo.beginnerStars+"/15";
-		if(intermediateText != null)
-			intermediateText.text = "Intermediate "+AccountInfo.intermediateStars+"/15";
-		if(advancedText != null)
-			advancedText.text = "Requires 30 stars";
-		if(masterText != null)
-			masterText.text = "Requires 45 stars";
     }
 
 	public void Close() {
@@ -156,6 +147,10 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		}
 
 		playerNameTxt.text = "Player " + playerCounter;
+
+		if(playerCounter==1 && AccountInfo.Instance!= null)
+			playerNameTxt.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
+
 		if(bestScore)
 		{
 			playerNameTxt.text += " (Winner)";
@@ -245,6 +240,10 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		}
 
 		playerNameTxt.text = "Player " + playerCounter;
+
+		if(playerCounter==1 && AccountInfo.Instance!= null)
+			playerNameTxt.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
+
 		if(bestScore)
 		{
 			playerNameTxt.text += " (Winner)";
@@ -253,6 +252,8 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 
 	public void InitObjectivePanel()
 	{
+		
+
 		objective1Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective1Code);
 		objective2Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective2Code);
 		objective3Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective3Code);
@@ -297,8 +298,12 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			Debug.LogWarning("Star String: " + starString);
 			GameMaster.instance.starCount = starCount;
 		}
-		//Update PlayFab star data based on performance temp - refactor this into 000 or 101 format!!!!
 
+
+		//Update player STAR UI
+		GUI_Controller.instance.StarRewardAnim(starString);
+
+		//Update PlayFab star data based on performance
 		if(ApplicationModel.LEVEL_CODE != "" && AccountInfo.playfabId != null)
 		{
 			Debug.Log("Star Count: " + GameMaster.instance.starCount);
@@ -308,7 +313,6 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			Debug.Log("Null level code..");
 		}
 
-		GUI_Controller.instance.CashRewardAnim();
 
 	}
 

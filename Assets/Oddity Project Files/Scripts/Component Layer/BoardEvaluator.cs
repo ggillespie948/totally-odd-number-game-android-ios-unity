@@ -965,6 +965,8 @@ public class BoardEvaluator : MonoBehaviour {
         //Even tile check
         // check all the valid moves to check if an EVEN tile is required
         // to make a valid move, if so.. indicate to Game Master to ensure player is dealt an even tile
+        Debug.Log("Valid AI moves: " + validMove.Count);
+        
         bool oddTileFound = false;
 
         foreach (AI_Move move in validMove)
@@ -973,23 +975,29 @@ public class BoardEvaluator : MonoBehaviour {
             {
                 foreach(int i in move.tileValues)
                 {
-                    if(i %2 != 0) {oddTileFound=true; Debug.Log("ODD TILE FOUND IN VALID MOVES");}
+                    if(i %2 != 0) 
+                    {
+                        oddTileFound=true; 
+                        Debug.Log("ODD TILE FOUND IN VALID MOVES");
+                    }
                 }
             } else 
             {
+                Debug.Log("Odd tile break!");
                 break;
             }
         }
 
         if(oddTileFound)
         {
+            Debug.Log("Even tile not required.");
             GameMaster.instance.evenTileRequired=false;
         } else 
         {
+            Debug.Log("Even Tile Required");
             GameMaster.instance.evenTileRequired=true;
         }
 
-        Debug.Log("Valid AI moves: " + validMove.Count);
 
 		
 

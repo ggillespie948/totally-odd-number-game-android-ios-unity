@@ -15,6 +15,7 @@ public class Database : MonoBehaviour {
 		set { instance = value;}
 	}
 
+	[Header("Tile Skins")]
 	[SerializeField]
 	private List<ShopItemTile> tileSkinShopItems;
 	public List<ShopItemTile> TileSkinShopItems
@@ -30,6 +31,60 @@ public class Database : MonoBehaviour {
 		get { return catalogTileSkins;}
 		set { catalogTileSkins = value;}
 	}
+	//------------------------------------------
+
+	[Header("Energy Passes")]
+	[SerializeField]
+	private List<ShopItemIAP> energyShopPasses;
+	public List<ShopItemIAP> EnergyShopPasses
+	{
+		get { return energyShopPasses;}
+		set { energyShopPasses = value;}
+	}
+
+	[SerializeField]
+	private List<CatalogItem> catalogEnergyPasses;
+	public List<CatalogItem> CatalogEnergyPasses
+	{
+		get { return catalogEnergyPasses;}
+		set { catalogEnergyPasses = value;}
+	}
+	//------------------------------------------
+
+	[Header("Energy Refill")]
+	[SerializeField]
+	private ShopItemIAP energyShopRefill;
+	public ShopItemIAP EnergyShopRefill
+	{
+		get { return energyShopRefill;}
+		set { energyShopRefill = value;}
+	}
+	[SerializeField]
+	private CatalogItem catalogEnergyRefill;
+	public CatalogItem CatalogEnergyRefill
+	{
+		get { return catalogEnergyRefill;}
+		set { catalogEnergyRefill = value;}
+	}
+	//------------------------------------------
+
+
+	// [Header("Grid Skins")]
+	// [SerializeField]
+	// private List<ShopItemTile> tileSkinShopItems;
+	// public List<ShopItemTile> TileSkinShopItems
+	// {
+	// 	get { return tileSkinShopItems;}
+	// 	set { tileSkinShopItems = value;}
+	// }
+
+	// [SerializeField]
+	// private List<CatalogItem> catalogTileSkins;
+	// public List<CatalogItem> CatalogTileSkins
+	// {
+	// 	get { return catalogTileSkins;}
+	// 	set { catalogTileSkins = value;}
+	// }
 
 	/// <summary>
 	/// Awake is called when the script instance is being loaded.
@@ -51,7 +106,7 @@ public class Database : MonoBehaviour {
 
 	}
 
-	public static void UpdateDatabase()
+	public static void LoadCatalog()
 	{
 		GetCatalogItemsRequest request  = new GetCatalogItemsRequest()
 		{
@@ -61,6 +116,12 @@ public class Database : MonoBehaviour {
 		PlayFabClientAPI.GetCatalogItems(request, UpdateDatabaseSuccess,AccountInfo.OnAPIError);
 	}
 
+
+	/// <summary>
+	/// This method iterates through every catalog item returned from the catalog and creates the relevant shop item
+	/// based on the item class of each.false This filters results from BOTH the UNLCOKABLES STORES  and IN-APP PURCHASES
+	/// </summary>
+	/// <param name="result"></param>
 	public static void UpdateDatabaseSuccess(GetCatalogItemsResult result)
 	{
 		for(int i=0; i<result.Catalog.Count; i++)
@@ -69,17 +130,30 @@ public class Database : MonoBehaviour {
 			{
 				Instance.catalogTileSkins.Add(result.Catalog[i]);
 				Instance.TileSkinShopItems.Add(CreateTileShopItem(result.Catalog[i], i));
+			} else if(result.Catalog[i].ItemClass == AccountInfo.ITEM_LIFEREFILL)
+			{
+				Instance.catalogEnergyRefill = result.Catalog[i];
+				Instance.EnergyShopRefill = CreateIAPShopItem(result.Catalog[i], 0);
+
+			} else if(result.Catalog[i].ItemClass == AccountInfo.ITEM_LIFEPASS)
+			{
+				Debug.LogWarning("Life pass found, backend not implemented.");
+				Instance.catalogEnergyPasses.Add(result.Catalog[i]);
+				Instance.energyShopPasses.Add(CreateIAPShopItem(result.Catalog[i], i));
+			} else 
+			{
+				Debug.LogWarning("Unknown catalog item found: " + result.Catalog[i].ItemClass);
 			}
 		}
-
-		MenuController.instance.NavBar.unlockablesPannel.GetComponent<UnlockablesController>().LoadTileStore();
+		MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().LoadTileStore();
+		MenuController.instance.InAppPurchasesController.LoadStore();
 	}
 
 	public static ShopItemTile CreateTileShopItem(CatalogItem item, int i)
 	{
 		Debug.Log("Creating shop tile item.. " + item.ItemId);
 		ShopItemTile ts = new ShopItemTile(
-			i,
+			int.Parse(GetCatalogCustomData(AccountInfo.UNLOCKNO, item)),
 			item.DisplayName,
 		 	int.Parse(GetCatalogCustomData(AccountInfo.ITEM_COST, item)),
 			int.Parse(GetCatalogCustomData(AccountInfo.ITEM_STARREQ, item)),
@@ -89,7 +163,34 @@ public class Database : MonoBehaviour {
 		);
 
 		return ts;
+	}
 
+	public static ShopItemIAP CreateIAPShopItem(CatalogItem item, int i)
+	{
+		Debug.Log("Creating shop item.. " + item.ItemId);
+		ShopItemIAP er = new ShopItemIAP(
+			i,
+			item.DisplayName,
+			item.Description,
+		 	int.Parse(GetCatalogCustomData(AccountInfo.ITEM_COST, item)),
+			item.ItemId
+		);
+
+		return er;
+	}
+
+	public static ShopItemIAP CreateEnergyPassItem(CatalogItem item, int i)
+	{
+		Debug.Log("Creating shop energy pass item.. " + item.ItemId);
+		ShopItemIAP ep = new ShopItemIAP(
+			i,
+			item.DisplayName,
+			item.Description,
+		 	int.Parse(GetCatalogCustomData(AccountInfo.ITEM_COST, item)),
+			item.ItemId
+		);
+
+		return ep;
 	}
 
 	public static string GetCatalogCustomData(int index, CatalogItem item)
@@ -108,7 +209,6 @@ public class Database : MonoBehaviour {
 				newCData[i] = newCData[i].TrimStart('"');
 				newCData[i] = newCData[i].TrimEnd('"');
 				newCData[i] = newCData[i].Trim();
-				Debug.Log(newCData[i]);
 				return newCData[i];
 				
 			}

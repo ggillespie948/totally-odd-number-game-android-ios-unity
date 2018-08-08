@@ -6,27 +6,22 @@ using UnityEngine.UI;
 
 public class IntroPanelController : MonoBehaviour {
 
-	public TextMeshProUGUI playerNameTxt;
-	public Image playerPortrait;
-	public Image playerPortraitRing;
+	// Use this for initialization
+	[SerializeField]
+    private GameObject introPanel;
+    
+	[SerializeField]
+    private TextMeshProUGUI targetText1;
 
-	public GameObject AI_Container1;
-	public TextMeshProUGUI AINameTxt1;
-	public Image AIPortrait1;
-	public Image AIPortraitRing1;
+	[SerializeField]
+    private TextMeshProUGUI targetText2;
 
-	public GameObject AI_Container2;
-	public TextMeshProUGUI AINameTxt2;
-	public Image AIPortrait2;
-	public Image AIPortraitRing2;
+	[SerializeField]
+    private TextMeshProUGUI targetText3;
 
-	
-	public GameObject AI_Container3;
-	public TextMeshProUGUI AINameTxt3;
-	public Image AIPortrait3;
-	public Image AIPortraitRing3;
-
-	public TextMeshProUGUI VsText;
+	[SerializeField]
+	private GameObject[] playerGameOverSection; // root ->score->name
+												//  	->image->border
 
 	/// <summary>
 	/// Start is called on the frame when a script is enabled just before
@@ -34,59 +29,65 @@ public class IntroPanelController : MonoBehaviour {
 	/// </summary>
 	void Start()
 	{
-		if(AccountInfo.Instance!= null)
-			playerNameTxt.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
-		playerPortraitRing.color=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN].tileSkinCol;
+		introPanel.SetActive(true);
+		StartCoroutine(InitIntroPlayerSections());
+	}
 
-		//AINameTxt1.text=ApplicationModel.AI_NAME_1;
-		AIPortraitRing3.color=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+1].tileSkinCol;
 
-		//AINameTxt2.text=ApplicationModel.AI_NAME_2;
-		AIPortraitRing3.color=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+2].tileSkinCol;
-
-		//AINameTxt3.text=ApplicationModel.AI_NAME_3;
-		//AIPortraitRing3.color=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+3].tileSkinCol;
-
-		if(ApplicationModel.AI_PLAYERS+1 == 4)
+	public IEnumerator InitIntroPlayerSections()
+	{
+		int playercount=ApplicationModel.HUMAN_PLAYERS+ApplicationModel.AI_PLAYERS;
+		for(int i=0; i<(ApplicationModel.HUMAN_PLAYERS+ApplicationModel.AI_PLAYERS); i++)
 		{
-			AI_Container1.GetComponent<Animator>().enabled=true;
-			AI_Container2.GetComponent<Animator>().enabled=true;
-			AI_Container3.GetComponent<Animator>().enabled=true;
-
-		} else if (ApplicationModel.AI_PLAYERS+1 == 3)
-		{
-			AI_Container3.SetActive(false);
-			AI_Container1.GetComponent<Animator>().enabled=true;
-			AI_Container2.GetComponent<Animator>().enabled=true;
-
-		} else if (ApplicationModel.AI_PLAYERS+1 == 2)
-		{
-			AI_Container2.SetActive(false);
-			AI_Container3.SetActive(false);
-			AI_Container1.GetComponent<Animator>().enabled=true;
-			AINameTxt1.fontSize=36;
-			AI_Container1.gameObject.transform.localScale=new Vector3(1,1,1);
-			
-		} else if (ApplicationModel.AI_PLAYERS+1 == 1)
-		{
-			VsText.text="Target Mode";
-			AI_Container1.SetActive(false);
-			AI_Container2.SetActive(false);
-			AI_Container3.SetActive(false);
+			playerGameOverSection[i].SetActive(true);
+			if(i==0)
+			{
+				playerGameOverSection[i].GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+				//playerGameOverSection[i].GetComponentInChildren<TextMeshProUGUI>().transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
+			} else
+			{
+				playerGameOverSection[i].GetComponentInChildren<TextMeshProUGUI>().enabled=false;
+				playerGameOverSection[i].GetComponentInChildren<TextMeshProUGUI>().transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text="AI_"+i;
+				
+			}
 		}
 
-		Invoke("HideIntro", 4f);
+		for(int i=(ApplicationModel.HUMAN_PLAYERS+ApplicationModel.AI_PLAYERS); i<4; i++ )
+		{
+			Debug.Log("Deactive player section");
+			playerGameOverSection[i].SetActive(false);
+		}
+
+		if(ApplicationModel.AI_PLAYERS==0)
+		{
+			targetText1.gameObject.SetActive(true);
+			targetText1.text="1 Star Target "+ApplicationModel.TARGET.ToString();
+			targetText2.gameObject.SetActive(true);
+			targetText2.text="2 Star Target "+ApplicationModel.TARGET2.ToString();
+			targetText3.gameObject.SetActive(true);
+			targetText3.text="3 Star Target "+ApplicationModel.TARGET3.ToString();
+		}
+
+
+		yield return new WaitForSeconds(4.5f);
+
+		IntroFadeInTrigger();
 	}
 
-	public void HideIntro()
+	private void IntroFadeInTrigger()
 	{
-		GetComponent<Animator>().SetTrigger("hide");
-		AI_Container1.GetComponent<Animator>().SetTrigger("hide");
-		AI_Container2.GetComponent<Animator>().SetTrigger("hide");
-		AI_Container3.GetComponent<Animator>().SetTrigger("hide");
-
-		GameMaster.instance.enabled=true;
-		GUI_Controller.instance.enabled=true;
-
+		GetComponent<Animator>().SetTrigger("fadeIn");
 	}
+
+	/// <summary>
+	/// This function is called at the end of the intro panel "fade in" aniamtion via an animation event
+	/// </summary>
+	private void HideIntroPanel()
+	{
+		GameMaster.instance.enabled=true;
+		GUI_Controller.instance.gameObject.SetActive(true);
+		
+	}
+
+
 }

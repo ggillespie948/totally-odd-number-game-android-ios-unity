@@ -124,7 +124,7 @@ public class Game_Configuration : MonoBehaviour {
 					else
 						if(objStar3 != null){objStar3.SetActive(false);}
 
-					if(starRequirement>(AccountInfo.beginnerStars+AccountInfo.intermediateStars+AccountInfo.advancedStars))
+					if(starRequirement>(AccountInfo.beginnerStars+AccountInfo.noviceStars+AccountInfo.intermediateStars+AccountInfo.advancedStars+AccountInfo.masterStars+AccountInfo.grandMasterStars))
 					{
 						//Image[] imgs = GetComponentsInChildren<Image>();
 						Button[] btns = GetComponentsInChildren<Button>();
@@ -147,8 +147,58 @@ public class Game_Configuration : MonoBehaviour {
 		}
 	}
 
+	public void CheckStarReq()
+	{
+		Debug.Log("Checking game config star req..");
+		Debug.Log("wordl no  " + worldNo);
+		Debug.Log("level no  " + levelNo);
+		Debug.LogWarning("wordlstars level,world:  " + AccountInfo.worldStars[worldNo,levelNo]);
+
+		if(worldNo==2)
+			return;
+
+
+		if(starRequirement>(AccountInfo.beginnerStars+AccountInfo.noviceStars+AccountInfo.intermediateStars+AccountInfo.advancedStars+AccountInfo.masterStars+AccountInfo.grandMasterStars))
+		{
+			if(starRequirement!=0)
+			{
+				//Image[] imgs = GetComponentsInChildren<Image>();
+				Button[] btns = GetComponentsInChildren<Button>();
+				GetComponentInChildren<TextMeshProUGUI>().GetComponentInChildren<SpriteRenderer>().enabled=true;
+				GetComponentInChildren<TextMeshProUGUI>().enableAutoSizing=true;
+				GetComponentInChildren<TextMeshProUGUI>().text="Requires " + starRequirement.ToString();
+				foreach(Button btn in btns)
+				{
+					btn.interactable=false;
+				}
+			}
+			// foreach(Image img in imgs)
+			// {
+			// 	img.gameObject.SetActive(true);
+			// 	img.CrossFadeAlpha(0.35f, 1f, false);
+			// }
+
+		} else{
+			if(starRequirement!=0)
+			{
+				Debug.Log("Unlocking config");
+				Button[] btns = GetComponentsInChildren<Button>();
+				GetComponentInChildren<TextMeshProUGUI>().GetComponentInChildren<SpriteRenderer>().enabled=false;
+				GetComponentInChildren<TextMeshProUGUI>().enableAutoSizing=false;
+				GetComponentInChildren<TextMeshProUGUI>().fontSize=140;
+				GetComponentInChildren<TextMeshProUGUI>().text=(levelNo+1).ToString();
+				foreach(Button btn in btns)
+				{
+					btn.interactable=true;
+				}
+			}
+
+		}
+	}
+
 	public void InitaliseLevelSelection()
 	{
+		MenuController.instance.activeGameConfig=this;
 		objectivePanel.SetActive(false);
 		configPanel.SetActive(true);
 		
@@ -206,6 +256,8 @@ public class Game_Configuration : MonoBehaviour {
 		else
 			tile7.SetActive(true);
 
+
+		
 		
 		
 	}
@@ -280,6 +332,9 @@ public class Game_Configuration : MonoBehaviour {
 		
 	}
 
+	/// <summary>
+	///  Called by success of live deduction
+	/// </summary>
 	public void StartLevel()
 	{
 		StartCoroutine(_StartLevel());
@@ -289,6 +344,8 @@ public class Game_Configuration : MonoBehaviour {
 	{
 		if(challengeMode)
 			MenuController.instance.NavBar.CloseAllDialogues(true);
+
+		
 
 		levelCode = config.levelCode;
 		ai_difficulty = config.ai_difficulty;
@@ -315,6 +372,8 @@ public class Game_Configuration : MonoBehaviour {
 		objective3Code = config.objective3Code;
 		gameObject.SetActive(true);
 		InitaliseLevelObjectives();
+
+		MenuController.instance.activeGameConfig=this;
 
 	}
 
@@ -531,6 +590,9 @@ public class Game_Configuration : MonoBehaviour {
 
 			case "Fill":
 				return "Fill the game grid completely";
+
+			case "FillWin":
+				return "Fill the game grid and win";
 
 			case "BestTurnScore":
 				return "Finish with the best turn score";

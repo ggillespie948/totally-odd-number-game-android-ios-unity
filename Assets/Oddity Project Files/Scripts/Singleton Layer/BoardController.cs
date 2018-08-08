@@ -14,7 +14,6 @@ public class BoardController : MonoBehaviour, Observable {
     public List<Observer> observerList;
     public int GRID_SIZE = 7;
     public int GRID_CENTER;
-
     public bool boardFull = false;
 
     // Use this for initialization
@@ -91,86 +90,86 @@ public class BoardController : MonoBehaviour, Observable {
                 gameGrid[i,o] = GameMaster.instance.StateMachine.BOARD_STATE.gameGrid[i,o];
                 switch (gameGrid[i, o])
                 {
-                    case 1:
-                        Debug.Log("1 TILE GENERATED");
-                        GridTile tile = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile1, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
-                        tile.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        GameMaster.instance.objGameGrid[i,o].cellTile = tile;
-                        GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
-                        tile.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        tile.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
-                        GUI_Controller.instance.ActivateCell(tile);
+                    // case 1:
+                    //     Debug.Log("1 TILE GENERATED");
+                    //     GridTile tile = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile1, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
+                    //     tile.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile = tile;
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
+                    //     tile.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     tile.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
+                    //     GUI_Controller.instance.ActivateTile(tile);
 
-                    break;
+                    // break;
 
-                    case 2:
-                        Debug.Log("2 TILE GENERATED");
-                        GridTile tile2 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile2, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
-                        tile2.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        GameMaster.instance.objGameGrid[i,o].cellTile = tile2;
-                        GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
-                        GUI_Controller.instance.ActivateCell(tile2);
-                        tile2.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        tile2.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
-                    break;
+                    // case 2:
+                    //     Debug.Log("2 TILE GENERATED");
+                    //     GridTile tile2 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile2, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
+                    //     tile2.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile = tile2;
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
+                    //     GUI_Controller.instance.ActivateTile(tile2);
+                    //     tile2.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     tile2.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
+                    // break;
 
-                    case 3:
-                        Debug.Log("3 TILE GENERATED");
-                        GridTile tile3 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile3, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
-                        tile3.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        GameMaster.instance.objGameGrid[i,o].cellTile = tile3;
-                        GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
-                        GUI_Controller.instance.ActivateCell(tile3);
-                        tile3.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        tile3.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
-                    break;
+                    // case 3:
+                    //     Debug.Log("3 TILE GENERATED");
+                    //     GridTile tile3 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile3, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
+                    //     tile3.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile = tile3;
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
+                    //     GUI_Controller.instance.ActivateTile(tile3);
+                    //     tile3.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     tile3.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
+                    // break;
 
-                    case 4:
-                        Debug.Log("4 TILE GENERATED");
-                        GridTile tile4 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile4, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
-                        tile4.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        GameMaster.instance.objGameGrid[i,o].cellTile = tile4;
-                        GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
-                        GUI_Controller.instance.ActivateCell(tile4);
-                        tile4.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        tile4.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
-                    break;
+                    // case 4:
+                    //     Debug.Log("4 TILE GENERATED");
+                    //     GridTile tile4 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile4, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
+                    //     tile4.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile = tile4;
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
+                    //     GUI_Controller.instance.ActivateTile(tile4);
+                    //     tile4.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     tile4.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
+                    // break;
 
-                    case 5:
-                        Debug.Log("5 TILE GENERATED");
-                        GridTile tile5= Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile5, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
-                        tile5.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        GameMaster.instance.objGameGrid[i,o].cellTile = tile5;
-                        GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
-                        GUI_Controller.instance.ActivateCell(tile5);
-                        tile5.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        tile5.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
-                    break;
+                    // case 5:
+                    //     Debug.Log("5 TILE GENERATED");
+                    //     GridTile tile5= Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile5, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
+                    //     tile5.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile = tile5;
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
+                    //     GUI_Controller.instance.ActivateTile(tile5);
+                    //     tile5.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     tile5.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
+                    // break;
 
-                    case 6:
-                        Debug.Log("6 TILE GENERATED");
-                        GridTile tile6 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile6, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
-                        tile6.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        GameMaster.instance.objGameGrid[i,o].cellTile = tile6;
-                        GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
-                        GUI_Controller.instance.ActivateCell(tile6);
-                        tile6.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        tile6.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
-                    break;
+                    // case 6:
+                    //     Debug.Log("6 TILE GENERATED");
+                    //     GridTile tile6 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile6, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
+                    //     tile6.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile = tile6;
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
+                    //     GUI_Controller.instance.ActivateTile(tile6);
+                    //     tile6.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     tile6.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
+                    // break;
 
-                    case 7:
-                        Debug.Log("7 TILE GENERATED");
-                        GridTile tile7 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile7, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
-                        tile7.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        GameMaster.instance.objGameGrid[i,o].cellTile = tile7;
-                        GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
-                        GUI_Controller.instance.ActivateCell(tile7);
-                        tile7.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
-                        tile7.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
-                    break;
+                    // case 7:
+                    //     Debug.Log("7 TILE GENERATED");
+                    //     GridTile tile7 = Instantiate(GameMaster.instance.themes[ApplicationModel.THEME].Tile7, GameMaster.instance.objGameGrid[i,o].transform.position - new Vector3(0,0,1), Quaternion.Euler(0, 0, 0));
+                    //     tile7.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile = tile7;
+                    //     GameMaster.instance.objGameGrid[i,o].cellTile.placed = true;
+                    //     GUI_Controller.instance.ActivateTile(tile7);
+                    //     tile7.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform);
+                    //     tile7.gameObject.transform.localScale = new Vector3(GameMaster.TILE_SCALE, GameMaster.TILE_SCALE, GameMaster.TILE_SCALE);
+                    // break;
 
-                    default:
-                    break;
+                    // default:
+                    // break;
 
                 }
                 
@@ -186,16 +185,34 @@ public class BoardController : MonoBehaviour, Observable {
         if(GameMaster.instance.totalTiles == 0 && gameGrid[GRID_CENTER,GRID_CENTER] == 0)
         {
             // first tile must be played in centre
-            GUI_Controller.instance.SpawnTextPopup("Place first tile in center", Color.yellow, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
+            GUI_Controller.instance.SpawnTextPopup("Place first tile in center", Color.red, GameMaster.instance.objGameGrid[0,GRID_CENTER].transform, 20);
             GameMaster.instance.StateMachine.RevertToLastValidState(false);
+
+            //animate tile back to start
+            if(GameMaster.instance.selectedTile!= null)
+                {
+                    GameMaster.instance.selectedTile.GetComponent<NoGravity>().enabled=true;
+                    GameMaster.instance.selectedTile.DeafultTileSkin();
+
+                    GameMaster.instance.selectedTile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.selectedTile.startPos;
+                    GUI_Controller.instance.AnimateTo(GameMaster.instance.selectedTile.GetComponent<GUI_Object>(), GameMaster.instance.selectedTile.startPos
+                                                    + new Vector3(0, 0, -1), .8f);
+                    GUI_Controller.instance.RotateObjectBackward(GameMaster.instance.selectedTile.gameObject, .8f, 360);
+                    
+                }
+
             return false;
         } else if(GameMaster.instance.totalTiles==0 && gameGrid[GRID_CENTER,GRID_CENTER] != 0 && cell.cellTile.value % 2 != 0)
         {
             AudioManager.instance.Play("play11");
+            Debug.LogError("Play tile 11? ");
+
+
         } else if(GameMaster.instance.totalTiles==0 && gameGrid[GRID_CENTER,GRID_CENTER] != 0 && cell.cellTile.value % 2 == 0)
         {
             GUI_Controller.instance.SpawnTextPopup("Not odd!", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
             GameMaster.instance.StateMachine.RevertToLastValidState(false);
+            Debug.LogError("Send played tile back to star pos");
             return false;
         }
 
@@ -470,9 +487,91 @@ public class BoardController : MonoBehaviour, Observable {
                 GameMaster.instance.invalidTilesInplay = false;
                 GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
             }
+        } else 
+        {
+            for(int i=0; i<GameMaster.instance.playedTiles.Count; i++)
+            {
+                GameMaster.instance.playedTiles[i].cellTile.ActiveTileSkin();
+            }
         }
         
         return validity;
+    }
+
+    public int GetNotificationLocation()
+    {
+        List<int> locs = new List<int>();
+        locs.Clear();
+        locs.Add(0);
+        locs.Add(0);
+        locs.Add(0);
+        locs.Add(0);
+        if(GRID_SIZE==5)
+        {
+            for(int i=0; i<4; i++)
+            {
+                for(int u=0; u<4; u++)
+                {
+                        Debug.LogError("i:" + i + "     u:" + u + " GG:"  + gameGrid[i,u]);
+                        Debug.LogError("i:" + i + "     u+1:" + u + " GG:"  + gameGrid[i,u+1]);
+                    if(gameGrid[i,u] != 0 || gameGrid[i,u+1] != 0)
+                    {
+                        locs[i]+=1;
+                    }
+                }
+                Debug.LogError("_______" );
+            }
+        } else if(GRID_SIZE==7)
+        {
+            locs.Add(0);
+            locs.Add(0);
+
+            for(int i=1; i<5; i++)
+            {
+                for(int u=0; u<5; u++)
+                {
+                    if(gameGrid[i,u] != 0 || gameGrid[i,u+1] != 0)
+                        locs[i]+=1;
+                }
+            }
+        } else if(GRID_SIZE==9)
+        {
+            locs.Add(0);
+            locs.Add(0);
+
+            for(int i=1; i<7; i++)
+            {
+                for(int u=0; u<7; u++)
+                {
+                    if(gameGrid[i,u] != 0 || gameGrid[i,u+1] != 0)
+                    {
+                        Debug.Log("game grid:" + gameGrid[i,u]);
+                        locs[i]+=1;
+                    }
+                }
+            }
+        }
+
+        int lowestLoc=0;
+        int lowestCount=9999;
+        int index=0;
+        foreach(int count in locs)
+        {
+
+            Debug.LogError("loc index:"+index+ "  value:" +count);
+            if(count<lowestCount)
+            {
+                lowestLoc=index;
+                lowestCount=count;
+            }
+
+            index++;
+        }
+
+        Debug.LogError("lowest loc:" +lowestLoc);
+
+
+        return lowestLoc;
     }
 
     /// <summary>
@@ -899,25 +998,34 @@ public class BoardController : MonoBehaviour, Observable {
 
     }
 
+    
     public void testFunc()
     {
         //Stop user ending turn on AI turn
         if(GameMaster.instance.vsAi && !GameMaster.instance.humanTurn)
             return;
 
+        StartCoroutine(UnlockSubmitButton());
+        GUI_Controller.instance.Submit_Button.GetComponent<BoxCollider>().enabled=false;
 
         CheckBoardValidity(true, false); //temp
 
         
-
     }
 
+    private IEnumerator UnlockSubmitButton()
+    {
+        yield return new WaitForSeconds(4.5f);
+        GUI_Controller.instance.Submit_Button.GetComponent<BoxCollider>().enabled=true;
+    }
+
+    
     public bool CheckBoardValidity(bool endTurn, bool isAI) //temp
     {
-        Debug.Log("Checking board validity..");
-        //check the row and cols of every placed tile this turn,
+
         List<GridCell> InvalidTiles = new List<GridCell>();
         InvalidTiles.Clear();
+        GUI_Controller.instance.TilesScored.Clear();
 
         Debug.LogWarning("Played tiles count: " + GameMaster.instance.playedTiles.Count);
 
@@ -951,6 +1059,10 @@ public class BoardController : MonoBehaviour, Observable {
             //GUI_Controller.instance.ScoreTextSpawnLoc = Cell.gameObject.transform.position; //- new Vector3 (0,0,15);
 
         }
+
+        if(GameMaster.instance.playedTiles.Count == 0)
+            staticNeighbourCheck=true;
+
         Debug.LogWarning("static need check: " + staticNeighbourCheck);
 
         //If all are valid, end turn
@@ -1091,11 +1203,28 @@ public class BoardController : MonoBehaviour, Observable {
             if(GameMaster.instance.playedTiles.Count > 0)
                 GUI_Controller.instance.DisableAllEmissions();
 
-             //Activate Score Effect for tiles
+            if(GameMaster.instance.totalTiles==1 && gameGrid[GRID_CENTER,GRID_CENTER] != 0 && gameGrid[GRID_CENTER,GRID_CENTER] % 2 != 0)
+            {
+                Debug.LogError("valid central tile? ");
+                colScore=gameGrid[GRID_CENTER,GRID_CENTER];
+            }
+             
+             
+            //SCORE EFFECT AND PROCESS SCORE + NOTIFICATION POP UP //  
             GUI_Controller.instance.TilesScoredEffect(rowScore+colScore);
+            ///
 
-            //GUI_Controller.instance.SpawnTextPopup("+"+(+colScore+rowScore), Color.gray, 
-                //GUI_Controller.instance.transform, (colScore+rowScore+10));
+
+            Debug.Log("turnindicator: " + GameMaster.instance.turnIndicator);
+            Debug.Log("exact score: " + GameMaster.instance.PlayerStatistics.exactScore);
+            Debug.Log("colScore rowScore" + (colScore+rowScore));
+            
+            
+            if(GameMaster.instance.turnIndicator==1 && GameMaster.instance.PlayerStatistics.exactScore!=0 && ((rowScore+colScore)==GameMaster.instance.PlayerStatistics.exactScore))
+            {
+                Debug.LogWarning("EXACT TURNSCORE OBJECTIVE MET");
+                GameMaster.instance.PlayerStatistics.turnScoreExactMet=true;
+            }
 
             //Update Player SCore
             if(GameMaster.instance.totalTiles==1 && GameMaster.instance.playedTiles.Count >0)
@@ -1113,7 +1242,7 @@ public class BoardController : MonoBehaviour, Observable {
             {
                 foreach(GridCell cell in GameMaster.instance.playedTiles)
                 {
-                    GUI_Controller.instance.ActivateCell(cell.cellTile);
+                    GUI_Controller.instance.ActivateTile(cell.cellTile);
                 }
             }
 
@@ -1122,21 +1251,26 @@ public class BoardController : MonoBehaviour, Observable {
 
             if (endTurn)
             {
+                GameMaster.instance.TurnTimer.enabled=false;
                 foreach(GridTile tile in GUI_Controller.instance.GetAllTiles())
                 {
                     if(tile.placed==true)
+                    {
                         tile.locked=true;
+                        tile.GetComponent<BoxCollider2D>().enabled=false;
+                    }
+                    
                 }
                 StartCoroutine(GameMaster.instance.EndTurnDelay(3f));
-                //GameMaster.instance.EndTurn();
             }
 
         }
-        else // else end turn ==false or invalid tiles
+        else // else END TURN = FALSE  or INVALID TILES IN PLAY in play
         {
+            Debug.LogError("end turn false or invalid tiles in play");
             foreach(GridCell cell in InvalidTiles)
             {
-                //GUI_Controller.instance.SpawnTextPopup("Not odd!", Color.red, cell.cellTile.transform, 23);
+               Debug.LogError("INCREMENTING PLAYER ERRORS, DEACTIVATING ACTIVATED CELL SKINS AND ENABLE NO GRAV");
                 GameMaster.instance.playerErrors[GameMaster.instance.turnIndicator-1]++;
                 GameMaster.instance.errorsMade++;
                 if(cell.cellTile != null && cell.cellTile.activated)
@@ -1147,13 +1281,19 @@ public class BoardController : MonoBehaviour, Observable {
             }
 
             //if there are unvalid tiles, return grid to last valdi state, return invalid nodes to starpos
-            // if(GameMaster.instance.TurnTimer.timeLeft > 0.01)
-            // {
-            //     GameMaster.instance.StateMachine.RevertToLastValidState(false);
-            // } else
-            // {
-            //     GameMaster.instance.StateMachine.RevertToLastValidState(true);
-            // }
+            if(GameMaster.instance.TurnTimer.timeLeft > 0.01)
+            {
+                //GameMaster.instance.StateMachine.RevertToLastValidState(false);
+            } else
+            {
+                 Debug.LogError("TIME UP INVALID TILES");
+                foreach(GridCell cell in InvalidTiles)
+                {
+                    Debug.LogError("INCREMENTING PLAYER ERRORS, RESET BOARD POS, ANIM BACK TO HAND");
+                    GameMaster.instance.playerErrors[GameMaster.instance.turnIndicator-1]++;
+                    GameMaster.instance.errorsMade++;
+                }
+            }
 
         }
 
@@ -1165,26 +1305,127 @@ public class BoardController : MonoBehaviour, Observable {
                 return true;
         }
 
-            if(InvalidTiles.Count == 0)
+        if(InvalidTiles.Count == 0)
+        {
+            Debug.LogWarning("Check board validity: true");
+            GameMaster.instance.invalidTilesInplay=false;
+            
+            GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
+            return true;
+        }
+        else
+        {
+            //NotifyObservers(this, "")
+
+            if(GameMaster.instance.TurnTimer.timeLeft < 0.01)
             {
-                Debug.LogWarning("Check board validity: true");
-                GameMaster.instance.invalidTilesInplay=false;
-                GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning("Check board validity: false");
-                GameMaster.instance.invalidTilesInplay=true;
-                return false;
+                GUI_Controller.instance.DisableGridBoxColliders();
+
+                Debug.LogError("TIME UP INVALID TILES in play AGAIN??????????????");
+                foreach(GridCell cell in GameMaster.instance.playedTiles)
+                {
+                    GUI_Controller.instance.SpawnTextPopup("Not odd!", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
+                    if(cell.cellTile != null)
+                    {
+                        Debug.LogError("RE-RESET BOARD, ADD TO HAND, DEFAULT TILE SKINS, NO GRAC, PLACED, START POSS, CELL TILE");
+                        
+                        //Reset Board Position
+                        BoardController.instance.gameGrid[cell.cellTile.x,cell.cellTile.y]=0;
+                        BoardController.instance.staticgameGrid[cell.cellTile.x,cell.cellTile.y]=0;
+                        BoardController.instance.lastValidGameGrid[cell.cellTile.x,cell.cellTile.y]=0;
+
+                        //Add tile bgack to hand
+                        GameMaster.instance.currentHand.Add(cell.cellTile);
+
+                        //Animate Tile Back To Start Location 
+                        //cell.cellTile.transform.position=cell.cellTile.startPos;
+                        cell.cellTile.GetComponent<NoGravity>().enabled=true;
+                        cell.cellTile.DeafultTileSkin();
+
+                        cell.cellTile.GetComponent<GUI_Object>().targetPos = cell.cellTile.startPos;
+                        GUI_Controller.instance.AnimateTo(cell.cellTile.GetComponent<GUI_Object>(), cell.cellTile.startPos
+                                                        + new Vector3(0, 0, -1), .8f);
+                        GUI_Controller.instance.RotateObjectBackward(cell.cellTile.gameObject, .8f, 360);
+
+                        
+                            
+                        //Restore tile properties
+                        cell.cellTile.placed=false;
+                        cell.cellTile.activated=false;
+                        cell.cellTile.x=0;
+                        cell.cellTile.y=0;
+
+                        cell.cellTile=null;
+
+                        //NotifyObservers(this, "Event.TimesUp");
+                        
+                    }
+                }
+
+                if(GameMaster.instance.selectedTile!= null)
+                {
+                    GameMaster.instance.selectedTile.GetComponent<NoGravity>().enabled=true;
+                    GameMaster.instance.selectedTile.DeafultTileSkin();
+
+                    GameMaster.instance.selectedTile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.selectedTile.startPos;
+                    GUI_Controller.instance.AnimateTo(GameMaster.instance.selectedTile.GetComponent<GUI_Object>(), GameMaster.instance.selectedTile.startPos
+                                                    + new Vector3(0, 0, -1), .8f);
+                    GUI_Controller.instance.RotateObjectBackward(GameMaster.instance.selectedTile.gameObject, .8f, 360);
+                    
+                    GameMaster.instance.selectedTile.GetComponent<BoxCollider2D>().enabled=false;
+                }
+
+                
+                            
+
+                GameMaster.instance.ToggleBoxColliders(false, false);
+                //GameMaster.instance.HidePlayerTiles();
+                Debug.LogError("END TURN DELAY!!!!! . (DISABLED)");
+                StartCoroutine(GameMaster.instance.EndTurnDelay(3f));
 
             }
+
+            //INVALID TILES IN PLAY, TIME > 0.01
+            GUI_Controller.instance.SpawnTextPopup("Errors+1", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 12);
+            return false;
+
+        }
         
     }
 
     public void EventScore(int score)
     {
         NotifyObservers(this, "Event.Score."+(score).ToString());
+
+    }
+
+    public int FindNotificationPosition()
+    {
+        int[] rowTotals = new int[GRID_SIZE];
+
+        foreach(GridTile tile in GUI_Controller.instance.TilesScored)
+        {
+            if(rowTotals.Length>=tile.y)
+            rowTotals[tile.y]+=1;
+        }
+
+        for(int i=0; i<GRID_SIZE; i++)
+        {
+            //Debug.Log("i:" + i + "   rowTot: " + rowTotals[i]);
+        }
+
+        int lowestIndex =0;
+        int lowestIndexCount =9999;
+        for(int i=1; i<GRID_SIZE-1; i++)
+        {
+            if(rowTotals[i]<lowestIndexCount)
+            {
+                lowestIndex=i;
+                lowestIndexCount=rowTotals[i];
+            }
+        }
+
+        return lowestIndex;
 
     }
 
@@ -1414,7 +1655,7 @@ public class BoardController : MonoBehaviour, Observable {
 
         if (validity == true)
         {
-            GUI_Controller.instance.ActivateCell(cell.cellTile);
+            GUI_Controller.instance.ActivateTile(cell.cellTile);
             
 
         } else

@@ -13,6 +13,12 @@ public class NotificationController : MonoBehaviour, Observer {
 	[SerializeField]
 	private string[] Tier3_Score_Phrase;
 
+	[SerializeField]
+	private BoardEvaluator averageScoreEvaluator;
+
+	[SerializeField]
+	public Material[] fontPresets;
+
 
 
 	// Use this for initialization
@@ -37,6 +43,24 @@ public class NotificationController : MonoBehaviour, Observer {
 		} else if (ret[1] == "ScoreSound")
 		{
 			ProcessScoreSoundNotification(int.Parse(ret[2]));
+		} else if (ret[1] == "TimesUp")
+		{
+			GUI_Controller.instance.SpawnTextPopup("Times Up!", Color.white, GUI_Controller.instance.transform, 36, fontPresets[0]);
+			AudioManager.instance.Play("TimesUp");
+			foreach(GridTile tile in GameMaster.instance.currentHand)
+			{
+				Debug.Log("Disable disable");
+				tile.GetComponent<BoxCollider2D>().enabled=false;
+			}
+			foreach(GridCell cell in GameMaster.instance.playedTiles)
+			{
+				Debug.Log("Disable played tile");
+				if(cell.cellTile != null)
+				cell.cellTile.GetComponent<BoxCollider2D>().enabled=false;
+			}
+		} else if (ret[1] == "Odd")
+		{
+			
 		}
 
 	}
@@ -46,24 +70,23 @@ public class NotificationController : MonoBehaviour, Observer {
 		if(score < 5 && GameMaster.instance.totalTiles > 9)
 		{
 			int randPhrase = Random.Range(0, Tier0_Score_Phrase.Length);
-			GUI_Controller.instance.SpawnTextPopup(Tier0_Score_Phrase[randPhrase], Color.gray, GameMaster.instance.playedTiles[0].transform, 23);
+			GUI_Controller.instance.SpawnTextPopup(Tier0_Score_Phrase[randPhrase], Color.white, GameMaster.instance.playedTiles[0].transform, 30, fontPresets[0]);
 
 		} else if(score > 30 && score < 40)
 		{
 			int randPhrase = Random.Range(0, Tier1_Score_Phrase.Length);
-			GUI_Controller.instance.SpawnTextPopup(Tier1_Score_Phrase[randPhrase], Color.cyan, GameMaster.instance.playedTiles[0].transform, 18);
+			GUI_Controller.instance.SpawnTextPopup(Tier1_Score_Phrase[randPhrase], Color.cyan, GameMaster.instance.playedTiles[0].transform, 30, fontPresets[1]);
 			
 		} else if (score >= 40 && score <= 60)
 		{
 			int randPhrase = Random.Range(0, Tier2_Score_Phrase.Length);
-			GUI_Controller.instance.SpawnTextPopup(Tier2_Score_Phrase[randPhrase], Color.yellow, GameMaster.instance.playedTiles[0].transform, 23);
+			GUI_Controller.instance.SpawnTextPopup(Tier2_Score_Phrase[randPhrase], Color.white, GameMaster.instance.playedTiles[0].transform, 32, fontPresets[2]);
 
 		} else if (score > 60)
 		{
 			int randPhrase = Random.Range(0, Tier3_Score_Phrase.Length);
-			GUI_Controller.instance.SpawnTextPopup(Tier3_Score_Phrase[randPhrase], Color.white, GameMaster.instance.playedTiles[0].transform,27);
+			GUI_Controller.instance.SpawnTextPopup(Tier3_Score_Phrase[randPhrase], Color.white, GameMaster.instance.playedTiles[0].transform,35, fontPresets[3]);
 		}
-		
 	}
 
 	private void ProcessScoreSoundNotification(int score)
