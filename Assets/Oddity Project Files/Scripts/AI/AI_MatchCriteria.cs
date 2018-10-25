@@ -8,7 +8,7 @@ public class AI_MatchCriteria {
 
     public int spaces;
 
-    public List<int> xSpaces;
+    public List<int> xSpaces; // in horizontal moves this is the collection of y spaces involed in move
 
     public int rowcolNo; //temp - on horizontal moves this is col no on vertical its the row no
 

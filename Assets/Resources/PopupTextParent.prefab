@@ -101,8 +101,7 @@ MonoBehaviour:
   m_text: Let's Go!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce500a10b08971941ac571646fef97a4, type: 2}
-  m_sharedMaterial: {fileID: 21443282477999856, guid: ce500a10b08971941ac571646fef97a4,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: ad7632031acdc3941bcfd86bd7038cfe, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

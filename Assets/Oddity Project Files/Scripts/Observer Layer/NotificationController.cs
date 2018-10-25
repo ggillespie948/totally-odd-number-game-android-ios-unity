@@ -61,7 +61,16 @@ public class NotificationController : MonoBehaviour, Observer {
 		} else if (ret[1] == "Odd")
 		{
 			
+		} else if (ret[1] == "Exchange")
+		{
+			GUI_Controller.instance.SpawnTextPopup("Exchange", Color.white, GUI_Controller.instance.transform, 36, fontPresets[0]);
+
+			
 		}
+
+
+		
+
 
 	}
 

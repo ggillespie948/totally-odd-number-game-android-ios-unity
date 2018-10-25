@@ -24,13 +24,13 @@ public class ShopItem : MonoBehaviour {
 	public GameObject purchaseBG;
 
 	[SerializeField]
-	public static float GBP {get; private set;}
+	public static decimal GBP {get; private set;}
 
 	[SerializeField]
-	public static float USD {get; private set;}
+	public static decimal USD {get; private set;}
 
 	[SerializeField]
-	public static float EUR {get; private set;}
+	public static decimal EUR {get; private set;}
 
 	public void InspectItem()
 	{
@@ -51,21 +51,28 @@ public class ShopItem : MonoBehaviour {
 		MenuController.instance.NavBar.activeShopItem=this.gameObject;
 		MenuController.instance.NavBar.gameObject.SetActive(false);
 
+		MenuController.instance.NavBar.shopItemTitle.text=itemData.Name;
+		MenuController.instance.NavBar.shopItemDescription.text=item.Description;
+
+		MenuController.instance.navHighlight.SetActive(false);
+
 		if(AccountInfo.Instance.InventoryContains(item))
 		{
-			MenuController.instance.NavBar.shopItemTitle.text=item.Description;
 			MenuController.instance.NavBar.priceText.alignment=TMPro.TextAlignmentOptions.Center;
 			MenuController.instance.NavBar.priceText.text="You have already purchased this item.";
 		} else 
 		{
 			MenuController.instance.NavBar.priceText.alignment=TMPro.TextAlignmentOptions.Left;
 
-			if(itemCost!= null)
+			if(item.ItemClass == AccountInfo.ITEM_LIFEPASS || item.ItemClass == AccountInfo.ITEM_COINPACK || item.ItemClass ==  AccountInfo.ITEM_LEVELPACK)
 			{
-				string costString = GBP.ToString();
-				MenuController.instance.NavBar.priceText.text= "Do you wish to purchase this " + item.ItemClass + " for £" +costString[0]+"."+costString[1]+costString[2]+"?";
-				MenuController.instance.NavBar.shopItemTitle.text=item.Description;
-				MenuController.instance.NavBar.coinIcon.enabled=true;
+				MenuController.instance.NavBar.priceText.alignment=TMPro.TextAlignmentOptions.Center;
+				MenuController.instance.NavBar.priceText.text= "Do you wish to purchase this " + item.ItemClass + " for £" + itemData.GBP.ToString("#.##")+"?";
+				MenuController.instance.NavBar.coinIcon.enabled=false;
+			} else{
+				MenuController.instance.NavBar.priceText.alignment=TMPro.TextAlignmentOptions.Center;
+				MenuController.instance.NavBar.priceText.text= "Do you wish to purchase this " + item.ItemClass + " for " + itemData.Cost + " coins?";
+				MenuController.instance.NavBar.coinIcon.enabled=false;
 			}
 		}
 
@@ -94,11 +101,31 @@ public class ShopItem : MonoBehaviour {
 		GUI_Controller.instance.confirmPurchasePanel.GetComponent<Animator>().SetTrigger("ClosePanel");
 
 		MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
+		MenuController.instance.navHighlight.SetActive(true);
 		Invoke("CloseInspector", 1.5f);
 
 		if(purchaseBG!=null)
 			purchaseBG.SetActive(false);
 	}
+
+	public void QuickUninspect()
+	{
+		inspected=false;
+		GetComponent<GUI_Object>().targetPos= startPos;
+		MenuController.instance.NavBar.activeShopItem=null;
+		transform.position=startPos;
+		MenuController.instance.NavBar.gameObject.SetActive(true);
+		this.gameObject.transform.SetParent(MenuController.instance.NavBar.inspectedItemParent.transform);
+		GUI_Controller.instance.confirmPurchasePanel.GetComponent<Animator>().SetTrigger("ClosePanel");
+		MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
+		MenuController.instance.navHighlight.SetActive(true);
+		CloseInspector();
+
+		if(purchaseBG!=null)
+			purchaseBG.SetActive(false);
+
+	}
+
 
 	public void CloseInspector()
 	{
@@ -118,6 +145,16 @@ public class ShopItem : MonoBehaviour {
 		startPos = transform.position;
 		description=itemData.Description;
 		this.gameObject.SetActive(true);
+
+
+		if(item.ItemClass == AccountInfo.ITEM_LIFEPASS || item.ItemClass == AccountInfo.ITEM_COINPACK || item.ItemClass == AccountInfo.ITEM_LEVELPACK)
+		{
+			ShopItem.GBP=(decimal)itemData.Cost/100;
+			itemData.GBP=(decimal)itemData.Cost/100;
+			itemCost.text="£"+ShopItem.GBP.ToString("#.##");
+		}
+		//if class==life pass || coin bundle.. cost = <float>cost/100 string that and pace currecny infront of it 
+
 	}
 
 	public void PurchaseWithCoins()
@@ -148,7 +185,7 @@ public class ShopItem : MonoBehaviour {
 		
 
 		Invoke("StopCoinEmission", 3.25f);
-		Invoke("StopCoinAnim", 5f);
+		Invoke("StopCoinAnim", 6f);
 		Invoke("UninspectItem", 7.25f);
 	}
 

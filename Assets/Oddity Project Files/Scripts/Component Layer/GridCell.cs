@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridCell : MonoBehaviour {
 
@@ -12,10 +13,13 @@ public class GridCell : MonoBehaviour {
     public Color highlightColour;
     public Outline Outline;
 
+    //private Image irend;
+
 
     void Awake()
     {
         rend = GetComponent<Renderer>();
+        //irend = GetComponent<Image>();
     }
 
     void Start()

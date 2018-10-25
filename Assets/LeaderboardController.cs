@@ -68,7 +68,7 @@ public class LeaderboardController : MonoBehaviour {
 
 		switch(selectedLeaderboard)
 		{
-			case 0:
+			case 2:
 			AccountInfo.Instance.LoadLeaderboard("Wins");
 			leaderboardTitle.text="Wins (All)";
 			break;
@@ -78,9 +78,9 @@ public class LeaderboardController : MonoBehaviour {
 			leaderboardTitle.text="Tiles Played";
 			break;
 
-			case 2:
-			AccountInfo.Instance.LoadLeaderboard("GamesPlayed");
-			leaderboardTitle.text="Games Played";
+			case 0:
+			AccountInfo.Instance.LoadLeaderboard("Stars");
+			leaderboardTitle.text="Stars";
 			break;
 		}
 
@@ -116,9 +116,11 @@ public class LeaderboardController : MonoBehaviour {
 
 		foreach(LeaderboardEntry entry in leaderboardEntries)
 		{
-			if(entry.nameTxt.text == "-")
+			if(entry.nameTxt.text == "-" || entry.nameTxt.text == "Loading...")
 			{
 				entry.gameObject.SetActive(false);
+			} else { 
+				entry.gameObject.SetActive(true);
 			}
 		}
 

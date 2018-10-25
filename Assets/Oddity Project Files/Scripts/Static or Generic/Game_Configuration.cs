@@ -42,25 +42,11 @@ public class Game_Configuration : MonoBehaviour {
 	public int human_players =1;
 	public int turnTime;
 	public int maxTile;
-	public int oneTiles;
-	public int twoTiles;
-	public int threeTiles;
-	public int fourTiles;
-	public int fiveTiles;
-	public int sixTiles;
-	public int sevenTiles;
-	public int eightTiles;
-	public int nineTiles;
+	public int[] startTileCounts;
+	[Header("Set these three scores to a non-0 val and ai_players to 0 for target mode")]
 	public int targetScore;
-
 	public int targetScore2;
 	public int targetScore3;
-
-	public int rewardCoins;
-
-	public int rewardLives;
-
-	public string rewardSpecial;
 
 	public GameObject tile1;
 	public GameObject tile2;
@@ -69,6 +55,9 @@ public class Game_Configuration : MonoBehaviour {
 	public GameObject tile5;
 	public GameObject tile6;
 	public GameObject tile7;
+	public GameObject tile8;
+	public GameObject tile9;
+	public GameObject tilePlus;
 
 	[Header("Game Objective Items")]
 	public string objective1Code;
@@ -78,7 +67,12 @@ public class Game_Configuration : MonoBehaviour {
 	[Header("Star Requirement (optional)")]
 	public int starRequirement = 0;
 
+	[SerializeField]
+	public Image colour;
 
+
+	[SerializeField]
+	private bool isSelecitonDialog;
 
 	/// <summary>
 	/// Start is called on the frame when a script is enabled just before
@@ -100,9 +94,6 @@ public class Game_Configuration : MonoBehaviour {
 			{
 				if(worldNo >= 0)
 				{
-					Debug.Log("wordl no  " + worldNo);
-					Debug.Log("level no  " + levelNo);
-					Debug.LogWarning("wordlstars level,world:  " + AccountInfo.worldStars[worldNo,levelNo]);
 
 					if(AccountInfo.worldStars[worldNo,levelNo]=="111")
 					{
@@ -124,7 +115,7 @@ public class Game_Configuration : MonoBehaviour {
 					else
 						if(objStar3 != null){objStar3.SetActive(false);}
 
-					if(starRequirement>(AccountInfo.beginnerStars+AccountInfo.noviceStars+AccountInfo.intermediateStars+AccountInfo.advancedStars+AccountInfo.masterStars+AccountInfo.grandMasterStars))
+					if(starRequirement>(GUI_Controller.instance.CurrencyUI.playerStars))
 					{
 						//Image[] imgs = GetComponentsInChildren<Image>();
 						Button[] btns = GetComponentsInChildren<Button>();
@@ -149,39 +140,29 @@ public class Game_Configuration : MonoBehaviour {
 
 	public void CheckStarReq()
 	{
-		Debug.Log("Checking game config star req..");
-		Debug.Log("wordl no  " + worldNo);
-		Debug.Log("level no  " + levelNo);
-		Debug.LogWarning("wordlstars level,world:  " + AccountInfo.worldStars[worldNo,levelNo]);
-
-		if(worldNo==2)
-			return;
-
-
-		if(starRequirement>(AccountInfo.beginnerStars+AccountInfo.noviceStars+AccountInfo.intermediateStars+AccountInfo.advancedStars+AccountInfo.masterStars+AccountInfo.grandMasterStars))
+		if(starRequirement>(GUI_Controller.instance.CurrencyUI.playerStars))
 		{
 			if(starRequirement!=0)
 			{
 				//Image[] imgs = GetComponentsInChildren<Image>();
-				Button[] btns = GetComponentsInChildren<Button>();
-				GetComponentInChildren<TextMeshProUGUI>().GetComponentInChildren<SpriteRenderer>().enabled=true;
-				GetComponentInChildren<TextMeshProUGUI>().enableAutoSizing=true;
-				GetComponentInChildren<TextMeshProUGUI>().text="Requires " + starRequirement.ToString();
-				foreach(Button btn in btns)
+				if(!isSelecitonDialog)
 				{
-					btn.interactable=false;
+					Button[] btns = GetComponentsInChildren<Button>();
+					GetComponentInChildren<TextMeshProUGUI>().GetComponentInChildren<SpriteRenderer>().enabled=true;
+					GetComponentInChildren<TextMeshProUGUI>().enableAutoSizing=true;
+					GetComponentInChildren<TextMeshProUGUI>().text="Requires " + starRequirement.ToString();
+					foreach(Button btn in btns)
+					{
+						btn.interactable=false;
+					}
 				}
 			}
-			// foreach(Image img in imgs)
-			// {
-			// 	img.gameObject.SetActive(true);
-			// 	img.CrossFadeAlpha(0.35f, 1f, false);
-			// }
+
 
 		} else{
-			if(starRequirement!=0)
-			{
-				Debug.Log("Unlocking config");
+			//temp - make this check whether a level selection is already unlocked
+			//if(starRequirement!=0)
+			//{
 				Button[] btns = GetComponentsInChildren<Button>();
 				GetComponentInChildren<TextMeshProUGUI>().GetComponentInChildren<SpriteRenderer>().enabled=false;
 				GetComponentInChildren<TextMeshProUGUI>().enableAutoSizing=false;
@@ -191,8 +172,81 @@ public class Game_Configuration : MonoBehaviour {
 				{
 					btn.interactable=true;
 				}
-			}
+			//}
 
+		}
+
+		UpdateStarParticles();
+	}
+
+	public Color threeStarColMain;
+	public Color threeStarColBg;
+	public Color defaultColMain;
+	public Color defaultColBg;
+	/// <summary>
+	/// /// method which updates the star graphics / particles each time a new world is selected
+	/// </summary>
+	private void UpdateStarParticles()
+	{
+		if(AccountInfo.Instance == null)
+		return;
+
+		if(AccountInfo.worldStars[worldNo,levelNo]=="111" && (!isSelecitonDialog))
+		{
+			if(!isSelecitonDialog)
+			{
+				GetComponentInChildren<GUI_Dialogue>().bgMain.color=threeStarColMain;
+				GetComponentInChildren<GUI_Dialogue>().bg.color=threeStarColBg;
+			}
+		} else 
+		{
+			GetComponentInChildren<GUI_Dialogue>().bgMain.color=defaultColMain;
+			GetComponentInChildren<GUI_Dialogue>().bg.color=defaultColBg;
+		}
+		
+		if(AccountInfo.worldStars[worldNo, levelNo][0]=='1')
+		{
+			if(objStar1 != null)
+			{
+				objStar1.SetActive(true);
+			}
+		}
+		else
+		{
+			if(objStar1 != null)
+			{
+				objStar1.SetActive(false);
+			}
+		}
+
+		if(AccountInfo.worldStars[worldNo, levelNo][1]=='1')
+		{
+			if(objStar2 != null)
+			{
+				objStar2.SetActive(true);
+			}
+		}
+		else
+		{
+			if(objStar2 != null)
+			{
+				objStar2.SetActive(false);
+			}
+		}
+
+		if(AccountInfo.worldStars[worldNo, levelNo][2]=='1')
+		{
+			if(objStar3 != null)
+			{
+				objStar3.SetActive(true);
+			}
+		}
+		else
+		{
+			if(objStar3 != null)
+			{
+				objStar3.SetActive(false);
+			}
 		}
 	}
 
@@ -221,40 +275,60 @@ public class Game_Configuration : MonoBehaviour {
 			turnTimeTxt.text = "";
 		}
 		
-		if(oneTiles == 0)
+		
+		Debug.LogError("Change preview tiles of level selction dialog!!! not implemented");
+		if(startTileCounts[0] == 0)
 			tile1.SetActive(false);
 		else
 			tile1.SetActive(true);
 
-		if(twoTiles == 0)
+		if(startTileCounts[1] == 0)
 			tile2.SetActive(false);
 		else
 			tile2.SetActive(true);
 
-		if(threeTiles == 0)
+		if(startTileCounts[2] == 0)
 			tile3.SetActive(false);
 		else
 			tile3.SetActive(true);
 
-		if(fourTiles == 0)
+		if(startTileCounts[3] == 0)
 			tile4.SetActive(false);
 		else
 			tile4.SetActive(true);
 
-		if(fiveTiles == 0)
+		if(startTileCounts[4] == 0)
 			tile5.SetActive(false);
 		else
 			tile5.SetActive(true);
 
-		if(sixTiles == 0)
+		if(startTileCounts[5] == 0)
 			tile6.SetActive(false);
 		else
 			tile6.SetActive(true);
 
-		if(sevenTiles == 0)
+		if(startTileCounts[6] == 0)
 			tile7.SetActive(false);
 		else
 			tile7.SetActive(true);
+
+		if(startTileCounts[7] == 0)
+			tile8.SetActive(false);
+		else
+			tile8.SetActive(true);
+
+		if(startTileCounts[8] == 0)
+			tile9.SetActive(false);
+		else
+			tile9.SetActive(true);
+
+		if(startTileCounts[9] > 0)
+		{
+			tilePlus.SetActive(true);
+		} else 
+		{
+			tilePlus.SetActive(false);
+		}
 
 
 		
@@ -293,15 +367,7 @@ public class Game_Configuration : MonoBehaviour {
 		ApplicationModel.LEVEL_NO = levelNo;
 		ApplicationModel.WORLD_NO = worldNo;
 		ApplicationModel.LEVEL_CODE = levelCode;
-		ApplicationModel.ONE_TILES = oneTiles;
-		ApplicationModel.TWO_TILES = twoTiles;
-		ApplicationModel.THREE_TILES = threeTiles;
-		ApplicationModel.FOUR_TILES = fourTiles;
-		ApplicationModel.FIVE_TILES = fiveTiles;
-		ApplicationModel.SIX_TILES = sixTiles;
-		ApplicationModel.SEVEN_TILES = sevenTiles;
-		ApplicationModel.EIGHT_TILES = eightTiles;
-		ApplicationModel.NINE_TILES = nineTiles;
+		ApplicationModel.START_TILE_COUNTS =startTileCounts; 
 		ApplicationModel.AI_PLAYERS=ai_opponents;
 		ApplicationModel.HUMAN_PLAYERS=1;
 		ApplicationModel.GRID_SIZE=gridSize;
@@ -311,13 +377,14 @@ public class Game_Configuration : MonoBehaviour {
 		ApplicationModel.Objective1Code=objective1Code;
 		ApplicationModel.Objective2Code=objective2Code;
 		ApplicationModel.Objective3Code=objective3Code;
+		ApplicationModel.MAX_TILE=maxTile;
 
 		if(challengeMode)
 			ApplicationModel.RETURN_TO_WORLD=worldNo;
 		else
 			ApplicationModel.RETURN_TO_WORLD=-1;
 
-		MenuController.instance.NavBar.gameObject.SetActive(false);
+		//MenuController.instance.NavBar.gameObject.SetActive(false);
 
 		if(targetScore ==0)
 		{
@@ -340,13 +407,14 @@ public class Game_Configuration : MonoBehaviour {
 		StartCoroutine(_StartLevel());
 	}
 
+	/// <summary>
+	/// this method is used to transfer the selected world's data to each of the 10 level configurations
+	/// presented to the user
+	/// </summary>
+	/// <param name="config"></param>
 	public void LoadConfiguration(Game_Configuration config)
 	{
-		if(challengeMode)
-			MenuController.instance.NavBar.CloseAllDialogues(true);
-
-		
-
+		startTileCounts=config.startTileCounts;
 		levelCode = config.levelCode;
 		ai_difficulty = config.ai_difficulty;
 		levelTitle = config.levelTitle;
@@ -357,21 +425,52 @@ public class Game_Configuration : MonoBehaviour {
 		ai_opponents = config.ai_opponents;
 		turnTime = config.turnTime;
 		maxTile = config.maxTile;
-		oneTiles = config.oneTiles;
-		twoTiles = config.twoTiles;
-		threeTiles = config.threeTiles;
-		fourTiles = config.fourTiles;
-		fiveTiles = config.fiveTiles;
-		sixTiles = config.sixTiles;
-		sevenTiles = config.sevenTiles;
+		startTileCounts = config.startTileCounts;
 		targetScore = config.targetScore;
 		targetScore2 = config.targetScore2;
 		targetScore3 = config.targetScore3;
 		objective1Code = config.objective1Code;
 		objective2Code = config.objective2Code;
 		objective3Code = config.objective3Code;
+		starRequirement=config.starRequirement;
+
+	}
+
+	/// <summary>
+	/// This method is called when a level icon is selected in a specific worlf of challengge mdoe
+	/// This method is very similar to LoadConfiguration() except it also initialises the actual
+	/// individual level selection window
+	/// </summary>
+	/// <param name="config"></param>
+	public void SelectLevelConfiguration(Game_Configuration config)
+	{
+		if(challengeMode)
+			MenuController.instance.NavBar.CloseAllDialogues(true);
+
+		startTileCounts=config.startTileCounts;
+		levelCode = config.levelCode;
+		ai_difficulty = config.ai_difficulty;
+		levelTitle = config.levelTitle;
+		levelNo = config.levelNo;
+		worldNo = config.worldNo;
+		gridSize = config.gridSize;
+		human_players = config.human_players;
+		ai_opponents = config.ai_opponents;
+		turnTime = config.turnTime;
+		maxTile = config.maxTile;
+		startTileCounts = config.startTileCounts;
+		targetScore = config.targetScore;
+		targetScore2 = config.targetScore2;
+		targetScore3 = config.targetScore3;
+		objective1Code = config.objective1Code;
+		objective2Code = config.objective2Code;
+		objective3Code = config.objective3Code;
+		starRequirement=config.starRequirement;
+
 		gameObject.SetActive(true);
 		InitaliseLevelObjectives();
+
+		colour.color=MenuController.instance.NavBar.challengeModeDialogue.GetComponent<ChallengeModeController>().worldColourThemes[worldNo];
 
 		MenuController.instance.activeGameConfig=this;
 
@@ -518,55 +617,55 @@ public class Game_Configuration : MonoBehaviour {
 	{
 		switch(maxTile)
 		{
-			case 3:
-				oneTiles=gridSize*(8-maxTile)+9;
-				twoTiles=gridSize*(8-maxTile)+9;
-				threeTiles=gridSize*(8-maxTile)+9;
-				fourTiles=0;
-				fiveTiles=0;
-				sixTiles=0;
-				sevenTiles=0;
-			break;
+			// case 3:
+			// 	oneTiles=gridSize*(8-maxTile)+9;
+			// 	twoTiles=gridSize*(8-maxTile)+9;
+			// 	threeTiles=gridSize*(8-maxTile)+9;
+			// 	fourTiles=0;
+			// 	fiveTiles=0;
+			// 	sixTiles=0;
+			// 	sevenTiles=0;
+			// break;
 
-			case 4:
-				oneTiles=gridSize*(8-maxTile)+9;
-				twoTiles=gridSize*(8-maxTile)+9;
-				threeTiles=gridSize*(8-maxTile)+9;
-				fourTiles=gridSize*(8-maxTile)+9;
-				fiveTiles=0;
-				sixTiles=0;
-				sevenTiles=0;
-			break;
+			// case 4:
+			// 	oneTiles=gridSize*(8-maxTile)+9;
+			// 	twoTiles=gridSize*(8-maxTile)+9;
+			// 	threeTiles=gridSize*(8-maxTile)+9;
+			// 	fourTiles=gridSize*(8-maxTile)+9;
+			// 	fiveTiles=0;
+			// 	sixTiles=0;
+			// 	sevenTiles=0;
+			// break;
 
-			case 5:
-				oneTiles=gridSize*(8-maxTile)+9;
-				twoTiles=gridSize*(8-maxTile)+9;
-				threeTiles=gridSize*(8-maxTile)+9;
-				fourTiles=gridSize*(8-maxTile)+9;
-				fiveTiles=gridSize*(8-maxTile)+9;
-				sixTiles=0;
-				sevenTiles=0;
-			break;
+			// case 5:
+			// 	oneTiles=gridSize*(8-maxTile)+9;
+			// 	twoTiles=gridSize*(8-maxTile)+9;
+			// 	threeTiles=gridSize*(8-maxTile)+9;
+			// 	fourTiles=gridSize*(8-maxTile)+9;
+			// 	fiveTiles=gridSize*(8-maxTile)+9;
+			// 	sixTiles=0;
+			// 	sevenTiles=0;
+			// break;
 
-			case 6:
-				oneTiles=gridSize*(8-maxTile)+9;
-				twoTiles=gridSize*(8-maxTile)+9;
-				threeTiles=gridSize*(8-maxTile)+9;
-				fourTiles=gridSize*(8-maxTile)+9;
-				fiveTiles=gridSize*(8-maxTile)+9;
-				sixTiles=gridSize*(8-maxTile)+9;
-				sevenTiles=0;
-			break;
+			// case 6:
+			// 	oneTiles=gridSize*(8-maxTile)+9;
+			// 	twoTiles=gridSize*(8-maxTile)+9;
+			// 	threeTiles=gridSize*(8-maxTile)+9;
+			// 	fourTiles=gridSize*(8-maxTile)+9;
+			// 	fiveTiles=gridSize*(8-maxTile)+9;
+			// 	sixTiles=gridSize*(8-maxTile)+9;
+			// 	sevenTiles=0;
+			// break;
 
-			case 7:
-				oneTiles=gridSize*(8-maxTile)+9;
-				twoTiles=gridSize*(8-maxTile)+9;
-				threeTiles=gridSize*(8-maxTile)+9;
-				fourTiles=gridSize*(8-maxTile)+9;
-				fiveTiles=gridSize*(8-maxTile)+9;
-				sixTiles=gridSize*(8-maxTile)+9;
-				sevenTiles=gridSize*(8-maxTile)+9;
-			break;
+			// case 7:
+			// 	oneTiles=gridSize*(8-maxTile)+9;
+			// 	twoTiles=gridSize*(8-maxTile)+9;
+			// 	threeTiles=gridSize*(8-maxTile)+9;
+			// 	fourTiles=gridSize*(8-maxTile)+9;
+			// 	fiveTiles=gridSize*(8-maxTile)+9;
+			// 	sixTiles=gridSize*(8-maxTile)+9;
+			// 	sevenTiles=gridSize*(8-maxTile)+9;
+			// break;
 		}
 
 	}
@@ -628,10 +727,16 @@ public class Game_Configuration : MonoBehaviour {
 				return "Win the game with an even score";
 
 			case "Activate":
-				return "Activate " + ret[0] + " tiles in a single turn";
+				return "Activate " + ret[1] + " tiles in a single turn";
 
 			case "RunnerUp":
 				return "Finish 2nd or better in the game";
+
+			case "Swaps":
+				return "Finish with " + ret[1] + " tile swaps or less";
+
+			case "SwapsWin":
+				return "Win the game with " + ret[1] + " tile swaps or less";
 
 			default:
 				return "404: Object code unrecognised";

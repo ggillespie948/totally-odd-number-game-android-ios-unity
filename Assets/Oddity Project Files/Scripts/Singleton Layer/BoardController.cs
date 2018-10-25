@@ -185,7 +185,7 @@ public class BoardController : MonoBehaviour, Observable {
         if(GameMaster.instance.totalTiles == 0 && gameGrid[GRID_CENTER,GRID_CENTER] == 0)
         {
             // first tile must be played in centre
-            GUI_Controller.instance.SpawnTextPopup("Place first tile in center", Color.red, GameMaster.instance.objGameGrid[0,GRID_CENTER].transform, 20);
+            GUI_Controller.instance.SpawnErrorPopup("Place first tile in center", Color.red, GameMaster.instance.objGameGrid[0,GRID_CENTER].transform, 20);
             GameMaster.instance.StateMachine.RevertToLastValidState(false);
 
             //animate tile back to start
@@ -210,7 +210,7 @@ public class BoardController : MonoBehaviour, Observable {
 
         } else if(GameMaster.instance.totalTiles==0 && gameGrid[GRID_CENTER,GRID_CENTER] != 0 && cell.cellTile.value % 2 == 0)
         {
-            GUI_Controller.instance.SpawnTextPopup("Not odd!", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
+            GUI_Controller.instance.SpawnErrorPopup("Not odd!", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
             GameMaster.instance.StateMachine.RevertToLastValidState(false);
             Debug.LogError("Send played tile back to star pos");
             return false;
@@ -463,9 +463,8 @@ public class BoardController : MonoBehaviour, Observable {
         colTot = 0;
         rowTot = 0;
 
-        Debug.Log("check mvoe v increase");
         GameMaster.instance.totalTiles++;
-        GameMaster.instance.lblHandPrint2.text = "total tiles: " + GameMaster.instance.totalTiles;
+        //GameMaster.instance.lblHandPrint2.text = "total tiles: " + GameMaster.instance.totalTiles;
 
         if (GameMaster.instance.invalidTilesInplay == true)
         {
@@ -489,10 +488,10 @@ public class BoardController : MonoBehaviour, Observable {
             }
         } else 
         {
-            for(int i=0; i<GameMaster.instance.playedTiles.Count; i++)
-            {
-                GameMaster.instance.playedTiles[i].cellTile.ActiveTileSkin();
-            }
+            // for(int i=0; i<GameMaster.instance.playedTiles.Count; i++)
+            // {
+            //     GameMaster.instance.playedTiles[i].cellTile.ActiveTileSkin();
+            // }
         }
         
         return validity;
@@ -1027,7 +1026,7 @@ public class BoardController : MonoBehaviour, Observable {
         InvalidTiles.Clear();
         GUI_Controller.instance.TilesScored.Clear();
 
-        Debug.LogWarning("Played tiles count: " + GameMaster.instance.playedTiles.Count);
+        //Debug.LogWarning("Played tiles count: " + GameMaster.instance.playedTiles.Count);
 
         bool staticNeighbourCheck = false;
 
@@ -1036,7 +1035,7 @@ public class BoardController : MonoBehaviour, Observable {
 
             if (CheckTileValidity(Cell, endTurn) == false)
             {
-                Debug.Log("CELL ADDED TO INVALID TILES LIST!! X:" + Cell.x + " Y:" + Cell.y);
+                //Debug.Log("CELL ADDED TO INVALID TILES LIST!! X:" + Cell.x + " Y:" + Cell.y);
                 InvalidTiles.Add(Cell);
 
             } else
@@ -1049,7 +1048,7 @@ public class BoardController : MonoBehaviour, Observable {
                 if(!staticNeighbourCheck && CheckForExistingStaticNeighbours(Cell.x, Cell.y))
                 {
                     staticNeighbourCheck=true;
-                    Debug.LogWarning("Tile Has Static Neebs");
+                    //Debug.LogWarning("Tile Has Static Neebs");
                 }
             } else 
             {
@@ -1063,7 +1062,7 @@ public class BoardController : MonoBehaviour, Observable {
         if(GameMaster.instance.playedTiles.Count == 0)
             staticNeighbourCheck=true;
 
-        Debug.LogWarning("static need check: " + staticNeighbourCheck);
+        //Debug.LogWarning("static need check: " + staticNeighbourCheck);
 
         //If all are valid, end turn
         if (InvalidTiles.Count == 0 && endTurn && staticNeighbourCheck)
@@ -1205,7 +1204,7 @@ public class BoardController : MonoBehaviour, Observable {
 
             if(GameMaster.instance.totalTiles==1 && gameGrid[GRID_CENTER,GRID_CENTER] != 0 && gameGrid[GRID_CENTER,GRID_CENTER] % 2 != 0)
             {
-                Debug.LogError("valid central tile? ");
+                //Debug.LogError("valid central tile? ");
                 colScore=gameGrid[GRID_CENTER,GRID_CENTER];
             }
              
@@ -1215,14 +1214,14 @@ public class BoardController : MonoBehaviour, Observable {
             ///
 
 
-            Debug.Log("turnindicator: " + GameMaster.instance.turnIndicator);
-            Debug.Log("exact score: " + GameMaster.instance.PlayerStatistics.exactScore);
-            Debug.Log("colScore rowScore" + (colScore+rowScore));
+            //Debug.Log("turnindicator: " + GameMaster.instance.turnIndicator);
+            //Debug.Log("exact score: " + GameMaster.instance.PlayerStatistics.exactScore);
+            //Debug.Log("colScore rowScore" + (colScore+rowScore));
             
             
             if(GameMaster.instance.turnIndicator==1 && GameMaster.instance.PlayerStatistics.exactScore!=0 && ((rowScore+colScore)==GameMaster.instance.PlayerStatistics.exactScore))
             {
-                Debug.LogWarning("EXACT TURNSCORE OBJECTIVE MET");
+                //Debug.LogWarning("EXACT TURNSCORE OBJECTIVE MET");
                 GameMaster.instance.PlayerStatistics.turnScoreExactMet=true;
             }
 
@@ -1242,7 +1241,7 @@ public class BoardController : MonoBehaviour, Observable {
             {
                 foreach(GridCell cell in GameMaster.instance.playedTiles)
                 {
-                    GUI_Controller.instance.ActivateTile(cell.cellTile);
+                    //GUI_Controller.instance.ActivateTile(cell.cellTile);
                 }
             }
 
@@ -1267,10 +1266,10 @@ public class BoardController : MonoBehaviour, Observable {
         }
         else // else END TURN = FALSE  or INVALID TILES IN PLAY in play
         {
-            Debug.LogError("end turn false or invalid tiles in play");
+            //Debug.LogError("end turn false or invalid tiles in play");
             foreach(GridCell cell in InvalidTiles)
             {
-               Debug.LogError("INCREMENTING PLAYER ERRORS, DEACTIVATING ACTIVATED CELL SKINS AND ENABLE NO GRAV");
+               //Debug.LogError("INCREMENTING PLAYER ERRORS, DEACTIVATING ACTIVATED CELL SKINS AND ENABLE NO GRAV");
                 GameMaster.instance.playerErrors[GameMaster.instance.turnIndicator-1]++;
                 GameMaster.instance.errorsMade++;
                 if(cell.cellTile != null && cell.cellTile.activated)
@@ -1286,10 +1285,10 @@ public class BoardController : MonoBehaviour, Observable {
                 //GameMaster.instance.StateMachine.RevertToLastValidState(false);
             } else
             {
-                 Debug.LogError("TIME UP INVALID TILES");
+                 //Debug.LogError("TIME UP INVALID TILES");
                 foreach(GridCell cell in InvalidTiles)
                 {
-                    Debug.LogError("INCREMENTING PLAYER ERRORS, RESET BOARD POS, ANIM BACK TO HAND");
+                    //Debug.LogError("INCREMENTING PLAYER ERRORS, RESET BOARD POS, ANIM BACK TO HAND");
                     GameMaster.instance.playerErrors[GameMaster.instance.turnIndicator-1]++;
                     GameMaster.instance.errorsMade++;
                 }
@@ -1299,7 +1298,7 @@ public class BoardController : MonoBehaviour, Observable {
 
         if(GameMaster.instance.totalTiles==1 &&  gameGrid[GRID_CENTER,GRID_CENTER] % 2 != 0)
         {
-            Debug.LogWarning("Check board validity: true");
+            //Debug.LogWarning("Check board validity: true");
                 GameMaster.instance.invalidTilesInplay=true;
                 GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
                 return true;
@@ -1307,7 +1306,7 @@ public class BoardController : MonoBehaviour, Observable {
 
         if(InvalidTiles.Count == 0)
         {
-            Debug.LogWarning("Check board validity: true");
+            //Debug.LogWarning("Check board validity: true");
             GameMaster.instance.invalidTilesInplay=false;
             
             GameMaster.instance.StateMachine.SetLastValidState(GameMaster.instance.turnIndicator);
@@ -1321,13 +1320,13 @@ public class BoardController : MonoBehaviour, Observable {
             {
                 GUI_Controller.instance.DisableGridBoxColliders();
 
-                Debug.LogError("TIME UP INVALID TILES in play AGAIN??????????????");
+                //Debug.LogError("TIME UP INVALID TILES in play AGAIN??????????????");
                 foreach(GridCell cell in GameMaster.instance.playedTiles)
                 {
-                    GUI_Controller.instance.SpawnTextPopup("Not odd!", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
+                    GUI_Controller.instance.SpawnErrorPopup("Not odd!", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 28);
                     if(cell.cellTile != null)
                     {
-                        Debug.LogError("RE-RESET BOARD, ADD TO HAND, DEFAULT TILE SKINS, NO GRAC, PLACED, START POSS, CELL TILE");
+                        //Debug.LogError("RE-RESET BOARD, ADD TO HAND, DEFAULT TILE SKINS, NO GRAC, PLACED, START POSS, CELL TILE");
                         
                         //Reset Board Position
                         BoardController.instance.gameGrid[cell.cellTile.x,cell.cellTile.y]=0;
@@ -1380,13 +1379,13 @@ public class BoardController : MonoBehaviour, Observable {
 
                 GameMaster.instance.ToggleBoxColliders(false, false);
                 //GameMaster.instance.HidePlayerTiles();
-                Debug.LogError("END TURN DELAY!!!!! . (DISABLED)");
+                //Debug.LogError("END TURN DELAY!!!!! . (DISABLED)");
                 StartCoroutine(GameMaster.instance.EndTurnDelay(3f));
 
             }
 
             //INVALID TILES IN PLAY, TIME > 0.01
-            GUI_Controller.instance.SpawnTextPopup("Errors+1", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 12);
+            GUI_Controller.instance.SpawnErrorPopup("Errors+1", Color.red, GameMaster.instance.objGameGrid[GRID_CENTER,GRID_CENTER].transform, 22);
             return false;
 
         }
@@ -1399,6 +1398,8 @@ public class BoardController : MonoBehaviour, Observable {
 
     }
 
+    
+    public int presetLoc = 0;
     public int FindNotificationPosition()
     {
         int[] rowTotals = new int[GRID_SIZE];
@@ -1409,22 +1410,39 @@ public class BoardController : MonoBehaviour, Observable {
             rowTotals[tile.y]+=1;
         }
 
-        for(int i=0; i<GRID_SIZE; i++)
-        {
-            //Debug.Log("i:" + i + "   rowTot: " + rowTotals[i]);
-        }
+        // for(int i=0; i<GRID_SIZE; i++)
+        // {
+        //     ////Debug.Log("i:" + i + "   rowTot: " + rowTotals[i]);
+        // }
 
         int lowestIndex =0;
         int lowestIndexCount =9999;
+        List<int> equalRowtots = new List<int>();
+        equalRowtots.Clear();
         for(int i=1; i<GRID_SIZE-1; i++)
         {
             if(rowTotals[i]<lowestIndexCount)
             {
                 lowestIndex=i;
                 lowestIndexCount=rowTotals[i];
+            } else if(rowTotals[i] == lowestIndexCount)
+            {
+                equalRowtots.Add(i);
             }
         }
 
+        //if equal number of rows have same activated tile count,
+        //pick a random index 
+        if(equalRowtots.Count>1)
+        {
+            int rng = Random.Range(0, equalRowtots.Count);
+            Debug.LogWarning("Returning RNG: " + rng);
+            Debug.LogWarning("equal row tot counts:  " + equalRowtots.Count);
+            presetLoc=rng;
+            return equalRowtots[rng];
+        } 
+
+        //else there was only one lowest index count
         return lowestIndex;
 
     }
@@ -1499,7 +1517,7 @@ public class BoardController : MonoBehaviour, Observable {
                 GameMaster.instance.errorsMade++;
                 GameMaster.instance.playerErrors[GameMaster.instance.turnIndicator-1]++;
             }
-            //Debug.Log("No neighbours");
+            ////Debug.Log("No neighbours");
         }
 
 
@@ -1565,7 +1583,7 @@ public class BoardController : MonoBehaviour, Observable {
             {
                 if (yList.Count > 1)
                 {
-                    //Debug.Log("Even col tot (TV)");
+                    ////Debug.Log("Even col tot (TV)");
                     validity = false;
                     colValidity = false;
 
@@ -1650,12 +1668,12 @@ public class BoardController : MonoBehaviour, Observable {
         {
             validity = true;
             
-            Debug.Log("total tiles = 1");
+            //Debug.Log("total tiles = 1");
         }
 
         if (validity == true)
         {
-            GUI_Controller.instance.ActivateTile(cell.cellTile);
+            //GUI_Controller.instance.ActivateTile(cell.cellTile);
             
 
         } else
@@ -1663,8 +1681,8 @@ public class BoardController : MonoBehaviour, Observable {
 
             if(rowValidity == true && colValidity == true)
             {
-                //Debug.Log("ROW VALDITIY: " + rowValidity);
-                //Debug.Log("COL VALDITIY: " + colValidity);
+                ////Debug.Log("ROW VALDITIY: " + rowValidity);
+                ////Debug.Log("COL VALDITIY: " + colValidity);
             } else
             {
                 // GUI_Controller.instance.SpawnTextPopup("Not Odd!", Color.red, cell.cellTile.transform);
@@ -1893,34 +1911,34 @@ public class BoardController : MonoBehaviour, Observable {
             //Debug.Log("AI Valid: last neeb check mf failed :(((( ");
         }
 
-        if(validity == true && (x==0 ||x==6) && y==5)
-        {
-            //Update Score
-            // Debug.LogWarning("Check AI TileVAlidity:");   
-            // Debug.LogWarning("GridTile Value:" + gameGrid[x,y]);           
-            // Debug.LogWarning("x: " + x);
-            // Debug.LogWarning("y: " + y);
-            // Debug.LogWarning("rowTot: " + rowTot);
-            // Debug.LogWarning("colTot: " + colTot);
-            // Debug.LogWarning("rowVal: " + rowValidity);
-            // Debug.LogWarning("colVal: " + colValidity);
-            // Debug.LogWarning("-------------  X-LIST  -----------------");
-            // Debug.LogWarning("xList.Count: " + xList.Count);
-            // foreach(int z in xList)
-            // {
-            //     Debug.LogWarning(z);
-            // }
-            // Debug.LogWarning("-------------  Y-LIST  -----------------");
-            // Debug.LogWarning("yList.Count: " + yList.Count);
-            // foreach(int v in yList)
-            // {
-            //     Debug.LogWarning(v);
-            // }
-            // Debug.LogWarning("-----------------------------");
-            // Debug.LogWarning("0:5  - " + gameGrid[0,5]);
-            // Debug.LogWarning("6:5  - " + gameGrid[6,5]);
+        // if(validity==true && ((y==2 ||y==4) && x==1) && gameGrid[1,4] != 0)
+        // {
+        //     //Update Score
+        //     Debug.LogWarning("Check AI TileVAlidity:");   
+        //     Debug.LogWarning("GridTile Value:" + gameGrid[x,y]);           
+        //     Debug.LogWarning("x: " + x);
+        //     Debug.LogWarning("y: " + y);
+        //     Debug.LogWarning("rowTot: " + rowTot);
+        //     Debug.LogWarning("colTot: " + colTot);
+        //     Debug.LogWarning("rowVal: " + rowValidity);
+        //     Debug.LogWarning("colVal: " + colValidity);
+        //     // Debug.LogWarning("-------------  X-LIST  -----------------");
+        //     // Debug.LogWarning("xList.Count: " + xList.Count);
+        //     // foreach(int z in xList)
+        //     // {
+        //     //     Debug.LogWarning(z);
+        //     // }
+        //     // Debug.LogWarning("-------------  Y-LIST  -----------------");
+        //     // Debug.LogWarning("yList.Count: " + yList.Count);
+        //     // foreach(int v in yList)
+        //     // {
+        //     //     Debug.LogWarning(v);
+        //     // }
+        //     // Debug.LogWarning("-----------------------------");
+        //     //Debug.LogWarning("0:5  - " + gameGrid[0,5]);
+        //     //Debug.LogWarning("6:5  - " + gameGrid[6,5]);
 
-        }
+        // }
 
         return validity;
     }

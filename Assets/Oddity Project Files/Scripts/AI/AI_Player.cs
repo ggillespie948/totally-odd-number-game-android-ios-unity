@@ -31,17 +31,19 @@ public class AI_Player : MonoBehaviour {
     //Calculate tuples from hand
     public void Initalise()
     {
-		Debug.Log ("Calculating tile tuples..");
+		//Debug.Log ("Calculating tile tuples..");
         movesCalculated = false;
         noValidMoves = false;
+
+        if(GameMaster.instance.totalTiles ==0)
+        {
+            PlayFirstTile();    
+        }
+
 
         //Load current hand from game master
         LoadHand();
 
-        // if(GameMaster.instance.totalTiles ==0)
-        // {
-        //     PlayFirstTile();    
-        // }
 
 
 
@@ -53,6 +55,87 @@ public class AI_Player : MonoBehaviour {
 
         BoardEvaluator.isPlayerbool(true);
         BoardEvaluator.EvaluateBoard();
+    }
+
+    private void PlayFirstTile()
+    {
+        //load hand
+        switch(GameMaster.instance.turnIndicator)
+        {
+            case 1:
+                //Debug.Log("P1 hand loaded");
+                CurrentHand = GameMaster.instance.Player1Hand;
+                break;
+
+            case 2:
+                //Debug.Log("P2 hand loaded");
+                CurrentHand = GameMaster.instance.Player2Hand;
+                break;
+
+            case 3:
+                //Debug.Log("P3 hand loaded");
+                CurrentHand = GameMaster.instance.Player3Hand;
+                break;
+
+            case 4:
+                //Debug.Log("P4 hand loaded");
+                CurrentHand = GameMaster.instance.Player4Hand;
+                break;
+        }
+
+        GridTile removalTile = new GridTile();
+
+        //animate and remove odd tile form hand
+        foreach(GridTile tile in CurrentHand)
+        {
+            if(!isEven(tile.value))
+            {
+                Debug.Log("animate and remove tile");
+                //Place tile on to REAL game grid 
+                BoardController.instance.gameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER] = tile.value;
+                tile.placed = true;
+                tile.placedByAI = true;
+                tile.x=BoardController.instance.GRID_CENTER;
+                tile.y=BoardController.instance.GRID_CENTER;
+                GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER]);
+                tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER].transform.position + new Vector3(0, .07f, -1);
+                GUI_Controller.instance.AnimateTo(tile.GetComponent<GUI_Object>(), GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER, BoardController.instance.GRID_CENTER].transform.position + new Vector3(0, 0, -1), .8f);
+                GUI_Controller.instance.RotateObjectBackward(tile.gameObject, .8f, 360);
+                GameMaster.instance.objGameGrid[BoardController.instance.GRID_CENTER,BoardController.instance.GRID_CENTER].cellTile = tile;
+                GameMaster.instance.totalTiles++;
+                removalTile=tile;
+                break;
+            }
+        }
+
+        //Remove tile from current hand
+        CurrentHand.Remove(removalTile);
+
+        //load hand
+        switch(GameMaster.instance.turnIndicator)
+        {
+            case 1:
+                //Debug.Log("P1 hand loaded");
+                GameMaster.instance.Player1Hand.Remove(removalTile);
+                break;
+
+            case 2:
+                //Debug.Log("P2 hand loaded");
+                GameMaster.instance.Player2Hand.Remove(removalTile);
+                break;
+
+            case 3:
+                //Debug.Log("P3 hand loaded");
+                GameMaster.instance.Player3Hand.Remove(removalTile);
+                break;
+
+            case 4:
+                //Debug.Log("P4 hand loaded");
+                GameMaster.instance.Player4Hand.Remove(removalTile);
+                break;
+        }
+
+
     }
 
 
@@ -116,7 +199,7 @@ public class AI_Player : MonoBehaviour {
         //Wait for board evaluator thread to finish execution
         while (movesCalculated == false)
         {
-            Debug.Log("AI PLAYA Waiting....");
+           // Debug.Log("AI PLAYA Waiting....");
             yield return new WaitForSeconds(1);
         }
 
@@ -135,7 +218,7 @@ public class AI_Player : MonoBehaviour {
 
         if (CurrentHand.Count > 0 && noValidMoves == false)
         {
-            Debug.Log("Recalculating Possible Moves..");
+            //Debug.Log("Recalculating Possible Moves..");
             Initalise();
             yield break;
         }
@@ -144,7 +227,7 @@ public class AI_Player : MonoBehaviour {
 
         if (CurrentHand.Count == 0 || noValidMoves == true)
         {
-			Debug.Log ("Exit point");
+			//Debug.Log ("Exit point");
 
             //delay before ending turn to allow for tiles that are in animation to be activated properly
             yield return new WaitForSeconds(1.5f);
@@ -176,10 +259,8 @@ public class AI_Player : MonoBehaviour {
 
         if(BoardEvaluator.validMove.Count < 1)
         {
-
             movesCalculated = true;
             noValidMoves = true;
-           
             return;
         }
 
@@ -190,7 +271,7 @@ public class AI_Player : MonoBehaviour {
 
     void MakeMove(AI_Move Move)
     {
-        Debug.Log("Making move");
+        //Debug.Log("Making move");
 
         AI_MatchCriteria Criteria = Move.Criteria;
 
@@ -224,16 +305,16 @@ public class AI_Player : MonoBehaviour {
 
     void MakeMoveHorizontal(AI_Move Move)
     {
-        Debug.Log("This move consists of : " + Move.tileCount + " moves!!!!! ");
+        //Debug.Log("This move consists of : " + Move.tileCount + " moves!!!!! ");
         //temp
 		if (Move.Correction != null) {
-			Debug.Log ("HORIZONTAL CORRECTION BEING PLAYED");
-			Debug.Log ("X: " + Move.Correction.tileX);
-			Debug.Log ("Y: " + Move.Correction.tileY);
-			Debug.Log ("Val: " + Move.Correction.tileValue);
-			Debug.Log ("Dir: " + Move.Correction.correctionDir);
+			//Debug.Log ("HORIZONTAL CORRECTION BEING PLAYED");
+			//Debug.Log ("X: " + Move.Correction.tileX);
+			//Debug.Log ("Y: " + Move.Correction.tileY);
+			//Debug.Log ("Val: " + Move.Correction.tileValue);
+			//Debug.Log ("Dir: " + Move.Correction.correctionDir);
 		} else {
-			Debug.Log ("correction null");
+			//Debug.Log ("correction null");
 		}
 
         // Debug.Log("Move.Criteria.rowColNo :" + Move.Criteria.rowcolNo);
@@ -323,7 +404,7 @@ public class AI_Player : MonoBehaviour {
                     tile.x=x;
                     tile.y=y;
                     GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[x, y]);
-                    tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[x, y].transform.position + new Vector3(0, 0, -1);
+                    tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[x, y].transform.position + new Vector3(0, .07f, -1);
                     GUI_Controller.instance.AnimateTo(tile.GetComponent<GUI_Object>(), GameMaster.instance.objGameGrid[x, y].transform.position + new Vector3(0, 0, -1), .8f);
                     GUI_Controller.instance.RotateObjectBackward(tile.gameObject, .8f, 360);
                     GameMaster.instance.objGameGrid[x,y].cellTile = tile;
@@ -342,19 +423,19 @@ public class AI_Player : MonoBehaviour {
             foreach (GridTile i in RemovalList)
             {
                 CurrentHand.Remove(i);    //GameMaster.instance.Player1Hand.Remove(i);
-                Debug.Log("Tile removed - new hand count: " + CurrentHand.Count);
+                //Debug.Log("Tile removed - new hand count: " + CurrentHand.Count);
             }
 
             if (tilePlayed == false)
             {
-                Debug.Log("TILE NOT FOUND IN PLAYERS HAND");
+                //Debug.Log("TILE NOT FOUND IN PLAYERS HAND");
             }
 
         }
 
         if(Move.Correction != null)
         {
-            Debug.Log("Correction timeeeeeee");
+            //Debug.Log("Correction timeeeeeee");
 			List<GridTile> RemovalList = new List<GridTile>();
 			RemovalList.Clear();
 
@@ -368,7 +449,7 @@ public class AI_Player : MonoBehaviour {
                     tile.y=Move.Correction.tileY;
                     BoardController.instance.gameGrid[Move.Correction.tileX, Move.Correction.tileY] = Move.Correction.tileValue;
                     GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY]);
-                    tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY].transform.position + new Vector3(0, 0, -1);
+                    tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY].transform.position + new Vector3(0, .05f, -1);
                     GUI_Controller.instance.AnimateTo(tile.GetComponent<GUI_Object>(), GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY].transform.position + new Vector3(0, 0, -1), .8f);
                     GUI_Controller.instance.RotateObjectBackward(tile.gameObject, .8f, 360);
                     GameMaster.instance.objGameGrid[Move.Correction.tileX, Move.Correction.tileY].cellTile = tile;
@@ -379,7 +460,7 @@ public class AI_Player : MonoBehaviour {
 
             }
 
-            Debug.Log("Removing correction tilesssss");
+            //Debug.Log("Removing correction tilesssss");
 
 			foreach (GridTile i in RemovalList)
 			{
@@ -407,17 +488,17 @@ public class AI_Player : MonoBehaviour {
 
     void MakeMoveVertical(AI_Move Move)
     {
-        Debug.Log("This move consists of : " + Move.tileCount + " moves!!!!! ");
+        //Debug.Log("This move consists of : " + Move.tileCount + " moves!!!!! ");
 
         //temp
 		if (Move.Correction != null) {
-			Debug.Log ("VERTICAL CORRECTION BEING PLAYED");
-			Debug.Log ("X: " + Move.Correction.tileX);
-			Debug.Log ("Y: " + Move.Correction.tileY);
-			Debug.Log ("Val: " + Move.Correction.tileValue);
-			Debug.Log ("Dir: " + Move.Correction.correctionDir);
+			//Debug.Log ("VERTICAL CORRECTION BEING PLAYED");
+			//Debug.Log ("X: " + Move.Correction.tileX);
+			//Debug.Log ("Y: " + Move.Correction.tileY);
+			//Debug.Log ("Val: " + Move.Correction.tileValue);
+			//Debug.Log ("Dir: " + Move.Correction.correctionDir);
 		} else {
-			Debug.Log ("correction null");
+			//Debug.Log ("correction null");
 		}
 
         //try and place tiles
@@ -495,7 +576,7 @@ public class AI_Player : MonoBehaviour {
                     tile.x=x;
                     tile.y=y;
                     GameMaster.instance.playedTiles.Add(GameMaster.instance.objGameGrid[x, y]); 
-                    tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[x, y].transform.position + new Vector3(0, 0, -1);
+                    tile.GetComponent<GUI_Object>().targetPos = GameMaster.instance.objGameGrid[x, y].transform.position + new Vector3(0, .05f, -1);
                     GUI_Controller.instance.AnimateTo(tile.GetComponent<GUI_Object>(), GameMaster.instance.objGameGrid[x, y].transform.position
                                                      + new Vector3(0, 0, -1), .8f);
                     GUI_Controller.instance.RotateObjectBackward(tile.gameObject, .8f, 360);
@@ -519,7 +600,7 @@ public class AI_Player : MonoBehaviour {
 
             if (tilePlayed == false)
             {
-                Debug.Log("TILE NOT FOUND IN PLAYERS HAND");
+                //Debug.Log("TILE NOT FOUND IN PLAYERS HAND");
             }
 
             //break;
@@ -553,7 +634,7 @@ public class AI_Player : MonoBehaviour {
 
             }
 
-            Debug.Log("Removing correction tilesssss");
+            //Debug.Log("Removing correction tilesssss");
 
 			foreach (GridTile i in RemovalList)
 			{
@@ -562,8 +643,8 @@ public class AI_Player : MonoBehaviour {
             //GameMaster.instance.StateMachine.SetLastValidState(2);
 			noValidMoves = true;
 		    
-			Debug.Log ("Byeeeee");
-			Debug.Log (CurrentHand.Count);
+			//Debug.Log ("Byeeeee");
+			//Debug.Log (CurrentHand.Count);
 
         }
 

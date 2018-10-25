@@ -4,6 +4,7 @@ using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class AccountInfo : MonoBehaviour {
@@ -26,13 +27,18 @@ public class AccountInfo : MonoBehaviour {
 	public static int beginnerStars;
 	public static int noviceStars;
 	public static int intermediateStars;
+	public static int adeptStars;
 	public static int advancedStars;
+	public static int expertStars;
 	public static int masterStars;
+	public static int targetMasterStars;
 	public static int grandMasterStars;
+	public static int legendStars;
 
 	public static int totalStars;
 
 	public static string tileUnlockString;
+	public static string themeUnlockString;
 
 	[SerializeField]
 	private GetPlayerCombinedInfoResultPayload info;
@@ -52,11 +58,11 @@ public class AccountInfo : MonoBehaviour {
 
 	public static string CATALOG_ITEMS = "Items";
 	public static string ITEM_TILESKIN = "Tile Skin";
-
+	public static string ITEM_GRIDSKIN = "Grid Skin";
 	public static string ITEM_LIFEPASS = "Life Pass";
 	public static string ITEM_LIFEREFILL = "Life Refill";
 	public static string ITEM_COINPACK = "Coin Pack";
-	public static string ITEM_LEVELPACK = "Level Pack";
+	public static string ITEM_LEVELPACK = "FullGameLevelPass";
 
 	public static int ITEM_COST =1;
 	public static int ITEM_PREFAB =3;
@@ -65,7 +71,6 @@ public class AccountInfo : MonoBehaviour {
 	public static int UNLOCKNO =9;
 
 	public static int TILESKIN =0;
-	public static int GRIDSKIN =0;
 	public static int THEME =0;
 
 	public List<ItemInstance> inv_items = new List<ItemInstance>();
@@ -87,6 +92,8 @@ public class AccountInfo : MonoBehaviour {
 
 	[SerializeField]
 	public static string DAILY_CHALLENGE_CODE;
+	[SerializeField]
+	public static bool DAILY_CHALLENGE_COMPLETED{get; private set;}
 	
 		
 
@@ -98,7 +105,7 @@ public class AccountInfo : MonoBehaviour {
 
 		DontDestroyOnLoad(gameObject);
 
-		worldStars = new string[6,11]; // temp - hard coded the number of worlds/levels
+		worldStars = new string[10,11]; // temp - hard coded the number of worlds/levels
 	}
 
 	/// <summary>
@@ -108,8 +115,9 @@ public class AccountInfo : MonoBehaviour {
 	void Start()
 	{
 		//MenuController.instance.loadingPanel.SetActive(true);
-		Debug.Log("Account info initial login");
+		//Debug.Log("Account info initial login");
 		Login();
+		
 		
 	}
 
@@ -121,7 +129,7 @@ public class AccountInfo : MonoBehaviour {
 
 	public static int TotalStars()
 	{
-		return (beginnerStars+noviceStars+intermediateStars+advancedStars+masterStars+grandMasterStars);
+		return (beginnerStars+noviceStars+intermediateStars+adeptStars+advancedStars+expertStars+masterStars+targetMasterStars+grandMasterStars+legendStars);
 	}
 
 	public static void Login()
@@ -151,6 +159,7 @@ public class AccountInfo : MonoBehaviour {
 	private static void OnLoginSuccess(LoginResult result)
 	{
 		Debug.LogWarning("Login Successful");
+		Instance.CheckIn();
 		if(result.NewlyCreated)
 		{
 			SetUpAccount();
@@ -159,9 +168,10 @@ public class AccountInfo : MonoBehaviour {
 			GetPlayerData(result.PlayFabId);
 		}
 		MenuController.instance.navHighlight.SetActive(true);
-		Instance.LoadLeaderboard("Wins");
+		
 		//GetAccountInfo(result.PlayFabId);
 		Instance.GetInventory();
+		Instance.LoadLeaderboard("Stars");
 		
 		playfabId = result.PlayFabId;
 
@@ -209,7 +219,7 @@ public class AccountInfo : MonoBehaviour {
 			switch(val.StatisticName)
 			{
 				case "DailyStars":
-				AccountInfo.WIN_STREAK=val.Value;
+				AccountInfo.DAILY_STARS=val.Value;
 				break;
 
 				case "DailyTiles":
@@ -293,16 +303,18 @@ public class AccountInfo : MonoBehaviour {
 
 	static void OnAccountInfoSuccess(GetPlayerCombinedInfoResult result)
 	{
+
 		Debug.Log("Player Info Retrieved");
 		if(Instance != null)
 		{
 			Instance.info = result.InfoResultPayload;
 			UpdateUIContent(result.InfoResultPayload);
+			GetDailyChallenge();
 		} else {
 			
 		}
 
-		GetDailyChallenge();
+		
 
 	}
 
@@ -318,14 +330,26 @@ public class AccountInfo : MonoBehaviour {
 				GUI_Controller.instance.CurrencyUI.playerCoins=res;
 			}
 
-			if(Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.LIVES_CODE, out res))
+			if(!AccountInfo.instance.InventoryContainsItemClass("Life Pass"))
 			{
-				GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
+				if(Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.LIVES_CODE, out res))
+				{
+					GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().gameObject.SetActive(true);
+					GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().text =  res.ToString();
+					GUI_Controller.instance.CurrencyUI.playerLives=res;
+					GUI_Controller.instance.LivesDialogue.GetComponent<NoGravity>().enabled=false;
+				}
+			} else 
+			{
+				GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().text = "Unlimited";
 				GUI_Controller.instance.CurrencyUI.playerLives=res;
+				GUI_Controller.instance.LivesDialogue.GetComponent<Image>().color=Color.red;
+				GUI_Controller.instance.LivesDialogue.GetComponent<NoGravity>().enabled=true;
+
 			}
 
-			GUI_Controller.instance.StarDialogue.GetComponentInChildren<TextMeshProUGUI>().text = (beginnerStars+noviceStars+intermediateStars+advancedStars+masterStars+grandMasterStars).ToString();
-			GUI_Controller.instance.CurrencyUI.playerStars=(beginnerStars+noviceStars+intermediateStars+advancedStars+masterStars+grandMasterStars);
+			GUI_Controller.instance.CurrencyUI.playerStars=(beginnerStars+noviceStars+intermediateStars+adeptStars+advancedStars+expertStars+masterStars+targetMasterStars+grandMasterStars+legendStars);
+			GUI_Controller.instance.StarDialogue.GetComponentInChildren<TextMeshProUGUI>().text = (GUI_Controller.instance.CurrencyUI.playerStars).ToString();
 			
 		}
 
@@ -340,29 +364,43 @@ public class AccountInfo : MonoBehaviour {
 	public static void SetUpAccount() {
 		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
 			Data = new Dictionary<string, string>() {
-				{"B_STARS", "000,000,000,000,000,000,000,000,000,000"},
-				{"N_STARS", "000,000,000,000,000,000,000,000,000,000"},
-				{"I_STARS", "000,000,000,000,000,000,000,000,000,000"},
-				{"A_STARS", "000,000,000,000,000,000,000,000,000,000"},
-				{"M_STARS", "000,000,000,000,000,000,000,000,000,000"},
-				{"G_STARS", "000,000,000,000,000,000,000,000,000,000"},
 				{"Theme", "0"},
 				{"TileSkin", "0"},
-				{"GridSkin", "0"},
-				{"TileUnlockString", "0000000000000000"},
-				{"CURRENT_CHALLENGE_VAL", "0"}
+				{"ThemeUnlockString", "100000000"},
+				{"TileUnlockString", "1000000000000000"},
+				{"CURRENT_CHALLENGE_VAL", "0"} //the ID of the current daily challenge
 			}
 		}, 
-		result => Debug.Log("Successfully setup user data"),//SetUpAccount2(),
+		result =>  SetUpAccountChallengeData(),
 		error => {
 			Debug.Log("Got error setting initial user data");
+			Debug.Log(error.GenerateErrorReport());
+		});
+	}
+		public static void SetUpAccountChallengeData() {
+		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
+			Data = new Dictionary<string, string>() {
+				{"B_STARS", "000,000,000,000,000,000,000,000,000,000"}, //beginner
+				{"N_STARS", "000,000,000,000,000,000,000,000,000,000"}, //novice
+				{"I_STARS", "000,000,000,000,000,000,000,000,000,000"}, //intermediate
+				{"D_STARS", "000,000,000,000,000,000,000,000,000,000"}, //a D ept
+				{"A_STARS", "000,000,000,000,000,000,000,000,000,000"}, //advanced
+				{"E_STARS", "000,000,000,000,000,000,000,000,000,000"}, //expert
+				{"M_STARS", "000,000,000,000,000,000,000,000,000,000"}, //master
+				{"T_STARS", "000,000,000,000,000,000,000,000,000,000"}, //targetmaster
+				{"G_STARS", "000,000,000,000,000,000,000,000,000,000"}, //grand Master
+				{"L_STARS", "000,000,000,000,000,000,000,000,000,000"}, //legend
+			}
+		}, 
+		result =>  AccountInfo.instance.OnNameSetComplete(),
+		error => {
+			Debug.Log("Got error setting challenge mode user data");
 			Debug.Log(error.GenerateErrorReport());
 		});
 	}
 
 	public static void GetTimeToFullEnergy()
 	{
-		
 
 	}
 
@@ -424,6 +462,7 @@ public class AccountInfo : MonoBehaviour {
 				if(!result.Data.ContainsKey("B_STARS"))
 				{
 					SetUpAccount();
+					return;
 				}
 
 				Scene scene = SceneManager.GetActiveScene();
@@ -484,6 +523,23 @@ public class AccountInfo : MonoBehaviour {
 					}
 					intermediateStars = intermediateCounter;
 
+					//Parse Adept  Stars
+					int adeptCounter = 0;
+					string adeptStarString = result.Data["D_STARS"].Value;
+					string[] tokenResultD = adeptStarString.Split(',');
+					int indxD=0;
+					foreach(string token in tokenResultD)
+					{
+						worldStars[3,indxD]=token;
+						indxD++;
+						foreach(char c in token)
+						{
+							if(c=='1')
+								adeptCounter++;
+						}
+					}
+					adeptStars = adeptCounter;
+
 					//Parse Advanced Stars
 					int advancedCounter = 0;
 					string advancedStarString = result.Data["A_STARS"].Value;
@@ -491,7 +547,7 @@ public class AccountInfo : MonoBehaviour {
 					int indx3=0;
 					foreach(string token in tokenResult3)
 					{
-						worldStars[3,indx3]=token;
+						worldStars[4,indx3]=token;
 						indx3++;
 						foreach(char c in token)
 						{
@@ -501,6 +557,23 @@ public class AccountInfo : MonoBehaviour {
 					}
 					advancedStars = advancedCounter;
 
+					//Parse Expert Stars
+					int expertCounter = 0;
+					string expertStarString = result.Data["E_STARS"].Value;
+					string[] tokenResultE = expertStarString.Split(',');
+					int indxE=0;
+					foreach(string token in tokenResultE)
+					{
+						worldStars[5,indxE]=token;
+						indxE++;
+						foreach(char c in token)
+						{
+							if(c=='1')
+								expertCounter++;
+						}
+					}
+					expertStars = expertCounter;
+
 					//Parse Master Stars
 					int masterCounter = 0;
 					string masterStarString = result.Data["M_STARS"].Value;
@@ -508,7 +581,7 @@ public class AccountInfo : MonoBehaviour {
 					int indx4=0;
 					foreach(string token in tokenResult4)
 					{
-						worldStars[4,indx4]=token;
+						worldStars[6,indx4]=token;
 						indx4++;
 						foreach(char c in token)
 						{
@@ -518,6 +591,23 @@ public class AccountInfo : MonoBehaviour {
 					}
 					masterStars = masterCounter;
 
+					//Parse Target Master Stars
+					int targetMasterCounter = 0;
+					string targetMasterStarString = result.Data["T_STARS"].Value;
+					string[] tokenResultT = targetMasterStarString.Split(',');
+					int indxT=0;
+					foreach(string token in tokenResultT)
+					{
+						worldStars[7,indxT]=token;
+						indxT++;
+						foreach(char c in token)
+						{
+							if(c=='1')
+								targetMasterCounter++;
+						}
+					}
+					targetMasterStars = targetMasterCounter;
+
 					//Parse Grand Master Stars
 					int gmasterCounter = 0;
 					string gmasterStarString = result.Data["G_STARS"].Value;
@@ -525,7 +615,7 @@ public class AccountInfo : MonoBehaviour {
 					int indx5=0;
 					foreach(string token in tokenResult5)
 					{
-						worldStars[5,indx5]=token;
+						worldStars[8,indx5]=token;
 						indx5++;
 						foreach(char c in token)
 						{
@@ -534,6 +624,30 @@ public class AccountInfo : MonoBehaviour {
 						}
 					}
 					grandMasterStars = gmasterCounter;
+
+					//Parse Legend  Stars
+					int legendCounter = 0;
+					string legendStarString = result.Data["L_STARS"].Value;
+					string[] tokenResultL = legendStarString.Split(',');
+					int indxL=0;
+					foreach(string token in tokenResultL)
+					{
+						worldStars[9,indxL]=token;
+						indxL++;
+						foreach(char c in token)
+						{
+							if(c=='1')
+								legendCounter++;
+						}
+					}
+					legendStars = legendCounter;
+
+					
+
+					if(result.Data.ContainsKey("CURRENT_CHALLENGE_VAL"))
+					{
+						CURRENT_CHALLENGE_NO=int.Parse(result.Data["CURRENT_CHALLENGE_VAL"].Value);
+					}
 
 					if(result.Data.ContainsKey("TileUnlockString"))
 					{
@@ -545,14 +659,29 @@ public class AccountInfo : MonoBehaviour {
 						UpdateTileSkinUnlockString();
 					}
 
+					if(result.Data.ContainsKey("ThemeUnlockString"))
+					{
+						themeUnlockString=result.Data["ThemeUnlockString"].Value;
+					}
+					else
+					{
+						themeUnlockString="1000000";
+						UpdateThemeString();
+					}
+
+					if(result.Data.ContainsKey("Theme"))
+					{
+						THEME=int.Parse(result.Data["Theme"].Value);
+					}
+
+					if(result.Data.ContainsKey("TileSkin"))
+					{
+						TILESKIN=int.Parse(result.Data["TileSkin"].Value);
+					}
 
 					Debug.Log("Setting cosmetic values...");
-					TILESKIN=int.Parse(result.Data["TileSkin"].Value);
 					ApplicationModel.TILESKIN=TILESKIN;
-					GRIDSKIN=int.Parse(result.Data["GridSkin"].Value);
-					THEME=int.Parse(result.Data["Theme"].Value);
 
-					GetAccountInfo();
 				}
 
 				//Account Info Request From Main GAmePlay Scene
@@ -594,6 +723,7 @@ public class AccountInfo : MonoBehaviour {
 				Debug.Log(error.GenerateErrorReport());
 			});
 	}
+	
 
 	public static void UpdateTileSkinUnlockString()
 	{
@@ -609,16 +739,16 @@ public class AccountInfo : MonoBehaviour {
 			});
 	}
 
-	public void UpdateGridSkin(int gridSkinID)
+	public static void UpdateThemeString()
 	{
 		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
 			Data = new Dictionary<string, string>() {
-					{"GridSkin", gridSkinID.ToString()}
+					{"ThemeUnlockString", themeUnlockString}
 				}
 			}, 
-			result => Debug.Log("Successfully updated player grid skin data"),
+			result => Debug.Log("Successfully updated player theme unlock string data"),
 			error => {
-				Debug.Log("Got error setting grid skin data");
+				Debug.Log("Got error setting tile skin");
 				Debug.Log(error.GenerateErrorReport());
 			});
 	}
@@ -674,11 +804,11 @@ public class AccountInfo : MonoBehaviour {
 		},
 		EventName = "player_completed_game"
 		},
-		result => UpdatePlayerStatistics(playerWin, GameMaster.instance.PlayerStatistics.p1Tiles),
+		result => UpdatePlayerStatistics(playerWin, GameMaster.instance.playerPlayedTiles[0], GameMaster.instance.starCount),
 		error => Debug.LogError(error.GenerateErrorReport()));
 	}
 
-	public void UpdatePlayerStatistics(bool playerWin, int tilesPlayed)
+	public void UpdatePlayerStatistics(bool playerWin, int tilesPlayed, int starCount)
 	{
 		Debug.Log("Player event sent.. updating player statistics");
 
@@ -710,7 +840,9 @@ public class AccountInfo : MonoBehaviour {
 				new StatisticUpdate{StatisticName = "Loses", Value=loseIncrement},
 				new StatisticUpdate{StatisticName = "TilesPlayed", Value=tilesPlayed},
 				new StatisticUpdate{StatisticName = "DailyTiles", Value=tilesPlayed},
-				new StatisticUpdate{StatisticName = "WinStreak", Value=playerWinStreakVal}
+				new StatisticUpdate{StatisticName = "WinStreak", Value=playerWinStreakVal},
+				new StatisticUpdate{StatisticName = "Stars", Value=starCount},
+				new StatisticUpdate{StatisticName = "DailyStars", Value=starCount}
 			} 
 		},
 		result => {Debug.Log("Player statistics updated"); },
@@ -741,7 +873,7 @@ public class AccountInfo : MonoBehaviour {
 			MaxResultsCount=1
 		},
 		result => {
-			Debug.Log("leaderboard retireved");
+//			Debug.Log("daily challenge leaderboard retireved");
 			foreach(PlayerLeaderboardEntry entry in result.Leaderboard)
 			{
 				if(entry.PlayFabId == AccountInfo.playfabId)
@@ -750,7 +882,7 @@ public class AccountInfo : MonoBehaviour {
 				}
 			}
 
-			Debug.LogError("DailyLeaderBoard: " + statisticName + ": val returned: " + value);
+		//	Debug.LogError("DailyLeaderBoard: " + statisticName + ": val returned: " + value);
 			UpdateChallengeUI(value);
 
 		},
@@ -774,6 +906,7 @@ public class AccountInfo : MonoBehaviour {
 		PlayFab.ClientModels.VirtualCurrencyRechargeTime res;
 		if(result.VirtualCurrencyRechargeTimes.TryGetValue(AccountInfo.LIVES_CODE, out res))
 		{
+			Debug.Log("Secs: " + res.SecondsToRecharge);
 			MenuController.instance.CurrencyUI.secsToFullEnergy=res.SecondsToRecharge;
 		}
 			
@@ -788,6 +921,17 @@ public class AccountInfo : MonoBehaviour {
 		foreach(ItemInstance inv_item in Instance.inv_items)
 		{
 			if(inv_item.ItemId == item.ItemId)
+			return true;
+		}
+
+		return false;
+	}
+
+	public bool InventoryContainsItemClass(string itemClass)
+	{
+		foreach(ItemInstance inv_item in Instance.inv_items)
+		{
+			if(inv_item.ItemClass == itemClass)
 			return true;
 		}
 
@@ -809,12 +953,35 @@ public class AccountInfo : MonoBehaviour {
 	public void OnNameSetComplete()
 	{
 		Debug.Log("Successfully updated player name");
-		MenuController.instance.OpenMainMenu();
+		SceneManager.LoadScene("TitleScreen");
 	}
 
 	public static void GetDailyChallenge()
 	{
-		Debug.LogError("Daily Challenge Code: " +AccountInfo.instance.info.TitleData["DailyChallengeCode."+AccountInfo.CURRENT_CHALLENGE_NO]);
+		UserDataRecord res;
+		if(AccountInfo.instance.info.UserReadOnlyData.ContainsKey("DailyChallengeComplete"))
+		{
+			if(AccountInfo.instance.info.UserReadOnlyData.TryGetValue("DailyChallengeComplete", out res))
+			{
+				if(res.Value == "1")
+				{
+					//Debug.Log("GetDAily Challenge: COMPLETED IT M8");
+					DAILY_CHALLENGE_COMPLETED=true;
+				}
+				else
+				{
+					//Debug.Log("GetDAily Challenge: NOT COMPLETED IT :(");
+					DAILY_CHALLENGE_COMPLETED=false;
+				}
+
+			}
+
+		}
+
+		
+		
+		
+		//Debug.LogError("Daily Challenge Code: " +AccountInfo.instance.info.TitleData["DailyChallengeCode."+AccountInfo.CURRENT_CHALLENGE_NO]);
 		DAILY_CHALLENGE_CODE=AccountInfo.instance.info.TitleData["DailyChallengeCode."+AccountInfo.CURRENT_CHALLENGE_NO];
 
 		//Get daily challenge text name
@@ -825,7 +992,6 @@ public class AccountInfo : MonoBehaviour {
 			string challengeCode = AccountInfo.instance.info.TitleData["DailyChallengeCode."+CURRENT_CHALLENGE_NO];
 
 			string[] ret = challengeCode.Split('.');
-
 			
 			AccountInfo.Instance.LoadDailyLeaderboardValue(ret[0]);
 		}
@@ -839,26 +1005,68 @@ public class AccountInfo : MonoBehaviour {
 	public static void ResetDailyChallenge()
 	{
 		//Generate New Current Challenge Val and Update player data		
-		int newChallengeVal=-1;
-		while(newChallengeVal != -1 && newChallengeVal != AccountInfo.CURRENT_CHALLENGE_NO)
+		int newChallengeVal=AccountInfo.CURRENT_CHALLENGE_NO;
+		while(newChallengeVal == AccountInfo.CURRENT_CHALLENGE_NO)
 		{
-			newChallengeVal = Random.Range(0, 10); 
+			newChallengeVal = UnityEngine.Random.Range(0, 10); 
 		}
-		AccountInfo.UpdateCurrentChallengeVal(newChallengeVal);
+		AccountInfo.UpdateDailyChallengeInformation(newChallengeVal);
+
+		//Reset Read-only completion indicator via cloud script
+		AccountInfo.ResetDailyChallengeRequest();
 
 		//Retrieve challenge code
+		Debug.Log("New challenge value: " + newChallengeVal);
 		string challengeCode = AccountInfo.instance.info.TitleData["DailyChallengeCode."+newChallengeVal];
 		DAILY_CHALLENGE_CODE=AccountInfo.instance.info.TitleData["DailyChallengeCode."+newChallengeVal];
 		CURRENT_CHALLENGE_NO=newChallengeVal;
 		
 
-		MenuController.instance.UpdateDailyChallengeUI(
-			ParseChallengeCodeTitle(challengeCode),
-			0, 
-			ParseChallengeMaxVal(challengeCode)
-		);
+		// MenuController.instance.UpdateDailyChallengeUI(
+		// 	ParseChallengeCodeTitle(challengeCode),
+		// 	0, 
+		// 	ParseChallengeMaxVal(challengeCode)
+		// );
 
 
+	}
+
+	/// <summary>
+	/// Method which resets a READONLY player data vlaue (the indicator on whether
+	/// the daily challenege has been completed) via a cloud script call.
+	///  This data would otherwise would be read only from the client's game instance
+	/// </summary>
+	public static void ResetDailyChallengeRequest()
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest
+		{
+				FunctionName = "ResetDailyChallenge",
+				GeneratePlayStreamEvent = true,
+				FunctionParameter = new Dictionary<string,object> { {"keyName", "DailyChallengeComplete" }, { "valueString", "0" } }
+			};
+			
+			PlayFabClientAPI.ExecuteCloudScript(request, CloudScriptCallBackSuccess, null);
+	}
+
+	/// <summary>
+	/// Method which resets a READONLY player data vlaue (the indicator on whether
+	/// the daily challenege has been completed) via a cloud script call.
+	///  This data would otherwise would be read only from the client's game instance
+	/// </summary>
+	public static void SetDailyChallengeComplete()
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest
+		{
+				FunctionName = "DailyChallengeComplete",
+				GeneratePlayStreamEvent = true,
+			};
+			
+			PlayFabClientAPI.ExecuteCloudScript(request, CloudScriptCallBackSuccess, null);
+	}
+
+	public static void  CloudScriptCallBackSuccess(ExecuteCloudScriptResult res)
+	{
+		Debug.Log("Data successfully updated via cloud script: " + res.ToString());
 	}
 
 	public static void UpdateChallengeUI(int val)
@@ -878,13 +1086,13 @@ public class AccountInfo : MonoBehaviour {
 		switch(ret[0])
 		{
 			case "DailyWins":
-				return "Win " + ret[1] + " Games.";
+				return "Win " + ret[1] + " Games";
 
 			case "DailyStars":
-				return "Collect " + ret[1] + " Stars.";
+				return "Collect " + ret[1] + " Stars";
 			
 			case "DailyTiles":
-				return "Play " + ret[1] + " Tiles Today.";
+				return "Play " + ret[1] + " Tiles";
 
 			default:
 				return "404: Object code unrecognised";
@@ -906,11 +1114,12 @@ public class AccountInfo : MonoBehaviour {
 				MenuController.instance.UpdateDailyChallengeUI(AccountInfo.Instance.LoadDailyLeaderboardValue(ret[0]));
 	}
 
-	private static void UpdateCurrentChallengeVal(int challengeNo)
+	public static void UpdateDailyChallengeInformation(int challengeNo)
 	{
 		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
 			Data = new Dictionary<string, string>() {
-					{"CURRENT_CHALLENGE_VAL", challengeNo.ToString()}
+					{"CURRENT_CHALLENGE_VAL", challengeNo.ToString()},
+					{"DailyChallengeComplete", "0"}
 				}
 			}, 
 			result => Debug.Log("Successfully updated player CURRENT DAILY CHALLENGE DATA"),
@@ -918,6 +1127,53 @@ public class AccountInfo : MonoBehaviour {
 				Debug.Log("Got error updated current challenge data");
 				Debug.Log(error.GenerateErrorReport());
 			});
+	}
+
+
+	public void CheckIn()
+	{
+		Debug.Log("Checking-in with Server...");
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest() { 
+			FunctionName = "CheckIn", 
+		};
+		
+		PlayFabClientAPI.ExecuteCloudScript(request, OnCheckInCallback, OnAPIError);
+	}
+	
+	void OnCheckInCallback(ExecuteCloudScriptResult result)
+	{
+		// output any errors that happend within cloud script
+		if(result.Error != null)
+		{
+			Debug.LogError(string.Format("{0} -- {1}", result.Error, result.Error.Message));
+			return;
+		}	
+
+		//Debug.Log("CheckIn Results:");
+        List<ItemInstance> grantedItems = PlayFab.Json.JsonWrapper.DeserializeObject<List<ItemInstance>>(result.FunctionResult.ToString());
+		
+		if(grantedItems != null && grantedItems.Count > 0)
+		{
+			Debug.Log(string.Format("You were granted {0} items:", grantedItems.Count));
+			
+			string output = string.Empty;
+			foreach(var item in grantedItems)
+			{
+				output += string.Format("\t {0}: {1}\n", item.ItemId, item.Annotation);
+			}
+			Debug.Log(output);
+		}
+		else if(result.Logs.Count > 0)
+		{
+			foreach(var statement in result.Logs)
+			{
+				Debug.Log(statement.Message);
+			}
+		}
+		else
+		{
+			Debug.Log("CheckIn Successful! No items granted.");
+		}
 	}
 
 }

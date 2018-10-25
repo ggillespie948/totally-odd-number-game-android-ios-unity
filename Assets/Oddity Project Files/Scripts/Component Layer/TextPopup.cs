@@ -7,7 +7,6 @@ public class TextPopup : MonoBehaviour {
 
 	public Animator animator;
 	public TextMeshProUGUI popupText;
-
 	public Material fontMaterial;
 
 	/// <summary>
@@ -19,7 +18,7 @@ public class TextPopup : MonoBehaviour {
 		//Get the animation object of text
 		AnimatorClipInfo[] clipInfo = animator.GetCurrentAnimatorClipInfo(0);
 		Destroy(gameObject, clipInfo[0].clip.length - 0.2f);
-		animator.SetTrigger("TextSlideRight");
+		//animator.SetTrigger("TextSlideRight");
 	}
 
 	public void SetText(string text)

@@ -39,9 +39,6 @@ public class PlayerCard : MonoBehaviour {
 			if(portraitRing!= null && (GameMaster.instance.tileSkins.Length>ApplicationModel.TILESKIN+i))
 			portraitRing.color=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+i].tileSkinCol;
 		}
-
-		
-
 	}
 
 	public void SetQueuePos(int pos)
@@ -63,7 +60,7 @@ public class PlayerCard : MonoBehaviour {
 	{
 		if(Active)
 		{
-			Anim.Play("PlayerCard_Deactivate",0);
+			//Anim.Play("PlayerCard_Deactivate",0);
 			PlayAudio();
 			//GetComponentInChildren<Image>().color = Color.red;
 			Anim.enabled=false;
@@ -84,6 +81,11 @@ public class PlayerCard : MonoBehaviour {
 	public void PlayAudio()
 	{
 		AudioManager.instance.Play("CardFlip");
+	}
+
+	public void SetCol(Color col)
+	{
+		ActiveNameTag.color=col;
 	}
 
 

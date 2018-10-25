@@ -54,6 +54,47 @@ public class MenuController : MonoBehaviour {
 
 	}
 
+	public void LifePurchaseComplete()
+	{
+		GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().text = "Unlimited";
+		GUI_Controller.instance.CurrencyUI.playerLives=15;
+		GUI_Controller.instance.LivesDialogue.GetComponent<Image>().color=Color.red;
+		GUI_Controller.instance.LivesDialogue.GetComponent<NoGravity>().enabled=true;
+		NavBar.UninspectActiveItem();
+	}
+
+	public void CoinPurchaseComplete()
+	{
+		switch(MenuController.instance.NavBar.activeShopItem.GetComponent<ShopItem>().itemData.Cost)
+		{
+			case 99:
+			CurrencyUI.AddCurrency(2500);
+			break;
+
+			case 199:
+			CurrencyUI.AddCurrency(10000);
+			break;
+
+			case 499:
+			CurrencyUI.AddCurrency(25000);
+			break;
+		}
+
+
+		NavBar.UninspectActiveItem();
+		
+	}
+
+	public void LevelPurchaseComplete()
+	{
+		GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>().text = "Unlimited";
+		GUI_Controller.instance.CurrencyUI.playerLives=15;
+		GUI_Controller.instance.LivesDialogue.GetComponent<Image>().color=Color.red;
+		GUI_Controller.instance.LivesDialogue.GetComponent<NoGravity>().enabled=true;
+		CurrencyUI.AddCurrency(2500);
+		NavBar.UninspectActiveItem();
+	}
+
 
     [Header("Other Panels")]
 	public GameObject fireWorks;
@@ -81,6 +122,12 @@ public class MenuController : MonoBehaviour {
 	public GUI_Dialogue_Call UnlockablesPanel_Dialogue;
 
 	public LeaderboardController leaderboardController;
+
+	[Header("Resource Notificaiton Panels")]
+	public GameObject noEnergyPanel;
+	public GameObject notEnoughCoinsPanel;
+	public GameObject fullGamePassRequiredPanel;
+	public GameObject dailyChallengeCompletePanel;
 
 	
 	[Header("Confirm Purchase Panel")]
@@ -143,17 +190,20 @@ public class MenuController : MonoBehaviour {
 			if(Account.isActiveAndEnabled == false)
             {
                 //Loading Screen, Get Playfab Account
-				Debug.Log("activate loading panel");
+				//Debug.Log("activate loading panel");
                 loadingScreen.SetActive(true);
                 Account.gameObject.SetActive(true);
-                StartCoroutine(LoadIntro(7.5f));
+                StartCoroutine(LoadIntro(8f));
             } else 
             {
                 //Load Main Menu, Press PlayButton
                 loadingScreen.SetActive(false);
 
                 if(AccountInfo.Instance.Info.PlayerProfile.DisplayName == null || AccountInfo.Instance.Info.PlayerProfile.DisplayName == "GJG")
+				{
+					MenuController.instance.navHighlight.SetActive(false);
                     nameSelector.SetActive(true);
+				}
                 else
                 {
 					playerNameText.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
@@ -168,20 +218,22 @@ public class MenuController : MonoBehaviour {
 			// LOAD INTRO RETURNING FROM SINGLEPLAYER / MULTIPLAYER GAME //
 			//	
 			
-			Debug.LogError("RETURN FROM GAME CODE ");
+			Debug.LogError("RETURN FROM GAME CODE @ RTW: " + ApplicationModel.RETURN_TO_WORLD);
 																	 //
 			playerNameText.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
 			MenuController.instance.navHighlight.SetActive(true);
-			AccountInfo.Instance.LoadLeaderboard("Wins");
+			AccountInfo.Instance.LoadLeaderboard("Stars");
 			AccountInfo.GetAccountInfo();
 			AccountInfo.GetPlayerData(AccountInfo.playfabId);
 			AccountInfo.Instance.GetInventory();
 			MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().LoadTileStore();
+			MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().LoadGridStore();
 			MenuController.instance.InAppPurchasesController.LoadStore();
+			MenuController.instance.NavBar.challengeModeDialogue.GetComponent<ChallengeModeController>().InitGameConfigs();
 			MenuController.instance.NavBar.challengeModeDialogue.GetComponent<ChallengeModeController>().SelectWorld(ApplicationModel.RETURN_TO_WORLD);
 			MenuController.instance.NavBar.gameObject.SetActive(true);
 			AccountInfo.UpdateDailyChallengeValue();
-			//Invoke("CheckForUnlock", 2.5f);
+			Invoke("CheckForUnlock", 2.5f);
 		}
 	}
 
@@ -203,13 +255,133 @@ public class MenuController : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Method called when player attempts to start a game without the required amount fo energy
+	/// </summary>
+	public void EnergyEmpty()
+	{
+		CloseInspectedItems();
+		NavBar.CloseAllDialogues(true);
+		NavBar.gameObject.SetActive(false);
+		noEnergyPanel.SetActive(true);
+		navHighlight.SetActive(false);
+	}
+
+	/// <summary>
+	/// Method is called via a button on the energy empty panel
+	/// </summary>
+	public void GoToEnergyStore()
+	{
+		CloseInspectedItems();
+		NavBar.gameObject.SetActive(true);
+		NavBar.PressShopButton();
+		noEnergyPanel.SetActive(false);
+		navHighlight.SetActive(true);
+		InAppPurchasesController.scrollRect.ScrollToTop();
+	}
+
+	/// <summary>
+	/// Method is called via a button on the energy empty panel, returns the player to player panel
+	///  This method is called by MULTIPLE resource notificaitons
+	///  closes active items and returns to player panel
+	/// </summary>
+	public void IllWait()
+	{
+		CloseInspectedItems();
+		NavBar.gameObject.SetActive(true);
+		NavBar.PressPlayButton();
+		noEnergyPanel.SetActive(false);
+		notEnoughCoinsPanel.SetActive(false);
+		fullGamePassRequiredPanel.SetActive(false);
+		navHighlight.SetActive(true);
+		dailyChallengeCompletePanel.SetActive(false);
+
+
+	}
+
+	private void CloseInspectedItems()
+	{
+		if(NavBar.activeTileBox!=null)
+			NavBar.activeTileBox.GetComponent<TileBox>().QuickUninspect();
+		else if(NavBar.activeShopItem!=null)
+			NavBar.activeShopItem.GetComponent<ShopItem>().QuickUninspect();
+		else if (NavBar.activeGridBox!=null)
+			NavBar.activeGridBox.GetComponent<GridBox>().QuickUninspect();
+
+	}
+
+	public void InsufficientCoins()
+	{
+		CloseInspectedItems();
+		NavBar.CloseAllDialogues(true);
+		NavBar.gameObject.SetActive(false);
+		notEnoughCoinsPanel.SetActive(true);
+		navHighlight.SetActive(false);
+	}
+
+	public void LevelPassRequired()
+	{
+		CloseInspectedItems();
+		NavBar.CloseAllDialogues(true);
+		NavBar.gameObject.SetActive(false);
+		fullGamePassRequiredPanel.SetActive(true);
+		navHighlight.SetActive(false);
+	}
+
+	public void GoToCoinStore()
+	{
+		CloseInspectedItems();
+		NavBar.gameObject.SetActive(true);
+		NavBar.PressShopButton();
+		notEnoughCoinsPanel.SetActive(false);
+		navHighlight.SetActive(true);
+		InAppPurchasesController.scrollRect.SnapToPositionVertical(InAppPurchasesController.coinStoreMarker, InAppPurchasesController.scrollRectContent, new Vector3(0,1,0));
+	}
+
+	public void GoToFullLevelPassStore()
+	{
+		CloseInspectedItems();
+		NavBar.gameObject.SetActive(true);
+		NavBar.PressShopButton();
+		fullGamePassRequiredPanel.SetActive(false);
+		navHighlight.SetActive(true);
+		InAppPurchasesController.scrollRect.ScrollToBottom();
+	}
+
+	/// <summary>
 	/// This method is an overload, which is called when the daily challenge is reset or loaded for first time
 	/// </summary>
 	/// <param name="title"></param>
 	/// <param name="val"></param>
 	public void UpdateDailyChallengeUI(string title, int val, int maxVal)
 	{
-		Debug.Log("overload update val: " + val);
+		Debug.Log("Daily Challenge Value: " + val);
+		//Get daily challenge complete value
+		if(!AccountInfo.DAILY_CHALLENGE_COMPLETED && val >= maxVal)
+		{
+			Debug.Log("Daily Challenge Complete >>>>>>>>>>!!!!!!!!");
+			AccountInfo.AddInGameCurrency(500);
+			dailyChallengeTitleText.text=title;
+			progressBar.minValue=0;
+			progressBar.maxValue=maxVal;
+			progressBar.value=maxVal;
+			dailyChallengeValueText.text=("Daily Challenge Complete");
+			navHighlight.SetActive(false);
+			dailyChallengeCompletePanel.SetActive(true);
+			CurrencyUI.AddCurrency(500);
+			AccountInfo.SetDailyChallengeComplete();
+			NavBar.CloseAllDialogues(true);
+			NavBar.gameObject.SetActive(false);
+			CloseAllMenus(true);
+
+		} else if (AccountInfo.DAILY_CHALLENGE_COMPLETED && val==0)
+		{
+			Debug.Log("RESET DAILY CHALLENGE!!!");
+			AccountInfo.ResetDailyChallenge();
+		}
+
+		if(val>maxVal)
+			val=maxVal;
+
 		dailyChallengeTitleText.text=title;
 		progressBar.minValue=0;
 		progressBar.maxValue=maxVal;
@@ -240,13 +412,7 @@ public class MenuController : MonoBehaviour {
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().ai_opponents = config.ai_opponents;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().turnTime = config.turnTime;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().maxTile = config.maxTile;
-		LevelSelectionDialogue.GetComponent<Game_Configuration>().oneTiles = config.oneTiles;
-		LevelSelectionDialogue.GetComponent<Game_Configuration>().twoTiles = config.twoTiles;
-		LevelSelectionDialogue.GetComponent<Game_Configuration>().threeTiles = config.threeTiles;
-		LevelSelectionDialogue.GetComponent<Game_Configuration>().fourTiles = config.fourTiles;
-		LevelSelectionDialogue.GetComponent<Game_Configuration>().fiveTiles = config.fiveTiles;
-		LevelSelectionDialogue.GetComponent<Game_Configuration>().sixTiles = config.sixTiles;
-		LevelSelectionDialogue.GetComponent<Game_Configuration>().sevenTiles = config.sevenTiles;
+		LevelSelectionDialogue.GetComponent<Game_Configuration>().startTileCounts = config.startTileCounts;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().targetScore = config.targetScore;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().objective1Code = config.objective1Code;
 		LevelSelectionDialogue.GetComponent<Game_Configuration>().objective2Code = config.objective2Code;
@@ -312,11 +478,29 @@ public class MenuController : MonoBehaviour {
 			{
 				Dialogue.SetActive(true);
 			}
+			if(AccountInfo.adeptStars == 30)
+			fireWorks.SetActive(true);
+			break;
+			
+			case 5:
+			foreach(GameObject Dialogue in World4Levels)
+			{
+				Dialogue.SetActive(true);
+			}
 			if(AccountInfo.advancedStars == 30)
 			fireWorks.SetActive(true);
 			break;
 
-			case 5:
+			case 6:
+			foreach(GameObject Dialogue in World4Levels)
+			{
+				Dialogue.SetActive(true);
+			}
+			if(AccountInfo.expertStars == 30)
+			fireWorks.SetActive(true);
+			break;
+
+			case 7:
 			foreach(GameObject Dialogue in World5Levels)
 			{
 				Dialogue.SetActive(true);
@@ -325,12 +509,30 @@ public class MenuController : MonoBehaviour {
 			fireWorks.SetActive(true);
 			break;
 
-			case 6:
+			case 8:
+			foreach(GameObject Dialogue in World4Levels)
+			{
+				Dialogue.SetActive(true);
+			}
+			if(AccountInfo.targetMasterStars == 30)
+			fireWorks.SetActive(true);
+			break;
+
+			case 9:
 			foreach(GameObject Dialogue in World6Levels)
 			{
 				Dialogue.SetActive(true);
 			}
 			if(AccountInfo.grandMasterStars == 30)
+			fireWorks.SetActive(true);
+			break;
+
+			case 10:
+			foreach(GameObject Dialogue in World4Levels)
+			{
+				Dialogue.SetActive(true);
+			}
+			if(AccountInfo.legendStars == 30)
 			fireWorks.SetActive(true);
 			break;
 
@@ -366,8 +568,11 @@ public class MenuController : MonoBehaviour {
 		ApplicationModel.VS_AI = false;
 		ApplicationModel.VS_LOCAL_MP = true;
 		ApplicationModel.SOLO_PLAY = false;
-		ApplicationModel.THEME = 3;
-        NavBar.CloseAllDialogues(true);
+		ApplicationModel.THEME = 0;
+		ApplicationModel.PLAYERS=2;
+		ApplicationModel.AI_PLAYERS=0;
+		ApplicationModel.HUMAN_PLAYERS=2;
+        //NavBar.CloseAllDialogues(true);
 		levelChanger.FadeToLevel("Main");
 		
 	}
@@ -379,7 +584,7 @@ public class MenuController : MonoBehaviour {
 		ApplicationModel.VS_AI = true;
 		ApplicationModel.VS_LOCAL_MP = false;
 		ApplicationModel.SOLO_PLAY = false;
-        NavBar.CloseAllDialogues(true);
+        //NavBar.CloseAllDialogues(true);
 		levelChanger.FadeToLevel("Main");
 	}
 
@@ -390,7 +595,7 @@ public class MenuController : MonoBehaviour {
 		ApplicationModel.SOLO_PLAY = true;
 		ApplicationModel.TUTORIAL_MODE = false;
 		//ApplicationModel.theme = 1;
-        NavBar.CloseAllDialogues(true);
+        //NavBar.CloseAllDialogues(true);
 		levelChanger.FadeToLevel("Main");
 	}
 
@@ -443,7 +648,48 @@ public class MenuController : MonoBehaviour {
 					NavBar.activeTileBox.GetComponent<TileBox>().PurchaseWithCoins();
 				} else
 				{
+					Debug.LogError("FAILED TO GET PRICE OR NOT ENOUGH GOLD price: " + price);
+					if(price!=0)
+					{
+						MenuController.instance.InsufficientCoins();
+					} else if(price==0)
+					{
+						Debug.Log("Equipping tile skin");
+						NavBar.activeTileBox.GetComponent<TileBox>().unlocked=true;
+						NavBar.activeTileBox.GetComponent<TileBox>().EquipTileSkin();
+					}
+
+					NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
+				}
+			}
+		}
+	}
+
+	private void PurchaseSelectedGridSkin()
+	{
+		NavBar.unlockablesPanel.GetComponent<UnlockablesController>().LockShopButtons();
+		if(AccountInfo.Instance.InventoryContains(NavBar.activeGridBox.GetComponent<GridBox>().item))
+		{
+			NavBar.activeGridBox.GetComponent<GridBox>().EquipGridSkin();
+		} else 
+		{
+			uint price=0;
+			if(NavBar.activeGridBox.GetComponent<GridBox>().item.VirtualCurrencyPrices.TryGetValue(AccountInfo.COINS_CODE, out price))
+			{
+				if(price != 0 && price <=  GUI_Controller.instance.CurrencyUI.playerCoins)
+				{
+					confirmPurchaseBtn.GetComponent<Animator>().enabled=true;
+					confirmPurchaseBtn.GetComponent<Animator>().SetTrigger("pressPurchase");
+					NavBar.activeGridBox.GetComponent<GridBox>().PurchaseWithCoins();
+				} else if (price ==0)
+				{
+					NavBar.activeGridBox.GetComponent<GridBox>().EquipGridSkin();
+				} else
+				{
 					Debug.LogError("FAILED TO GET PRICE OR NOT ENOUGH GOLD");
+					if(price!=0)
+						MenuController.instance.InsufficientCoins();
+
 					NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
 				}
 			}
@@ -456,6 +702,9 @@ public class MenuController : MonoBehaviour {
 			PurchaseSelectedTileSkin();
 		else if(NavBar.activeShopItem!=null)
 			PurchaseSelectedIAP();
+		else if (NavBar.activeGridBox!=null)
+			PurchaseSelectedGridSkin();
+			
 	}
 
 	private void PurchaseSelectedIAP()
@@ -484,19 +733,28 @@ public class MenuController : MonoBehaviour {
 						} else
 						{
 							Debug.LogError("FAILED TO GET PRICE OR NOT ENOUGH GOLD");
+							if(price!=0)
+							MenuController.instance.InsufficientCoins();
+
 							NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
 						}
 					}
 
 			break;
 
-			case "Energy Pass":
+			case "Life Pass":
+				MenuController.instance.InAppPurchasesController.UnlockShopButtons();
+				InAppPurchasesController.BuyProductID(selectedItem.itemID);
 			break;
 
-			case "Coin Bundle":
+			case "Coin Pack":
+				MenuController.instance.InAppPurchasesController.UnlockShopButtons();
+				InAppPurchasesController.BuyProductID(selectedItem.itemID);
 			break;
 
-			case "Full Game Level Pack":
+			case "Level Pack":
+				MenuController.instance.InAppPurchasesController.UnlockShopButtons();
+				InAppPurchasesController.BuyProductID(selectedItem.itemID);
 			break;
 
 			default:
@@ -508,6 +766,7 @@ public class MenuController : MonoBehaviour {
 
 	public void CloseAllMenus(bool closeInfo)
 	{
+
 	}
 
 	public void Quit()

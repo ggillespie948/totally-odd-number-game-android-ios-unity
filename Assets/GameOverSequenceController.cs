@@ -44,6 +44,9 @@ public class GameOverSequenceController : MonoBehaviour {
 		GetComponent<Animator>().Rebind(); //Weird untested code
 		gameOverSequencePanel.SetActive(true);
 		StartCoroutine(InitGameOverSections());
+		
+		
+
 	}
 
 

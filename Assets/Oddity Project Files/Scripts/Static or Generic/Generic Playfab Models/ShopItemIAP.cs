@@ -18,6 +18,12 @@ public class ShopItemIAP {
 	private Image icon;
 	[SerializeField]
 	private string itemID;
+		[SerializeField]
+	public decimal GBP;
+	[SerializeField]
+	public decimal EUR;
+	[SerializeField]
+	public decimal USD;
 
 	public ShopItemIAP(int _index, string _name, string _description, int _cost, string _itemID)
 	{

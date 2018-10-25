@@ -9,7 +9,7 @@ using PlayFab.ClientModels;
 public class TileBox : MonoBehaviour {
 
 	public int itemNo;
-	public Button purchaseBtn; 
+	public GameObject purchaseBtn; 
 	public Button equipBtn;
 	public Button equippedBtn;
 	public Button starReqBtn;
@@ -50,7 +50,8 @@ public class TileBox : MonoBehaviour {
 		if(starReq > AccountInfo.TotalStars())
 		{
 			Debug.Log("Not enough stars to inspect");
-			GUI_Controller.instance.SpawnTextPopup("This item requires "+starReq+" stars to be unlocked", Color.white, this.transform, 24 );
+			GUI_Controller.instance.SpawnTextPopupMenu("This item requires "+starReq+" stars to be unlocked", Color.white, this.transform, 24 );
+			inspected=false;
 			return;
 		}
 		startPos=transform.position;
@@ -63,34 +64,43 @@ public class TileBox : MonoBehaviour {
 		MenuController.instance.NavBar.activeTileBox=this.gameObject;
 		MenuController.instance.NavBar.gameObject.SetActive(false);
 
-		if(AccountInfo.Instance.InventoryContains(item))
+		MenuController.instance.NavBar.shopItemTitle.text=itemData.Name;
+		MenuController.instance.NavBar.shopItemDescription.text=item.Description;
+
+		MenuController.instance.navHighlight.SetActive(false);
+
+		if(AccountInfo.Instance.InventoryContains(item) || itemData.Index ==0  )
 		{
-			MenuController.instance.NavBar.shopItemTitle.text=item.Description;
 			MenuController.instance.NavBar.priceText.alignment=TMPro.TextAlignmentOptions.Center;
 			MenuController.instance.NavBar.priceText.text="Do you wish to equip this " + item.ItemClass + "?";
 			MenuController.instance.NavBar.coinIcon.enabled=false;
+		} else if (itemData.Cost==0)
+		{
+			MenuController.instance.NavBar.priceText.alignment=TMPro.TextAlignmentOptions.Center;
+			MenuController.instance.NavBar.priceText.text="Do you wish to equip this " + item.ItemClass + "?";
+			MenuController.instance.NavBar.coinIcon.enabled=false;
+
 		} else 
 		{
 			MenuController.instance.NavBar.priceText.alignment=TMPro.TextAlignmentOptions.Left;
-			MenuController.instance.NavBar.priceText.text= "Do you wish to purchase this " + item.ItemClass + " for " +itemData.Cost + "         ?";
+			MenuController.instance.NavBar.priceText.text= "Purchase this " + item.ItemClass + " for " +itemData.Cost + "         ?";
 			MenuController.instance.NavBar.coinIcon.enabled=true;
 		}
 
 		int itemCount=0;
-		List<GridTile> allTiles = itemData.Prefab.AllTiles();
-		Debug.Log("AP TS: " + ApplicationModel.TILESKIN + "   TS I: " + itemData.Index);
+		//List<GridTile> allTiles = itemData.Prefab.AllTiles();
 		foreach(GameObject obj in MenuController.instance.NavBar.previewItems)
 		{
 
 			if(obj.GetComponent<GridTile>() != null)
 			{
-				obj.GetComponent<Renderer>().material=allTiles[itemCount].GetComponent<Renderer>().sharedMaterial;
-				obj.GetComponent<GridTile>().activeSkin=allTiles[itemCount].activeSkin;
+				obj.GetComponent<Renderer>().material=itemData.Prefab.defaultSkins[itemCount];
+				obj.GetComponent<GridTile>().activeSkin=itemData.Prefab.activeSkins[itemCount];
 				if(ApplicationModel.TILESKIN==itemData.Index)
 					obj.GetComponent<GridTile>().ActiveTileSkin();
 			}
+			obj.SetActive(true);
 			itemCount++;
-
 		}
 
 		purchaseBtn.gameObject.SetActive(false); //close button animation
@@ -105,13 +115,26 @@ public class TileBox : MonoBehaviour {
 		StartCoroutine(GetComponent<GUI_Object>().AnimateTo(startPos, .35f));
 
 		MenuController.instance.NavBar.gameObject.SetActive(true);
-
+		MenuController.instance.navHighlight.SetActive(true);
 		purchaseBtn.gameObject.SetActive(true);
 		this.gameObject.transform.SetParent(MenuController.instance.NavBar.tileSkinParent.transform);
 		GUI_Controller.instance.confirmPurchasePanel.GetComponent<Animator>().SetTrigger("ClosePanel");
 
 		MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
 		Invoke("CloseInspector", 1.5f);
+	}
+
+	public void QuickUninspect()
+	{
+		inspected=false;
+		MenuController.instance.NavBar.activeTileBox=null;
+		transform.localScale=new Vector3(1.39f,1.39f,1.39f);
+		transform.position=startPos;
+		purchaseBtn.gameObject.SetActive(true);
+		MenuController.instance.navHighlight.SetActive(true);
+		this.gameObject.transform.SetParent(MenuController.instance.NavBar.tileSkinParent.transform);
+		MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
+		CloseInspector();
 	}
 
 	public void CloseInspector()
@@ -141,7 +164,7 @@ public class TileBox : MonoBehaviour {
 
 		if(AccountInfo.TILESKIN == itemData.Index)
 		{
-			purchaseBtn.GetComponent<Image>().color=Color.green;
+			purchaseBtn.GetComponent<Image>().color=MenuController.instance.UnlockablesController.greenPurchase;
 			purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text=" Active";
 			purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=false;
 
@@ -165,16 +188,11 @@ public class TileBox : MonoBehaviour {
 			Debug.Log("TILE UNLOCK STRING NULL");
 		}
 
-
-		
-
 		this.gameObject.SetActive(true);
 	}
 
 	public void UnlockItem()
 	{
-		starReqBtn.gameObject.SetActive(false);
-		//purchaseBtn.gameObject.SetActive(false);
 		unlocked=true;
 	}
 
@@ -218,14 +236,14 @@ public class TileBox : MonoBehaviour {
 			for(int i=0; i<Database.Instance.CatalogTileSkins.Count;i++)
 			{
 				MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].GetComponent<Image>().color=Color.white;
-				MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponent<Image>().color=Color.blue;
+				MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponent<Image>().color=MenuController.instance.UnlockablesController.bluePurchase;
 
 				if(MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].unlocked)
 				{
 					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text=" Owned";
 				} else 
 				{
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text = itemData.Cost.ToString();
+					//MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text = itemData.Cost.ToString();
 					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=true;
 				}
 
@@ -241,7 +259,7 @@ public class TileBox : MonoBehaviour {
 					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].lockedPanel.SetActive(false);
 				}
 			}
-			purchaseBtn.GetComponent<Image>().color=Color.green;
+			purchaseBtn.GetComponent<Image>().color=MenuController.instance.UnlockablesController.greenPurchase;
 			purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text=" Active";
 			purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=false;
 
@@ -276,7 +294,6 @@ public class TileBox : MonoBehaviour {
 		MenuController.instance.CurrencyUI.DecreaseCurrency(itemData.Cost);
 		AccountInfo.GetAccountInfo();
 		unlocked=true;
-		//TEMP - switch this between different unlcokable item items e.g. tile skin, theme, grid skin
 
 		Invoke("StopCoinEmission", 6.5f);
 		Invoke("StopCoinAnim", 10f);
@@ -291,13 +308,13 @@ public class TileBox : MonoBehaviour {
 		itemCount=0;
 		yield return new WaitForSeconds(delay);
 
-		List<GridTile> allTiles = itemData.Prefab.AllTiles();
+		//List<GridTile> allTiles = itemData.Prefab.AllTiles();
 		
 		foreach(GameObject obj in MenuController.instance.NavBar.previewItems)
 		{
 			if(obj.GetComponent<GridTile>() != null)
 			{
-				obj.GetComponent<Renderer>().material=allTiles[itemCount].GetComponent<Renderer>().sharedMaterial;
+				obj.GetComponent<Renderer>().material=itemData.Prefab.activeSkins[itemCount];
 				itemCount++;
 				AudioManager.instance.Play("piano"+itemCount);
 				obj.GetComponent<GridTile>().ActiveTileSkin();
@@ -321,8 +338,8 @@ public class TileBox : MonoBehaviour {
             {
                 case 1:
                 GameObject FX;
-                FX = Instantiate(itemData.Prefab.Tile1FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile1FX.transform.rotation);
+                FX = Instantiate(itemData.Prefab.activateFX[0], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[0].transform.rotation);
 
                 FX.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX, 1f);
@@ -330,64 +347,64 @@ public class TileBox : MonoBehaviour {
 
                 case 2:
                 GameObject FX2;
-                FX2 = Instantiate(itemData.Prefab.Tile2FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile2FX.transform.rotation);
+                FX2 = Instantiate(itemData.Prefab.activateFX[1], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[1].transform.rotation);
                 FX2.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX2, 1f);
                 break;
 
                 case 3:
                 GameObject FX3;
-                FX3 = Instantiate(itemData.Prefab.Tile3FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile3FX.transform.rotation);
+                FX3 = Instantiate(itemData.Prefab.activateFX[2], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[2].transform.rotation);
                 FX3.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX3, 1f);
                 break;
 
                 case 4:
                 GameObject FX4;
-                FX4 = Instantiate(itemData.Prefab.Tile4FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile4FX.transform.rotation);
+                FX4 = Instantiate(itemData.Prefab.activateFX[3], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[3].transform.rotation);
                 FX4.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX4, 1f);
                 break;
 
                 case 5:
                 GameObject FX5;
-                FX5 = Instantiate(itemData.Prefab.Tile5FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile5FX.transform.rotation);
+                FX5 = Instantiate(itemData.Prefab.activateFX[4], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[4].transform.rotation);
                 FX5.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX5, 1f);
                 break;
 
                 case 6:
                 GameObject FX6;
-                FX6 = Instantiate(itemData.Prefab.Tile6FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile6FX.transform.rotation);
+                FX6 = Instantiate(itemData.Prefab.activateFX[5], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[5].transform.rotation);
                 FX6.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX6, 1f);
                 break;
 
                 case 7:
                 GameObject FX7;
-                FX7 = Instantiate(itemData.Prefab.Tile7FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile7FX.transform.rotation);
+                FX7 = Instantiate(itemData.Prefab.activateFX[6], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[6].transform.rotation);
                 FX7.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX7, 1f);
                 break;
 
                 case 8:
                 GameObject FX8;
-                FX8 = Instantiate(itemData.Prefab.Tile8FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile8FX.transform.rotation);
+                FX8 = Instantiate(itemData.Prefab.activateFX[7], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[7].transform.rotation);
                 FX8.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX8, 1f);
                 break;
 
                 case 9:
                 GameObject FX9;
-                FX9 = Instantiate(itemData.Prefab.Tile9FX, tile.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile9FX.transform.rotation);
+                FX9 = Instantiate(itemData.Prefab.activateFX[8], tile.gameObject.transform.position-
+                    new Vector3(0,0,5), itemData.Prefab.activateFX[8].transform.rotation);
                 FX9.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
                 Destroy(FX9, 1f);
                 break;

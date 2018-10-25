@@ -8,21 +8,19 @@ using PlayFab.ClientModels;
 
 public class GridBox : MonoBehaviour {
 
-	public Button purchaseBtn; 
-	public Button starReqBtn;
+	public GameObject purchaseBtn; 
 	public Image itemIcon;
 	public TextMeshProUGUI itemName;
 	public string itemID;
 	public bool unlocked=false;
 	public Vector3 startPos = new Vector3();
-
-	//public GridSkin tileSkin;
-
-	public ShopItemTile itemData;
+	public Theme tileSkin;
+	public ShopItemGrid itemData;
 
 	[SerializeField]
 	public CatalogItem item;
 	public GameObject lockedPanel;
+	public GameObject lockedText;
 	private int starReq;
 	bool inspected=false;
 
@@ -35,42 +33,38 @@ public class GridBox : MonoBehaviour {
 		if(starReq > AccountInfo.TotalStars())
 		{
 			Debug.Log("Not enough stars to inspect");
-			GUI_Controller.instance.SpawnTextPopup("This item requires "+starReq+" stars to be unlocked", Color.white, this.transform, 24 );
+			GUI_Controller.instance.SpawnTextPopupMenu("This item requires "+starReq+" stars to be unlocked", Color.white, this.transform, 24 );
+			inspected=false;
 			return;
 		}
 		startPos=transform.position;
 		GetComponent<GUI_Object>().targetPos= GUI_Controller.instance.confirmPurchasePanelTarget.transform.position;
+
+		MenuController.instance.NavBar.inspectedItemParent=this.gameObject.transform.parent.gameObject;
 		this.gameObject.transform.SetParent(GUI_Controller.instance.confirmPurchasePanel.transform);
+
 		GUI_Controller.instance.confirmPurchasePanel.SetActive(true);
-		StartCoroutine(GetComponent<GUI_Object>().ScaleUp(1.45f,1f));
 		StartCoroutine(GetComponent<GUI_Object>().AnimateTo(GUI_Controller.instance.confirmPurchasePanelTarget.transform.position, .35f));
 
-		MenuController.instance.NavBar.activeTileBox=this.gameObject;
+		MenuController.instance.NavBar.activeGridBox=this.gameObject;
+		MenuController.instance.NavBar.gameObject.SetActive(false);
 
-		if(AccountInfo.Instance.InventoryContains(item))
+		MenuController.instance.NavBar.shopItemTitle.text=itemData.Name;
+		MenuController.instance.NavBar.shopItemDescription.text=item.Description;
+
+		if(AccountInfo.Instance.InventoryContains(item) || itemData.Index ==0  )
 		{
-			MenuController.instance.NavBar.gameObject.SetActive(false);
-			MenuController.instance.NavBar.shopItemTitle.text=item.Description;
 			MenuController.instance.NavBar.priceText.text= "Do you wish to equip this " + item.ItemClass + "?";
 			MenuController.instance.NavBar.coinIcon.enabled=false;
 		} else 
 		{
-			MenuController.instance.NavBar.priceText.text= "Do you wish to purchase this " + item.ItemClass + " for " +itemData.Cost + "         ?";
+			MenuController.instance.NavBar.priceText.text= "Purchase this " + item.ItemClass + " for " +itemData.Cost + "         ?";
 			MenuController.instance.NavBar.coinIcon.enabled=true;
 		}
-
-		int itemCount=0;
-		List<GridTile> allTiles = itemData.Prefab.AllTiles();
+		
 		foreach(GameObject obj in MenuController.instance.NavBar.previewItems)
 		{
-
-			if(obj.GetComponent<GridTile>() != null)
-			{
-				obj.GetComponent<Renderer>().material=allTiles[itemCount].GetComponent<Renderer>().sharedMaterial;
-				obj.GetComponent<GridTile>().activeSkin=allTiles[itemCount].activeSkin;
-			}
-			itemCount++;
-
+			obj.SetActive(false);
 		}
 
 		purchaseBtn.gameObject.SetActive(false); //close button animation
@@ -79,20 +73,29 @@ public class GridBox : MonoBehaviour {
 	public void UninspectItem()	{
 		inspected=false;
 		GetComponent<GUI_Object>().targetPos= startPos;
-		MenuController.instance.NavBar.activeTileBox=null;
-		
-		StartCoroutine(GetComponent<GUI_Object>().ScaleUp(1.39f,1f));
+		MenuController.instance.NavBar.activeGridBox=null;
 		StartCoroutine(GetComponent<GUI_Object>().AnimateTo(startPos, .35f));
-
 		MenuController.instance.NavBar.gameObject.SetActive(true);
-
-		
-
+		this.gameObject.transform.SetParent(MenuController.instance.NavBar.inspectedItemParent.transform);
+		MenuController.instance.navHighlight.SetActive(true);
 		purchaseBtn.gameObject.SetActive(true);
-		this.gameObject.transform.SetParent(MenuController.instance.NavBar.tileSkinParent.transform);
+		MenuController.instance.NavBar.inspectedItemParent=this.gameObject.transform.parent.gameObject;
 		GUI_Controller.instance.confirmPurchasePanel.GetComponent<Animator>().SetTrigger("ClosePanel");
 		Invoke("CloseInspector", 1.5f);
 	}
+		
+	public void QuickUninspect()
+	{
+		inspected=false;
+		MenuController.instance.NavBar.activeGridBox=null;
+		transform.position=startPos;
+		purchaseBtn.gameObject.SetActive(true);
+		MenuController.instance.navHighlight.SetActive(true);
+		this.gameObject.transform.SetParent(MenuController.instance.NavBar.inspectedItemParent.transform);
+		MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().UnlockShopButtons();
+		CloseInspector();
+	}
+
 
 	public void CloseInspector()
 	{
@@ -108,7 +111,7 @@ public class GridBox : MonoBehaviour {
 		startPos = transform.position;
 
 
-		if(AccountInfo.Instance.InventoryContains(item))
+		if(AccountInfo.Instance.InventoryContains(item) || itemData.Cost ==0 )
 		{
 			purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text=" Owned";
 			purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=false;
@@ -119,30 +122,32 @@ public class GridBox : MonoBehaviour {
 			purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=true;
 		}
 
-		if(AccountInfo.TILESKIN == itemData.Index)
+		if(AccountInfo.THEME == itemData.Index)
 		{
 			purchaseBtn.GetComponent<Image>().color=Color.green;
 			purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text=" Active";
 			purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=false;
-
 		}
 
-		if(AccountInfo.tileUnlockString!= null)
+		if(AccountInfo.themeUnlockString!= null)
 		{
-			if(starReq > AccountInfo.TotalStars() || AccountInfo.tileUnlockString[itemData.Index] == '0')
+			if(starReq > AccountInfo.TotalStars())
 			{
 				lockedPanel.SetActive(true);
 				purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text="Locked";
 				itemName.text="?????";
-				lockedPanel.GetComponentInChildren<TextMeshProUGUI>().text = itemData.StarReq.ToString();
+				lockedText.GetComponent<TextMeshProUGUI>().text = itemData.StarReq.ToString();
 				purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=false;
 			} else 
 			{
 				lockedPanel.SetActive(false);
+				lockedText.SetActive(false);
+
+
 			}
 		} else
 		{
-			Debug.Log("TILE UNLOCK STRING NULL");
+			Debug.Log("THEME UNLOCK STRING NULL");
 		}
 
 
@@ -153,8 +158,8 @@ public class GridBox : MonoBehaviour {
 
 	public void UnlockItem()
 	{
-		starReqBtn.gameObject.SetActive(false);
-		//purchaseBtn.gameObject.SetActive(false);
+		lockedPanel.SetActive(false);
+		lockedText.SetActive(false);
 		unlocked=true;
 	}
 
@@ -166,18 +171,17 @@ public class GridBox : MonoBehaviour {
 	private IEnumerator revealAfterDelay()
 	{
 		yield return new WaitForSeconds(1.5f);
-		GetComponent<Animator>().SetTrigger("reveal");
+		GetComponent<Animator>().SetTrigger("gridReveal");
 
 
 		// play sound effect
 		AudioManager.instance.Play("Unlock");
 
 		//Update tile unlock string so animation is only played once
-		char[] unlockS = AccountInfo.tileUnlockString.ToCharArray();
+		char[] unlockS = AccountInfo.themeUnlockString.ToCharArray();
 		unlockS[itemData.Index]='1';
-		AccountInfo.tileUnlockString = new string(unlockS);
-		AccountInfo.UpdateTileSkinUnlockString();
-		
+		AccountInfo.themeUnlockString = new string(unlockS);
+		AccountInfo.UpdateThemeString();
 		
 		itemIcon.sprite = itemData.Icon.sprite;
 		itemName.text = itemData.Name;
@@ -186,45 +190,46 @@ public class GridBox : MonoBehaviour {
 		startPos = transform.position;
 
 		Invoke("LoadItem", 2f);
-
 	}
 
-	public void EquipTileSkin()
+	public void EquipGridSkin()
 	{
 		if(unlocked)
 		{
-			ApplicationModel.TILESKIN=itemData.Index;
-			AccountInfo.Instance.UpdateTileSkin(itemData.Index);
-			for(int i=0; i<Database.Instance.CatalogTileSkins.Count;i++)
+			ApplicationModel.THEME=itemData.Index;
+			AccountInfo.Instance.UpdateTheme(itemData.Index);
+			for(int i=0; i<Database.Instance.CatalogGridSkins.Count;i++)
 			{
-				MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].GetComponent<Image>().color=Color.white;
-				MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponent<Image>().color=Color.blue;
+				MenuController.instance.UnlockablesController.gridBlocks[i].GetComponent<Image>().color=Color.white;
+				MenuController.instance.UnlockablesController.gridBlocks[i].purchaseBtn.GetComponent<Image>().color=MenuController.instance.UnlockablesController.bluePurchase;
 
-				if(MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].unlocked)
+				if(MenuController.instance.UnlockablesController.gridBlocks[i].unlocked)
 				{
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text=" Owned";
+					MenuController.instance.UnlockablesController.gridBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text=" Owned";
 				} else 
 				{
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text = itemData.Cost.ToString();
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=true;
+					MenuController.instance.UnlockablesController.gridBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text = itemData.Cost.ToString();
+					MenuController.instance.UnlockablesController.gridBlocks[i].purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=true;
 				}
 
-				if(MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].starReq > AccountInfo.TotalStars())
+				if(MenuController.instance.UnlockablesController.gridBlocks[i].starReq > AccountInfo.TotalStars())
 				{
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].lockedPanel.SetActive(true);
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text="Locked";
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].itemName.text="?????";
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].lockedPanel.GetComponentInChildren<TextMeshProUGUI>().text = MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].itemData.StarReq.ToString();
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=false;
+					MenuController.instance.UnlockablesController.gridBlocks[i].lockedPanel.SetActive(true);
+					MenuController.instance.UnlockablesController.gridBlocks[i].purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text="Locked";
+					MenuController.instance.UnlockablesController.gridBlocks[i].itemName.text="?????";
+					MenuController.instance.UnlockablesController.gridBlocks[i].lockedText.GetComponent<TextMeshProUGUI>().text = MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().gridBlocks[i].itemData.StarReq.ToString();
+					MenuController.instance.UnlockablesController.gridBlocks[i].purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=false;
 				} else 
 				{
-					MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().tileBlocks[i].lockedPanel.SetActive(false);
+					MenuController.instance.UnlockablesController.gridBlocks[i].lockedPanel.SetActive(false);
+					MenuController.instance.UnlockablesController.gridBlocks[i].lockedText.SetActive(false);
 				}
 			}
-			purchaseBtn.GetComponent<Image>().color=Color.green;
+			MenuController.instance.UnlockablesController.UnlockShopButtons();
+			purchaseBtn.GetComponent<Image>().color=MenuController.instance.UnlockablesController.greenPurchase;
 			purchaseBtn.GetComponentInChildren<TextMeshProUGUI>().text=" Active";
 			purchaseBtn.transform.GetChild(0).GetComponentInChildren<Image>().enabled=false;
-			//UninspectItem();
+			UninspectItem();
 		}
 
 	}
@@ -243,10 +248,6 @@ public class GridBox : MonoBehaviour {
 			Price = (int)price
 		};
 
-		//play purchase animation
-
-
-
 		PlayFabClientAPI.PurchaseItem(request, OnBoughtItem, AccountInfo.OnAPIError);
 	}
 
@@ -258,136 +259,24 @@ public class GridBox : MonoBehaviour {
 		AccountInfo.GetAccountInfo();
 		unlocked=true;
 		
-		//TEMP - switch this between different unlcokable item items e.g. tile skin, theme, grid skin
-		EquipTileSkin();
-
-
 
 		Invoke("StopCoinEmission", 6.5f);
 		Invoke("StopCoinAnim", 10f);
+		Invoke("EquipGridSkin", 10f);
 		
 	}
 
-
-	private int itemCount=0;
-	public IEnumerator ActivatePreviewTiles()
-	{
-		List<GridTile> allTiles = itemData.Prefab.AllTiles();
-		
-		foreach(GameObject obj in MenuController.instance.NavBar.previewItems)
-		{
-			if(obj.GetComponent<GridTile>() != null)
-			{
-				obj.GetComponent<Renderer>().material=allTiles[itemCount].GetComponent<Renderer>().sharedMaterial;
-				itemCount++;
-				AudioManager.instance.Play("piano"+itemCount);
-				obj.GetComponent<GridTile>().ActiveTileSkin();
-				ActivateTile(obj.GetComponent<GridTile>());
-				yield return new WaitForSeconds(.5f);
-			}
-
-		}
-
-		Invoke("EquipTileSkin", 3f);
-	}
-	public void ActivateTile(GridTile tile) 
-    {
-		
-        if (tile != null && !tile.activated )
-        {
-            tile.ActiveTileSkin();
-            tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
-            //tile.GetComponent<NoGravity>().enabled = false;
-            switch(tile.value)
-            {
-                case 1:
-                GameObject FX;
-                FX = Instantiate(itemData.Prefab.Tile1FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile1FX.transform.rotation);
-
-                FX.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX, 1f);
-                break;
-
-                case 2:
-                GameObject FX2;
-                FX2 = Instantiate(itemData.Prefab.Tile2FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile2FX.transform.rotation);
-                FX2.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX2, 1f);
-                break;
-
-                case 3:
-                GameObject FX3;
-                FX3 = Instantiate(itemData.Prefab.Tile3FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile3FX.transform.rotation);
-                FX3.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX3, 1f);
-                break;
-
-                case 4:
-                GameObject FX4;
-                FX4 = Instantiate(itemData.Prefab.Tile4FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile4FX.transform.rotation);
-                FX4.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX4, 1f);
-                break;
-
-                case 5:
-                GameObject FX5;
-                FX5 = Instantiate(itemData.Prefab.Tile5FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile5FX.transform.rotation);
-                FX5.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX5, 1f);
-                break;
-
-                case 6:
-                GameObject FX6;
-                FX6 = Instantiate(itemData.Prefab.Tile6FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile6FX.transform.rotation);
-                FX6.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX6, 1f);
-                break;
-
-                case 7:
-                GameObject FX7;
-                FX7 = Instantiate(itemData.Prefab.Tile7FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile7FX.transform.rotation);
-                FX7.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX7, 1f);
-                break;
-
-                case 8:
-                GameObject FX8;
-                FX8 = Instantiate(itemData.Prefab.Tile8FX, tile.gameObject.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile8FX.transform.rotation);
-                FX8.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX8, 1f);
-                break;
-
-                case 9:
-                GameObject FX9;
-                FX9 = Instantiate(itemData.Prefab.Tile9FX, tile.transform.position-
-                    new Vector3(0,0,5), itemData.Prefab.Tile9FX.transform.rotation);
-                FX9.transform.localScale=new Vector3(0.5f,0.5f,0.5f);
-                Destroy(FX9, 1f);
-                break;
-            }
-            tile.activated = true;
-        } 
-    }
+	
 
 	public void StopCoinEmission()
 	{
 		MenuController.instance.coinEmitter.EnableEmission(false);
-		itemCount=0;
-		StartCoroutine(ActivatePreviewTiles());
-		
+		Debug.LogError("GRID SKIN EQUIPPED! POPUP IMPLEMENT");
+
 	}
 
 	public void StopCoinAnim()
 	{
-		
 		MenuController.instance.confirmPurchaseBtn.GetComponent<Animator>().SetTrigger("purchaseComplete");
 
 	}

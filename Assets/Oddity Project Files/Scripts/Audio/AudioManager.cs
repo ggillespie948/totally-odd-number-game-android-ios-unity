@@ -9,6 +9,15 @@ public class AudioManager : MonoBehaviour {
 
     public static AudioManager instance = null;
 
+    [SerializeField]
+    public Material greenMat;
+    [SerializeField]
+    public Material redMat;
+    [SerializeField]
+    public GameObject soundBtnMesh;
+    [SerializeField]
+    public GameObject musicBtnMesh;
+
 	// Use this for initialization
 	void Awake () {
 
@@ -34,6 +43,13 @@ public class AudioManager : MonoBehaviour {
     public void ToggleSoundFX()
     {
         ApplicationModel.FX_ENABLED = !ApplicationModel.FX_ENABLED;
+        if(ApplicationModel.FX_ENABLED)
+        {
+            soundBtnMesh.GetComponent<Renderer>().material=greenMat;
+        } else
+        {
+            soundBtnMesh.GetComponent<Renderer>().material=redMat;
+        }
     }
 
     public void ToggleMusic()
@@ -42,10 +58,12 @@ public class AudioManager : MonoBehaviour {
 
         if(ApplicationModel.MUSIC_ENABLED)
         {
+            musicBtnMesh.GetComponent<Renderer>().material=greenMat;
             Sound t = Array.Find(sounds, sound => sound.name == "title");
             t.source.Play();
         } else
         {
+            musicBtnMesh.GetComponent<Renderer>().material=redMat;
             Sound t = Array.Find(sounds, sound => sound.name == "title");
             t.source.Stop();
         }

@@ -62,10 +62,12 @@ public class NavigationBarController : MonoBehaviour {
 	[SerializeField]
 	public GameObject tileSkinParent;
 	public TextMeshProUGUI shopItemTitle;
+	public TextMeshProUGUI shopItemDescription;
 	public TextMeshProUGUI priceText;
 	public Image coinIcon;
 	[Header("Currently Inspected Item")]
 	[SerializeField]
+	public GameObject activeGridBox;
 	public GameObject activeTileBox;
 	public GameObject activeShopItem;
 
@@ -139,6 +141,8 @@ public class NavigationBarController : MonoBehaviour {
 			activeTileBox.GetComponent<TileBox>().UninspectItem();
 		else if(activeShopItem!=null)
 			activeShopItem.GetComponent<ShopItem>().UninspectItem();
+		else if (activeGridBox!=null)
+			activeGridBox.GetComponent<GridBox>().UninspectItem();
 	}
 
 	
@@ -207,6 +211,7 @@ public class NavigationBarController : MonoBehaviour {
 		//tutorialModeDialogue.SetActive(true);
 		unlockablesPanel.SetActive(true);
 		playerPanel.SetActive(true);
+		MenuController.instance.NavBar.challengeModeDialogue.GetComponent<Animator>().SetTrigger("show");
 		unlockPanel.SetActive(true);
 		shopPanel.SetActive(true);
 		extraPanel.SetActive(true);
@@ -219,6 +224,7 @@ public class NavigationBarController : MonoBehaviour {
 		btn_1.transform.position+=new Vector3(0,.1f,0);
 		active_btn=1;
 		btn_1.GetComponentInChildren<TextMeshProUGUI>().enabled=true;
+		ToggleBaseMenu();
 		CloseAllDialogues(false);
 
 		if(ScrollSnap._currentPage!=0)

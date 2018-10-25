@@ -210,7 +210,7 @@ public class GUI_Object : MonoBehaviour {
         {
             if(this.GetComponent<GridTile>().placedByAI == true)
             {
-                GUI_Controller.instance.ActivateTile(this.GetComponent<GridTile>());
+                //GUI_Controller.instance.ActivateTile(this.GetComponent<GridTile>());
             }
         } else 
         {

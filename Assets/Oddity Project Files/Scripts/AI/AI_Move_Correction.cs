@@ -17,12 +17,12 @@ public class AI_Move_Correction {
 	{
 		if(_correctionDir == 'U' || _correctionDir == 'D') //Up or down =  a correction to a horizontal paly
 		{
-			Debug.Log("New Horizontal Correction Created.");
+			//Debug.Log("New Horizontal Correction Created.");
 
 
 		} else if (_correctionDir == 'L' || _correctionDir == 'R')  //Left or right =  a correction to a vertical paly
 		{
-			Debug.Log("New Vertical Correction Created.");
+			//Debug.Log("New Vertical Correction Created.");
 		}
 
 

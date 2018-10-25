@@ -36,7 +36,6 @@ public class GridTile : MonoBehaviour {
 
     public bool locked = false;
 
-
     void Awake()
     {
         observerList=new List<Observer>();
@@ -47,11 +46,12 @@ public class GridTile : MonoBehaviour {
 
         GM = GameMaster.instance;
         startPos = this.transform.position;
-        defaultSkin = this.renderer.material;
+        this.renderer.material = defaultSkin;
     }
 
     public void ActiveTileSkin()
     {
+        //StartCoroutine(GetComponent<GUI_Object>().RotateToPos(this.gameObject, new Vector3(0,0,0), .5f  ));
         this.renderer.material = activeSkin;
     }
 
@@ -181,7 +181,7 @@ public class GridTile : MonoBehaviour {
         GameMaster.instance.playedTiles.Add(GameMaster.instance.activeCell);
         GameMaster.instance.activeCell.cellTile = GameMaster.instance.selectedTile;
         GameMaster.instance.selectedTile.placed = true;
-        GameMaster.instance.selectedTile.GetComponent<GUI_Object>().targetPos=GameMaster.instance.activeCell.transform.position + new Vector3(0, 0, -1);
+        GameMaster.instance.selectedTile.GetComponent<GUI_Object>().targetPos=GameMaster.instance.activeCell.transform.position + new Vector3(0, .05f, -1);
         x=GameMaster.instance.activeCell.x;
         y=GameMaster.instance.activeCell.y;
 
@@ -193,7 +193,7 @@ public class GridTile : MonoBehaviour {
         //Check if move is actually valid
         if (BoardController.instance.CheckMoveValidity(GameMaster.instance.activeCell))
         {
-            GUI_Controller.instance.ActivateTile(GameMaster.instance.activeCell.cellTile);
+            //GUI_Controller.instance.ActivateTile(GameMaster.instance.activeCell.cellTile);
         }
 
         if(GameMaster.instance.TUTORIAL_MODE && GameMaster.instance.TutorialController.clear5 && GameMaster.instance.currentHand.Count >= 1 && GameMaster.instance.currentHand.Count <3) 

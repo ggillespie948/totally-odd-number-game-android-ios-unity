@@ -12,6 +12,9 @@ public class UnlockablesController : MonoBehaviour {
 	[Header("Store Items")]
 	[SerializeField]
 	public List<TileBox> tileBlocks;
+
+	[SerializeField]
+	public List<GridBox> gridBlocks;
 	
 
 	[Header("Unlockables Header")]
@@ -40,6 +43,8 @@ public class UnlockablesController : MonoBehaviour {
 	[SerializeField]
 	private ScrollRect gridSkinShop; 
 	[SerializeField]
+	private RectTransform gridSkinShopContent;
+	[SerializeField]
 	private ScrollRect avatarShop; 
 
 
@@ -58,6 +63,12 @@ public class UnlockablesController : MonoBehaviour {
 	public GameObject yesBtn;
 	[SerializeField]
 	public GameObject noBtn;
+
+
+	[SerializeField]
+	public Color bluePurchase;
+	[SerializeField]
+	public Color greenPurchase;
 
 	public void PreviousShop()
 	{
@@ -200,51 +211,88 @@ public class UnlockablesController : MonoBehaviour {
 		}
 	}
 
+	public void LoadGridStore()
+	{
+		gridSkinCount=0;
+
+		for(int i=0; i<Database.Instance.GridSkinShopItems.Count;i++)
+		{
+			if(gridBlocks[i].itemData.Prefab == null)
+			{
+				gridBlocks[i].itemData=Database.Instance.GridSkinShopItems[i];
+				gridBlocks[i].item=Database.Instance.CatalogGridSkins[i];
+				gridBlocks[i].LoadItem();
+				foreach(ItemInstance inst in AccountInfo.Instance.inv_items)
+				{
+					if(inst.ItemId==gridBlocks[i].itemID)
+					{
+						gridSkinCount++;
+						gridBlocks[i].UnlockItem();
+					}
+				}
+
+			}
+		}
+	}
+
 	public void CheckForItemUnlock()
 	{
+		//Check for Tile Skin Unlock
 		for(int i=0; i<Database.Instance.TileSkinShopItems.Count;i++)
 		{
 			if(tileBlocks[i].itemData.Prefab != null)
 			{
 				if(AccountInfo.tileUnlockString[i]=='0' && tileBlocks[i].itemData.StarReq <= AccountInfo.TotalStars())
 				{
-					ItemUnlockAnimation(tileBlocks[i].GetComponent<RectTransform>(), tileBlocks[i],1); //temp - chnage this val to item related info
+					ItemUnlockAnimation(tileBlocks[i].GetComponent<RectTransform>(), tileBlocks[i]); //temp - chnage this val to item related info
+				}
+			}
+		}
+
+		//Check for Grid Skin Unlock
+		for(int i=0; i<Database.Instance.GridSkinShopItems.Count;i++)
+		{
+			if(gridBlocks[i].itemData.Prefab != null)
+			{
+				if(AccountInfo.themeUnlockString[i]=='0' && gridBlocks[i].itemData.StarReq <= AccountInfo.TotalStars())
+				{
+					ItemUnlockAnimation(gridBlocks[i].GetComponent<RectTransform>(), gridBlocks[i]); //temp - chnage this val to item related info
 				}
 			}
 		}
 		
 	}
 
-	public void ItemUnlockAnimation(RectTransform item, TileBox tileBox, int panelNo)
+	public void ItemUnlockAnimation(RectTransform item, TileBox tileBox)
 	{
-		switch(panelNo)
-		{
-			case 1: //Tile Skin Shop
-					MenuController.instance.NavBar.PressUnlockablesButton();
-					tileSkinShop.SnapToPositionVertical(item, tileSkinContent, new Vector3(0,1,0));
-					tileBox.RevealAnimation();
-			break;
+		Debug.Log("Unlocking tile skin item..");
+		MenuController.instance.NavBar.PressUnlockablesButton();
+		tileSkinShop.SnapToPositionVertical(item, tileSkinContent, new Vector3(0,1,0));
+		tileBox.RevealAnimation();
+	}
 
-			case 2: //Grid Skin Shop
-			break;
-
-			case 3: //Avatar Shop
-			break;
-		}
+	public void ItemUnlockAnimation(RectTransform item, GridBox gridBox)
+	{
+		Debug.Log("Unlocking grid skin item..");
+		CloseAllScrollRects();
+		gridSkinShop.gameObject.SetActive(true);
+		shopTitle.text="Grid Skins";
+		collectionSubTitle.text="Collection: " + gridSkinCount+"/10";
+		MenuController.instance.NavBar.PressUnlockablesButton();
+		gridSkinShop.SnapToPositionVertical(item, gridSkinShopContent, new Vector3(0,1,0));
+		gridBox.RevealAnimation();
 	}
 
 	public void LockShopButtons()
 	{
 		yesBtn.GetComponent<BoxCollider>().enabled=false;
 		noBtn.GetComponent<BoxCollider>().enabled=false;
-
 	}
 
 	public void UnlockShopButtons()
 	{
 		yesBtn.GetComponent<BoxCollider>().enabled=true;
 		noBtn.GetComponent<BoxCollider>().enabled=true;
-
 	}
 
 

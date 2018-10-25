@@ -1,12 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GUI_Dialogue : MonoBehaviour {
 
 	public GameObject dialogRoot;
 
     protected bool _isOpened = false;
+
+    public Image bgMain;
+    public Image bg;
+
 
     public void Close() {
          if(_isOpened)

@@ -62,6 +62,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
     public GameObject[] Tile7ActivateFX;
     public GameObject[] Tile8ActivateFX;
     public GameObject[] Tile9ActivateFX;
+
+    [SerializeField]
+    public List<GameObject[]> tileFX;
     
     public Component[] GridTiles;
 
@@ -81,6 +84,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     private static TextPopup POPUP_TEXT;
     private static TextPopup POPUP_SCORE;
     private static TextPopup POPUP_CASH;
+    private static TextPopup POPUP_ERROR;
 
     [Header("GUI Effect Listener")]
     [SerializeField]
@@ -148,6 +152,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
         }
         instance = this;
 
+        Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 0;
+
         if(!POPUP_TEXT)
             POPUP_TEXT = Resources.Load<TextPopup>("PopupTextParent");
 
@@ -156,6 +163,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
         if(!POPUP_CASH)
             POPUP_CASH = Resources.Load<TextPopup>("PopupCashParent");
+
+        if(!POPUP_ERROR)
+            POPUP_ERROR = Resources.Load<TextPopup>("PopupTextError");
 
         DialogueController = this.GetComponent<GUI_Dialogue_Controller>();
         Time.timeScale = 1f;
@@ -225,7 +235,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     //IEnumerators For Animation        //temp - could refactor into scale object ?
     public IEnumerator GridIntroAnim()
     {
-
+        physcialGridContainer.SetActive(true);
         float scaleDuration = .87f;                                //animation duration in seconds
         Vector3 actualScale = physcialGridContainer.transform.localScale;             // scale of the object at the begining of the animation
         physcialGridContainer.transform.localScale = new Vector3(4, 4, 1);
@@ -436,12 +446,21 @@ public class GUI_Controller : MonoBehaviour, Observable {
             }
 		}
 
-        // if(starReward>0)
-        // {
-        //     CurrencyUI.AddStar(starReward);
-        // }
+        if(starReward>0)
+        {
+            StartCoroutine(currecnyDealyAdd(starReward, 3.6f));
+            if(AccountInfo.Instance != null)
+            AccountInfo.Instance.PlayerEvent_CompletedGame(GameMaster.instance.playerWin, ApplicationModel.GRID_SIZE, ApplicationModel.MAX_TILE, GameMaster.instance.playerScores[0], ApplicationModel.SOLO_PLAY);
+        }
         
         
+    }
+
+    private IEnumerator currecnyDealyAdd(int s, float d)
+    {
+        yield return new WaitForSeconds(d);
+
+        CurrencyUI.AddStar(s);
     }
 
     public void PauseGame()
@@ -449,6 +468,23 @@ public class GUI_Controller : MonoBehaviour, Observable {
         //ActionButtons.SetActive(false);
         PauseMenu.SetActive(true);
         PauseMenu.GetComponent<Image>().enabled=true;
+
+        if(ApplicationModel.FX_ENABLED)
+        {
+            AudioManager.instance.soundBtnMesh.GetComponent<Renderer>().material=AudioManager.instance.greenMat;
+        } else
+        {
+            AudioManager.instance.soundBtnMesh.GetComponent<Renderer>().material=AudioManager.instance.redMat;
+        }
+
+        if(ApplicationModel.MUSIC_ENABLED)
+        {
+           AudioManager.instance.musicBtnMesh.GetComponent<Renderer>().material=AudioManager.instance.greenMat;
+        } else
+        {
+            AudioManager.instance.musicBtnMesh.GetComponent<Renderer>().material=AudioManager.instance.redMat;
+        }
+
         pauseObjective1.text= GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective1Code);
         pauseObjective2.text= GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective2Code);
         pauseObjective3.text= GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective3Code);
@@ -460,6 +496,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
         } 
     }
 
+    /// <summary>
+    /// called via button
+    /// </summary>
     public void UnpauseGame()
     {
         PauseMenu.GetComponentInChildren<Animator>().SetTrigger("hide");
@@ -474,6 +513,9 @@ public class GUI_Controller : MonoBehaviour, Observable {
         Invoke("UnpauseInvoke",1.5f);
     }
 
+    /// <summary>
+    /// called via above invoke
+    /// </summary>
     private void UnpauseInvoke()
     {
         PauseMenu.SetActive(false);
@@ -532,7 +574,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
 				GUI_Controller.instance.CurrencyUI.playerLives=res;
 			}
 
-			GUI_Controller.instance.StarDialogue.GetComponentInChildren<TextMeshProUGUI>().text = (AccountInfo.beginnerStars+AccountInfo.noviceStars+AccountInfo.intermediateStars+AccountInfo.advancedStars+AccountInfo.masterStars+AccountInfo.grandMasterStars).ToString();
+			GUI_Controller.instance.StarDialogue.GetComponentInChildren<TextMeshProUGUI>().text = (GUI_Controller.instance.CurrencyUI.playerStars).ToString();
         }
     }
 
@@ -592,7 +634,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
         GridTiles = GetComponentsInChildren<GridTile>();
         foreach (GridTile tile in GridTiles)
         {
-            if(!tile.isFlashing)
+            if(!tile.isFlashing && tile.activated)
             {
                 StartCoroutine(tile.GetComponent<GUI_Object>().GlowToEmission(0,.6f,2f, false));
             }
@@ -656,87 +698,35 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     public void ActivateTile(GridTile tile) 
     {
-        if (tile != null && !tile.activated )
+        if (tile != null)
         {
-            AudioManager.instance.Play("play1");
+            //AudioManager.instance.Play("play11");
             tile.ActiveTileSkin();
-            tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
-            tile.GetComponent<NoGravity>().enabled = false;
-            switch(tile.value)
+
+            if(tileFX[GameMaster.instance.turnIndicator-1][tile.value-1] == null)
             {
-                case 1:
-                GameObject FX;
-                FX = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
-                    new Vector3(0,0,5), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
+                Debug.LogError("AWOOGA AWOOGA ABANDON SHIP AWOOGA AWOOGA THIS IS NOT A DIRLL");
+                Debug.LogError("tile.value" + tile.value);
+                Debug.LogError("turn indicator" + GameMaster.instance.turnIndicator);
+                Debug.LogError("Tile FX length:" + tileFX.Count);
+                Debug.LogError("Tile FX (turn indicator-1) length:" + tileFX[GameMaster.instance.turnIndicator-1].Length);
+
+
+            } else 
+            {
+             GameObject FX;
+                FX = Instantiate(tileFX[GameMaster.instance.turnIndicator-1]
+                [tile.value-1],
+                 GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
+                    new Vector3(0,0,5),
+                     Quaternion.Euler(0,0,0));
 
                 FX.transform.localScale=AdjustFXScale();
                 Destroy(FX, 1f);
-                break;
-
-                case 2:
-                GameObject FX2;
-                FX2 = Instantiate(Tile2ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
-                    new Vector3(0,0,5), Tile2ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
-                FX2.transform.localScale=AdjustFXScale();
-                Destroy(FX2, 1f);
-                break;
-
-                case 3:
-                GameObject FX3;
-                FX3 = Instantiate(Tile3ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
-                    new Vector3(0,0,5), Tile3ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
-                FX3.transform.localScale=AdjustFXScale();
-                Destroy(FX3, 1f);
-                break;
-
-                case 4:
-                GameObject FX4;
-                FX4 = Instantiate(Tile4ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
-                    new Vector3(0,0,5), Tile4ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
-                FX4.transform.localScale=AdjustFXScale();
-                Destroy(FX4, 1f);
-                break;
-
-                case 5:
-                GameObject FX5;
-                FX5 = Instantiate(Tile1ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
-                    new Vector3(0,0,5), Tile1ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
-                FX5.transform.localScale=AdjustFXScale();
-                Destroy(FX5, 1f);
-                break;
-
-                case 6:
-                GameObject FX6;
-                FX6 = Instantiate(Tile6ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
-                    new Vector3(0,0,5), Tile6ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
-                FX6.transform.localScale=AdjustFXScale();
-                Destroy(FX6, 1f);
-                break;
-
-                case 7:
-                GameObject FX7;
-                FX7 = Instantiate(Tile7ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
-                    new Vector3(0,0,5), Tile7ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
-                FX7.transform.localScale=AdjustFXScale();
-                Destroy(FX7, 1f);
-                break;
-
-                case 8:
-                GameObject FX8;
-                FX8 = Instantiate(Tile8ActivateFX[GameMaster.instance.turnIndicator-1], GameMaster.instance.objGameGrid[tile.x,tile.y].transform.position-
-                    new Vector3(0,0,5), Tile8ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
-                FX8.transform.localScale=AdjustFXScale();
-                Destroy(FX8, 1f);
-                break;
-
-                case 9:
-                GameObject FX9;
-                FX9 = Instantiate(Tile9ActivateFX[GameMaster.instance.turnIndicator-1], tile.transform.position-
-                    new Vector3(0,0,5), Tile9ActivateFX[GameMaster.instance.turnIndicator-1].transform.rotation);
-                FX9.transform.localScale=AdjustFXScale();
-                Destroy(FX9, 1f);
-                break;
             }
+
+            
+           
             tile.activated = true;
         } 
     }
@@ -764,8 +754,11 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             if(TilesScored[i] != null)
             {
+                if(!TilesScored[i].activated){GUI_Controller.instance.ActivateTile(TilesScored[i]);}
                 TilesScored[i].isFlashing = true;
-                //TilesScored[i].GetComponent<Renderer>().material.EnableEmission();
+                TilesScored[i].GetComponent<Renderer>().material.EnableEmission();
+                TilesScored[i].transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
+                TilesScored[i].GetComponent<NoGravity>().enabled = false;
                 StartCoroutine(TilesScored[i].GetComponent<GUI_Object>().Flash(TilesScored[i].GetComponent<Renderer>().material.color,2.5f, true));
             }
         }
@@ -789,6 +782,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             if(TilesScored[i] != null)
             {
                 TilesScored[i].isFlashing = true;
+                if(!TilesScored[i].activated){GUI_Controller.instance.ActivateTile(TilesScored[i]);}
                 TilesScored[i].GetComponent<Renderer>().material.EnableEmission();
                 TilesScored[i].GetComponent<Animator>().enabled=true;
                 TilesScored[i].GetComponent<Animator>().SetTrigger("TileScored");
@@ -815,6 +809,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
             if(TilesScored[i] != null)
             {
                 TilesScored[i].isFlashing = true;
+                if(!TilesScored[i].activated){GUI_Controller.instance.ActivateTile(TilesScored[i]);}
                 TilesScored[i].GetComponent<Renderer>().material.EnableEmission();
                 TilesScored[i].GetComponent<Animator>().enabled=true;
                 TilesScored[i].GetComponent<Animator>().SetTrigger("TileScored_Flip");
@@ -944,14 +939,49 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     }
 
+    public void SpawnTextPopupMenu(string text, Color colour, Transform location, int size)
+    {
+        TextPopup instance = Instantiate(POPUP_ERROR);
+        instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
+
+        instance.transform.position = instance.transform.position;
+        instance.popupText.alignment=TMPro.TextAlignmentOptions.Center;
+        instance.popupText.fontSize=28;
+        instance.SetColour(colour);
+        instance.SetText(text);
+    }
+
+    public void SpawnErrorPopup(string text, Color colour, Transform location, int size)
+    {
+        TextPopup instance = Instantiate(POPUP_ERROR);
+        instance.transform.SetParent(this.GetComponent<Canvas>().transform, false);
+        instance.transform.position = location.position;
+        instance.popupText.alignment=TMPro.TextAlignmentOptions.Center;
+        instance.popupText.fontSize=28;
+        instance.SetColour(colour);
+        instance.SetText(text);
+    }
+
+    public int notifPosition;
+
     public void SpawnTextPopup(string text, Color colour, Transform location, int size)
     {
-        if(size>100)
-            size=100;
+        if(size>80)
+            size=80;
 
-        int notificationLocation = BoardController.instance.FindNotificationPosition();
+        int notificationLocation;
 
-        Debug.Log("Spawning notif");
+        if(BoardController.instance.presetLoc != 0)
+        {
+            notificationLocation=BoardController.instance.presetLoc;
+
+        } else 
+        {
+            notificationLocation = BoardController.instance.FindNotificationPosition();//Mathf.RoundToInt(UnityEngine.Random.Range(0,4)); // finds area with least lit tiles for notifcation location
+        }
+
+
+        //Debug.Log("Spawning notif");
         if(text=="+0")
             return;
 
@@ -982,7 +1012,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
         } else {
             //Spawn Text Notification
-            Debug.Log("Spawning notif text size: " + size);
+            //Debug.Log("Spawning notif text size: " + size);
 
 
             TextPopup instance = Instantiate(POPUP_TEXT);
@@ -1002,6 +1032,7 @@ public class GUI_Controller : MonoBehaviour, Observable {
     }
 
     /// <summary>
+    /// OVERLOAD of method above including custom TM material
     /// Spawn text popup with a custom TM PRo font material preset (used for in game text notifcaitons (not score!))
     /// </summary>
     /// <param name="text"></param>
@@ -1011,10 +1042,21 @@ public class GUI_Controller : MonoBehaviour, Observable {
     /// <param name="fontMaterial"></param>
     public void SpawnTextPopup(string text, Color colour, Transform location, int size, Material fontMaterial)
     {
-        if(size>100)
-            size=100;
+        if(size>85)
+            size=85;
 
-        int notificationLocation = BoardController.instance.FindNotificationPosition();//Mathf.RoundToInt(UnityEngine.Random.Range(0,4)); // finds area with least lit tiles for notifcation location
+        
+        int notificationLocation;
+
+        if(BoardController.instance.presetLoc != 0)
+        {
+            notificationLocation=BoardController.instance.presetLoc;
+
+        } else 
+        {
+            notificationLocation = BoardController.instance.FindNotificationPosition();//Mathf.RoundToInt(UnityEngine.Random.Range(0,4)); // finds area with least lit tiles for notifcation location
+        }
+        
 
         if(notificationLocation==ApplicationModel.GRID_SIZE-1)
         {
@@ -1063,6 +1105,8 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 Xindex=3;
                 break;
             }
+
+            
             
             instance.transform.position =GameMaster.instance.objGameGrid[Xindex,notificationLocation].transform.position;
 
@@ -1097,7 +1141,6 @@ public class GUI_Controller : MonoBehaviour, Observable {
                 Xindex=6;
                 break;
             }
-            
 
             instance.transform.position =GameMaster.instance.objGameGrid[Xindex,notificationLocation].transform.position - new Vector3(0, .25f, 0);
             instance.popupText.enableVertexGradient=false;
@@ -1112,6 +1155,15 @@ public class GUI_Controller : MonoBehaviour, Observable {
 
     }
 
+    /// <summary>
+    /// This method originally spawned cash popup but now shows new stars being added 
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="colour"></param>
+    /// <param name="location"></param>
+    /// <param name="delay"></param>
+    /// <param name="popup"></param>
+    /// <returns></returns>
     public IEnumerator SpawnCashPopup(string text, Color colour, Transform location, float delay, string popup)
     {
         yield return new WaitForSeconds(delay);
@@ -1124,6 +1176,20 @@ public class GUI_Controller : MonoBehaviour, Observable {
         {
             SpawnTextPopup(popup, colour, location, 28);
         }
+
+    }
+
+    [SerializeField]
+    public TextPopup menuTextPopup;
+    public void SpawnMenuTextPopUp(string text, Color colour, Vector3 position, int size, Material fontMat)
+    {
+        menuTextPopup.transform.position=position;
+        menuTextPopup.SetColour(colour);
+        menuTextPopup.SetText(text);
+        menuTextPopup.SetSize(size);
+        menuTextPopup.SetFontMaterial(fontMat);
+        menuTextPopup.enabled=true;
+        menuTextPopup.animator.SetTrigger("");
 
     }
 

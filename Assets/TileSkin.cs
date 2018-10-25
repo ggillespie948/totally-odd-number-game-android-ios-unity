@@ -6,6 +6,16 @@ using UnityEngine.UI;
 public class TileSkin : MonoBehaviour {
 
 	// Use this for initialization
+	[SerializeField]
+	public Material[] defaultSkins;
+
+	[SerializeField]
+	public Material[] activeSkins;
+
+	[SerializeField]
+	public GameObject[] activateFX;
+
+
 	public GridTile Tile1;
 	public GridTile Tile2;
 	public GridTile Tile3;

@@ -13,7 +13,7 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -27,7 +27,7 @@ AnimatorController:
     m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
---- !u!1101 &1101039669685324394
+--- !u!1101 &1101563543935710036
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -38,7 +38,7 @@ AnimatorStateTransition:
     m_ConditionEvent: ClosePanel
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
-  m_DstState: {fileID: 1102455906869692838}
+  m_DstState: {fileID: 1102731611436004700}
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
@@ -51,14 +51,14 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
---- !u!1102 &1102455906869692838
+--- !u!1102 &1102731611436004700
 AnimatorState:
   serializedVersion: 5
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 3
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: PurchasePanelClose
-  m_Speed: 1
+  m_Name: PurchasePanel_Close
+  m_Speed: -1
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -69,7 +69,7 @@ AnimatorState:
   m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: c4db2a5bc24f8124c9ef80e9478cfa1b, type: 2}
+  m_Motion: {fileID: 7400000, guid: 0f61f2db0a99e174e824cfb56cef855e, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -109,16 +109,16 @@ AnimatorStateMachine:
     m_State: {fileID: 1102906192956655336}
     m_Position: {x: 216, y: -36, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102455906869692838}
-    m_Position: {x: 228, y: 72, z: 0}
+    m_State: {fileID: 1102731611436004700}
+    m_Position: {x: 228, y: 96, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
-  - {fileID: 1101039669685324394}
+  - {fileID: 1101563543935710036}
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: -36, y: 0, z: 0}
-  m_EntryPosition: {x: -36, y: 72, z: 0}
+  m_AnyStatePosition: {x: -12, y: -24, z: 0}
+  m_EntryPosition: {x: -24, y: 132, z: 0}
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 1102906192956655336}

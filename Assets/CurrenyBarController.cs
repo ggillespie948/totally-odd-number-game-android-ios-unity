@@ -37,6 +37,9 @@ public class CurrenyBarController : MonoBehaviour {
 	[SerializeField]
 	public int secsToFullEnergy=0;
 
+	[SerializeField]
+	private Color defaultCol;
+
 	public void showCoinInfoPanel()
 	{
 		if(coinInfoPanel!= null)
@@ -54,16 +57,25 @@ public class CurrenyBarController : MonoBehaviour {
 		if(energyInfoPanel!= null)
 		{
 			energyInfoPanel.SetActive(true);
-			if(playerLives<15)
-			{
-				energyInfoPanel.GetComponentInChildren<TeleType>().label01 = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                   Full Energy in <font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF YELLOW GLOW\">"+ (secsToFullEnergy/60) + "m</font>";
-				energyInfoPanel.GetComponentInChildren<TextMeshProUGUI>().text = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                   Full Energy in <font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF YELLOW GLOW\">"+ (secsToFullEnergy/60) + "m</font>";		
-			} else
-			{
-				energyInfoPanel.GetComponentInChildren<TeleType>().label01 = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                                 Energy Full.";
-				energyInfoPanel.GetComponentInChildren<TextMeshProUGUI>().text = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                             Energy Full.";
 
+			if( AccountInfo.Instance.InventoryContainsItemClass("Life Pass") )
+			{
+				energyInfoPanel.GetComponentInChildren<TeleType>().label01 = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                   Unlimited Energy Pass Active.";
+				energyInfoPanel.GetComponentInChildren<TextMeshProUGUI>().text = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.               Unlimited Energy Pass Active.";
+
+			} else{
+
+				if(playerLives<15)
+				{
+					energyInfoPanel.GetComponentInChildren<TeleType>().label01 = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                   Full Energy in <font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF YELLOW GLOW\">"+ ((secsToFullEnergy+((15-playerLives)*192)/60)) + " minutes</font>";
+					energyInfoPanel.GetComponentInChildren<TextMeshProUGUI>().text = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                   Full Energy in <font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF YELLOW GLOW\">"+((secsToFullEnergy+((15-playerLives)*192)/60))+ " minutes</font>";		
+				} else
+				{
+					energyInfoPanel.GetComponentInChildren<TeleType>().label01 = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                                 Energy Full.";
+					energyInfoPanel.GetComponentInChildren<TextMeshProUGUI>().text = "<font=\"FredokaOne-Regular SDF\" material=\"FredokaOne-Regular SDF RED GLOW\">Energy</font> is used to play games and regenerates over time.                             Energy Full.";
+				}
 			}
+
 			energyInfoPanel.GetComponentInChildren<TeleType>().autoPlay=true;
 			StartCoroutine(energyInfoPanel.GetComponentInChildren<TeleType>().Start());
 			StartCoroutine(ResetInformationPanelAfterDelay(energyInfoPanel,7.5f));
@@ -113,18 +125,18 @@ public class CurrenyBarController : MonoBehaviour {
 		{
 			case 'c':
 			playerCoins=newVal;
-			GUI_Controller.instance.LivesDialogue.GetComponentInChildren<Image>().color=Color.white;
+			GUI_Controller.instance.LivesDialogue.GetComponentInChildren<Image>().color=defaultCol;
 			break;
 
 			case 'l':
 			playerLives=newVal;
-			GUI_Controller.instance.CoinDialogue.GetComponentInChildren<Image>().color=Color.white;
+			GUI_Controller.instance.CoinDialogue.GetComponentInChildren<Image>().color=defaultCol;
 			break;
 
 			case 's':
 			Debug.Log("star ding");
 			playerStars=newVal;
-			GUI_Controller.instance.CoinDialogue.GetComponentInChildren<Image>().color=Color.white;
+			GUI_Controller.instance.CoinDialogue.GetComponentInChildren<Image>().color=defaultCol;
 			break;
 
 			default:
@@ -135,52 +147,64 @@ public class CurrenyBarController : MonoBehaviour {
 
 	public IEnumerator DecreasePlayerUIVal(int startVal, int newVal, TextMeshProUGUI text, char type) //type is used to determine currency lives/coins 
     {
-		
+		if(AccountInfo.Instance.InventoryContainsItemClass("Life Pass") && type =='l')
+		{
+			yield return new WaitForSeconds(1.5f);
+			livesEmitter.GetComponent<ParticleSystem>().EnableEmission(false);
+			yield return new WaitForSeconds(.75f);
+			MenuController.instance.StartActiveGameConfiguration();
+			
 
-        while(startVal > newVal-1)
-        {
-            //update score ui
-			text.text=startVal.ToString();
-            if(startVal-5 >= newVal)
-            {
-                startVal -= UnityEngine.Random.Range(5,20);
+		} else 
+		{
+			while(startVal > newVal-1)
+			{
+				//update score ui
+				text.text=startVal.ToString();
+				if(startVal-5 >= newVal)
+				{
+					startVal -= UnityEngine.Random.Range(5,20);
 
-            } else {
-                startVal--;
-            }
+				} else {
+					startVal--;
+				}
+
+				switch(type)
+				{
+					case 'c':
+						yield return new WaitForSeconds(.005f);
+					break;
+
+					case 'l':
+					yield return new WaitForSeconds(.5f);
+					break;
+				}
+
+
+			}
 
 			switch(type)
 			{
 				case 'c':
-            		yield return new WaitForSeconds(.005f);
+				playerCoins=newVal;
+				GUI_Controller.instance.PlayerCoins_Stone.GetComponent<Image>().color=defaultCol;
 				break;
 
 				case 'l':
-				yield return new WaitForSeconds(.3f);
+				livesEmitter.GetComponent<ParticleSystem>().EnableEmission(false);
+				yield return new WaitForSeconds(1f);
+				GUI_Controller.instance.LivesDialogue.GetComponent<Image>().color=defaultCol;
+				playerLives=newVal;
+				yield return new WaitForSeconds(2f);
+				break;
+
+				default:
 				break;
 			}
 
-
-        }
-
-		switch(type)
-		{
-			case 'c':
-			playerCoins=newVal;
-			GUI_Controller.instance.PlayerCoins_Stone.GetComponent<Image>().color=Color.white;
-			break;
-
-			case 'l':
-			livesEmitter.GetComponent<ParticleSystem>().EnableEmission(false);
-			yield return new WaitForSeconds(1f);
-			GUI_Controller.instance.LivesDialogue.GetComponent<Image>().color=Color.white;
-			playerLives=newVal;
-			yield return new WaitForSeconds(2f);
-			break;
-
-			default:
-			break;
 		}
+		
+
 
     }
 
@@ -216,21 +240,28 @@ public class CurrenyBarController : MonoBehaviour {
 
 	public void DecreaseLives(int val)
 	{
-		int lifeTotal=0;
-		if(AccountInfo.Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.LIVES_CODE, out lifeTotal))
-		if(lifeTotal >= val)
+		if(AccountInfo.Instance.InventoryContainsItemClass("Life Pass"))
 		{
 			GUI_Controller.instance.LivesDialogue.GetComponent<Image>().color=Color.red;
 			StartCoroutine(DecreasePlayerUIVal( playerLives, playerLives-val, GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>(), 'l'));
 			livesEmitter.GetComponent<ParticleSystem>().EnableEmission(true);
-			AccountInfo.DeductEnergy(val);
+			
 		} else 
 		{
-			Debug.Log("Not enough energy");
-			//open energy pop-up panel
+			int lifeTotal=0;
+			if(AccountInfo.Instance.Info.UserVirtualCurrency.TryGetValue(AccountInfo.LIVES_CODE, out lifeTotal))
+			if(lifeTotal >= val)
+			{
+				GUI_Controller.instance.LivesDialogue.GetComponent<Image>().color=Color.red;
+				StartCoroutine(DecreasePlayerUIVal( playerLives, playerLives-val, GUI_Controller.instance.LivesDialogue.GetComponentInChildren<TextMeshProUGUI>(), 'l'));
+				livesEmitter.GetComponent<ParticleSystem>().EnableEmission(true);
+				AccountInfo.DeductEnergy(val);
+			} else 
+			{
+				Debug.Log("Not enough energy");
+				MenuController.instance.EnergyEmpty();
+			}
 		}
-		
-
 	}
 
 	public ScrollRect shoptemp;

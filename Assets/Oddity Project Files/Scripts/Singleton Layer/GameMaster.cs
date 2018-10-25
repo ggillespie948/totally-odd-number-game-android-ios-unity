@@ -10,6 +10,10 @@ public class GameMaster : MonoBehaviour{
 
     public static GameMaster instance = null;     // Singleton instance
 
+    
+    [SerializeField]
+    private LevelChanger levelChanger;
+    
     [SerializeField]
     public bool TUTORIAL_MODE {get; set;}
 
@@ -29,9 +33,10 @@ public class GameMaster : MonoBehaviour{
     private static AI_Player AI_PLAYER;
     public static int MAX_TURN_INDICATOR;
     //[Header("Game Options")]
-    private static int START_ONE_TILES;    private int START_TWO_TILES;    private int START_THREE_TILES;
-    private  int START_FOUR_TILES;    private int START_FIVE_TILES;    private static int START_SIX_TILES;
-    private static int START_SEVEN_TILES; private static int START_EIGHT_TILES; private static int START_NINE_TILES;
+    // private static int START_ONE_TILES;    private int START_TWO_TILES;    private int START_THREE_TILES;
+    // private  int START_FOUR_TILES;    private int START_FIVE_TILES;    private static int START_SIX_TILES;
+    // private static int START_SEVEN_TILES; private static int START_EIGHT_TILES; private static int START_NINE_TILES;
+    private static int[] START_TILE_COUNTS;
     private int turnLimit{get; set;}
     public bool vsAi{get; private set;} 
     public bool soloPlay{get; private set;}
@@ -54,11 +59,15 @@ public class GameMaster : MonoBehaviour{
 
     [Header("Tile Variables")]
     private int totalRemainingTiles;
-    private static GridTile[] tile1;    private static GridTile[] tile2;    private static GridTile[] tile3;
-    private static GridTile[] tile4;    private static GridTile[] tile5;    private static GridTile[] tile6;  
-    private static GridTile[] tile7;    private static GridTile[] tile8;    private static GridTile[] tile9;
-   
-    private List<GridTile[]> tileModels = new List<GridTile[]>();
+    // private static GridTile[] tile1;    private static GridTile[] tile2;    private static GridTile[] tile3;
+    // private static GridTile[] tile4;    private static GridTile[] tile5;    private static GridTile[] tile6;  
+    // private static GridTile[] tile7;    private static GridTile[] tile8;    private static GridTile[] tile9;
+    [SerializeField]
+    public List<GridTile[]> tileModels = new List<GridTile[]>();
+
+    [SerializeField]
+    public GameObject tileModel3d;
+
 
     [SerializeField]
     public int totalTiles{get; set;}
@@ -75,6 +84,8 @@ public class GameMaster : MonoBehaviour{
     public List<int> playerErrors{get; set;}
     public List<int> playerBestTurnActivateTiles{get; set;}
     public List<int> playerPlayedTiles{get; set;}
+    public List<int> playerSwaps{get; set;}
+
 
     //Spawn Location
     [Header("Other")]
@@ -96,6 +107,8 @@ public class GameMaster : MonoBehaviour{
     public bool evenTileRequired{get; set;}
 
     public bool turnOver {get; private set;}
+
+    
 
 
     [Header("Debugging")]
@@ -128,6 +141,8 @@ public class GameMaster : MonoBehaviour{
         playerErrors = new List<int>();
         //init player error counters
         playerPlayedTiles = new List<int>();
+        //init player exchange counts
+        playerSwaps = new List<int>();
 
         turnLimit=20; //default
         soloPlay = ApplicationModel.SOLO_PLAY;
@@ -137,7 +152,9 @@ public class GameMaster : MonoBehaviour{
 
         objGameGrid = new GridCell[9, 9];
 
+        
         MAX_TURN_INDICATOR = ApplicationModel.AI_PLAYERS + ApplicationModel.HUMAN_PLAYERS;
+        Debug.LogError("MAX TURN INDICATOR: " + MAX_TURN_INDICATOR);
         for(int i=0; i<ApplicationModel.HUMAN_PLAYERS; i++)
         {
             turnIdentifier.Add(true);
@@ -147,6 +164,7 @@ public class GameMaster : MonoBehaviour{
         {
             turnIdentifier.Add(false);
         }
+
     }
 
     void Start()
@@ -198,22 +216,24 @@ public class GameMaster : MonoBehaviour{
         errorsMade = 0;
         averageTurnTime = 10f; //temp
 
-        START_ONE_TILES = ApplicationModel.ONE_TILES;                     
-        START_TWO_TILES = ApplicationModel.TWO_TILES;
-        START_THREE_TILES = ApplicationModel.THREE_TILES;
-        START_FOUR_TILES = ApplicationModel.FOUR_TILES;                     
-        START_FIVE_TILES = ApplicationModel.FIVE_TILES;
-        START_SIX_TILES = ApplicationModel.SIX_TILES;
-        START_SEVEN_TILES = ApplicationModel.SEVEN_TILES;
-        START_EIGHT_TILES = ApplicationModel.EIGHT_TILES;
-        START_NINE_TILES = ApplicationModel.NINE_TILES;
+        // START_ONE_TILES = ApplicationModel.ONE_TILES;                     
+        // START_TWO_TILES = ApplicationModel.TWO_TILES;
+        // START_THREE_TILES = ApplicationModel.THREE_TILES;
+        // START_FOUR_TILES = ApplicationModel.FOUR_TILES;                     
+        // START_FIVE_TILES = ApplicationModel.FIVE_TILES;
+        // START_SIX_TILES = ApplicationModel.SIX_TILES;
+        // START_SEVEN_TILES = ApplicationModel.SEVEN_TILES;
+        // START_EIGHT_TILES = ApplicationModel.EIGHT_TILES;
+        // START_NINE_TILES = ApplicationModel.NINE_TILES;
+
+        START_TILE_COUNTS = ApplicationModel.START_TILE_COUNTS;
 
         if(BoardController.instance.GRID_SIZE == 9)
         {
             GUI_Controller.instance.physcialGridContainer = GUI_Controller.instance.GameGrid_9x9;
             GUI_Controller.instance.physicalGridBG = GUI_Controller.instance.GameGridBG_9x9;
             GUI_Controller.instance.physicalGridDivider = GUI_Controller.instance.GameGrid_9x9_MainBG;
-            GUI_Controller.instance.GameGrid_9x9.SetActive(true);
+            //GUI_Controller.instance.GameGrid_9x9.SetActive(true);
             GRID_SCALE = .8f;
             TILE_SCALE=0.33f;
             GRID_TILE_LIGHT_RANGE = 2.5f;
@@ -223,7 +243,7 @@ public class GameMaster : MonoBehaviour{
             GUI_Controller.instance.physcialGridContainer = GUI_Controller.instance.GameGrid_5x5;
             GUI_Controller.instance.physicalGridBG = GUI_Controller.instance.GameGridBG_5x5;
             GUI_Controller.instance.physicalGridDivider = GUI_Controller.instance.GameGrid_5x5_MainBG;
-            GUI_Controller.instance.GameGrid_5x5.SetActive(true);
+            //GUI_Controller.instance.GameGrid_5x5.SetActive(true);
             GRID_SCALE = 1.3f;
             TILE_SCALE=0.55f;
         } else if(BoardController.instance.GRID_SIZE == 7)
@@ -231,12 +251,12 @@ public class GameMaster : MonoBehaviour{
             GUI_Controller.instance.physcialGridContainer = GUI_Controller.instance.GameGrid_7x7;
             GUI_Controller.instance.physicalGridBG = GUI_Controller.instance.GameGridBG_7x7;
             GUI_Controller.instance.physicalGridDivider = GUI_Controller.instance.GameGrid_7x7_MainBG;
-            GUI_Controller.instance.GameGrid_7x7.SetActive(true);
+            //GUI_Controller.instance.GameGrid_7x7.SetActive(true);
             GRID_SCALE = 1f;
             TILE_SCALE = .45f;
         } else {
             GUI_Controller.instance.physcialGridContainer = GUI_Controller.instance.GameGrid_5x5;
-            GUI_Controller.instance.GameGrid_5x5.SetActive(true);
+            //GUI_Controller.instance.GameGrid_5x5.SetActive(true);
             GRID_SCALE = 1.3f;
             TILE_SCALE=0.55f;
 
@@ -255,7 +275,7 @@ public class GameMaster : MonoBehaviour{
         }
 
         SetTheme();
-        StartCoroutine(GUI_Controller.instance.GridIntroAnim());
+        
         
     }
 
@@ -278,6 +298,7 @@ public class GameMaster : MonoBehaviour{
             GUI_Controller.instance.UI_GRADIENT_BG.SetActive(false);
         } else 
         {
+            GUI_Controller.instance.UI_GRADIENT_BG.SetActive(true);
             GUI_Controller.instance.UI_GRADIENT_BG.GetComponent<UnityEngine.UI.Extensions.Gradient>().vertex1=currentTheme.GradientVertext1;
             GUI_Controller.instance.UI_GRADIENT_BG.GetComponent<UnityEngine.UI.Extensions.Gradient>().vertex2=currentTheme.GradientVertext2;
         }
@@ -288,98 +309,119 @@ public class GameMaster : MonoBehaviour{
             GUI_Controller.instance.physicalGridDivider.gameObject.SetActive(false);
         } else 
         {
+            GUI_Controller.instance.physicalGridDivider.gameObject.SetActive(true);
             GUI_Controller.instance.physicalGridDivider.GetComponent<Renderer>().material=currentTheme.GridDivider;
         }
 
         //Initialise player tile models
-        tile1=new GridTile[MAX_TURN_INDICATOR];
-        tile2=new GridTile[MAX_TURN_INDICATOR];
-        tile3=new GridTile[MAX_TURN_INDICATOR];
-        tile4=new GridTile[MAX_TURN_INDICATOR];
-        tile5=new GridTile[MAX_TURN_INDICATOR];
-        tile6=new GridTile[MAX_TURN_INDICATOR];
-        tile7=new GridTile[MAX_TURN_INDICATOR];
-        tile8=new GridTile[MAX_TURN_INDICATOR];
-        tile9=new GridTile[MAX_TURN_INDICATOR];
+        // tile1=new GridTile[MAX_TURN_INDICATOR];
+        // tile2=new GridTile[MAX_TURN_INDICATOR];
+        // tile3=new GridTile[MAX_TURN_INDICATOR];
+        // tile4=new GridTile[MAX_TURN_INDICATOR];
+        // tile5=new GridTile[MAX_TURN_INDICATOR];
+        // tile6=new GridTile[MAX_TURN_INDICATOR];
+        // tile7=new GridTile[MAX_TURN_INDICATOR];
+        // tile8=new GridTile[MAX_TURN_INDICATOR];
+        // tile9=new GridTile[MAX_TURN_INDICATOR];
 
-        GUI_Controller.instance.Tile1ActivateFX=new GameObject[MAX_TURN_INDICATOR];
-        GUI_Controller.instance.Tile2ActivateFX=new GameObject[MAX_TURN_INDICATOR];
-        GUI_Controller.instance.Tile3ActivateFX=new GameObject[MAX_TURN_INDICATOR];
-        GUI_Controller.instance.Tile4ActivateFX=new GameObject[MAX_TURN_INDICATOR];
-        GUI_Controller.instance.Tile5ActivateFX=new GameObject[MAX_TURN_INDICATOR];
-        GUI_Controller.instance.Tile6ActivateFX=new GameObject[MAX_TURN_INDICATOR];
-        GUI_Controller.instance.Tile7ActivateFX=new GameObject[MAX_TURN_INDICATOR];
-        GUI_Controller.instance.Tile8ActivateFX=new GameObject[MAX_TURN_INDICATOR];
-        GUI_Controller.instance.Tile9ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        Debug.Log("default skins len" +  tileSkins[ApplicationModel.TILESKIN].defaultSkins.Length);
+        
+        GUI_Controller.instance.tileFX = new List<GameObject[]>();
+        //Initialise the material / activate FX stores
+        for(int i=0; i<MAX_TURN_INDICATOR; i++)
+        {
+            GUI_Controller.instance.tileFX.Add(new GameObject[20]);
+        }
+
+        for(int playerIndex=0; playerIndex<MAX_TURN_INDICATOR;playerIndex++)
+        {
+            Debug.LogError("assigning PLAYER tile skin data");
+            for(int tileValIndex=0; tileValIndex<ApplicationModel.MAX_TILE-1; tileValIndex++)
+            {
+                Debug.LogError("assign tile skin");
+                GUI_Controller.instance.tileFX[playerIndex][tileValIndex]=tileSkins[ApplicationModel.TILESKIN+playerIndex].activateFX[tileValIndex];
+            }
+        }
+
+
+        // GUI_Controller.instance.Tile1ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        // GUI_Controller.instance.Tile2ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        // GUI_Controller.instance.Tile3ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        // GUI_Controller.instance.Tile4ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        // GUI_Controller.instance.Tile5ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        // GUI_Controller.instance.Tile6ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        // GUI_Controller.instance.Tile7ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        // GUI_Controller.instance.Tile8ActivateFX=new GameObject[MAX_TURN_INDICATOR];
+        // GUI_Controller.instance.Tile9ActivateFX=new GameObject[MAX_TURN_INDICATOR];
 
         if(ApplicationModel.MIRROR_TILESKIN)
         {
             for(int i=0; i<MAX_TURN_INDICATOR;i++)
             {
-                tile1[i]=tileSkins[ApplicationModel.TILESKIN].Tile1;
-                tile2[i]=tileSkins[ApplicationModel.TILESKIN].Tile2;
-                tile3[i]=tileSkins[ApplicationModel.TILESKIN].Tile3;
-                tile4[i]=tileSkins[ApplicationModel.TILESKIN].Tile4;
-                tile5[i]=tileSkins[ApplicationModel.TILESKIN].Tile5;
-                tile6[i]=tileSkins[ApplicationModel.TILESKIN].Tile6;
-                tile7[i]=tileSkins[ApplicationModel.TILESKIN].Tile7;
-                tile8[i]=tileSkins[ApplicationModel.TILESKIN].Tile8;
-                tile9[i]=tileSkins[ApplicationModel.TILESKIN].Tile9;
+                // tile1[i]=tileSkins[ApplicationModel.TILESKIN].Tile1;
+                // tile2[i]=tileSkins[ApplicationModel.TILESKIN].Tile2;
+                // tile3[i]=tileSkins[ApplicationModel.TILESKIN].Tile3;
+                // tile4[i]=tileSkins[ApplicationModel.TILESKIN].Tile4;
+                // tile5[i]=tileSkins[ApplicationModel.TILESKIN].Tile5;
+                // tile6[i]=tileSkins[ApplicationModel.TILESKIN].Tile6;
+                // tile7[i]=tileSkins[ApplicationModel.TILESKIN].Tile7;
+                // tile8[i]=tileSkins[ApplicationModel.TILESKIN].Tile8;
+                // tile9[i]=tileSkins[ApplicationModel.TILESKIN].Tile9;
 
-                GUI_Controller.instance.Tile1ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile1FX;
-                GUI_Controller.instance.Tile2ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile2FX;
-                GUI_Controller.instance.Tile3ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile3FX;
-                GUI_Controller.instance.Tile4ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile4FX;
-                GUI_Controller.instance.Tile5ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile5FX;
-                GUI_Controller.instance.Tile6ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile6FX;
-                GUI_Controller.instance.Tile7ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile7FX;
-                GUI_Controller.instance.Tile8ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile8FX;
-                GUI_Controller.instance.Tile9ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile9FX;
+                // GUI_Controller.instance.Tile1ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile1FX;
+                // GUI_Controller.instance.Tile2ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile2FX;
+                // GUI_Controller.instance.Tile3ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile3FX;
+                // GUI_Controller.instance.Tile4ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile4FX;
+                // GUI_Controller.instance.Tile5ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile5FX;
+                // GUI_Controller.instance.Tile6ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile6FX;
+                // GUI_Controller.instance.Tile7ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile7FX;
+                // GUI_Controller.instance.Tile8ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile8FX;
+                // GUI_Controller.instance.Tile9ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN].Tile9FX;
             }
 
         } else 
         {
-            tile1[0]=tileSkins[ApplicationModel.TILESKIN].Tile1;
-            tile2[0]=tileSkins[ApplicationModel.TILESKIN].Tile2;
-            tile3[0]=tileSkins[ApplicationModel.TILESKIN].Tile3;
-            tile4[0]=tileSkins[ApplicationModel.TILESKIN].Tile4;
-            tile5[0]=tileSkins[ApplicationModel.TILESKIN].Tile5;
-            tile6[0]=tileSkins[ApplicationModel.TILESKIN].Tile6;
-            tile7[0]=tileSkins[ApplicationModel.TILESKIN].Tile7;
-            tile8[0]=tileSkins[ApplicationModel.TILESKIN].Tile8;
-            tile9[0]=tileSkins[ApplicationModel.TILESKIN].Tile9;
+            // tile1[0]=tileSkins[ApplicationModel.TILESKIN].Tile1;
+            // tile2[0]=tileSkins[ApplicationModel.TILESKIN].Tile2;
+            // tile3[0]=tileSkins[ApplicationModel.TILESKIN].Tile3;
+            // tile4[0]=tileSkins[ApplicationModel.TILESKIN].Tile4;
+            // tile5[0]=tileSkins[ApplicationModel.TILESKIN].Tile5;
+            // tile6[0]=tileSkins[ApplicationModel.TILESKIN].Tile6;
+            // tile7[0]=tileSkins[ApplicationModel.TILESKIN].Tile7;
+            // tile8[0]=tileSkins[ApplicationModel.TILESKIN].Tile8;
+            // tile9[0]=tileSkins[ApplicationModel.TILESKIN].Tile9;
 
-            GUI_Controller.instance.Tile1ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile1FX;
-            GUI_Controller.instance.Tile2ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile2FX;
-            GUI_Controller.instance.Tile3ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile3FX;
-            GUI_Controller.instance.Tile4ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile4FX;
-            GUI_Controller.instance.Tile5ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile5FX;
-            GUI_Controller.instance.Tile6ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile6FX;
-            GUI_Controller.instance.Tile7ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile7FX;
-            GUI_Controller.instance.Tile8ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile8FX;
-            GUI_Controller.instance.Tile9ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile9FX;
+            // GUI_Controller.instance.Tile1ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile1FX;
+            // GUI_Controller.instance.Tile2ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile2FX;
+            // GUI_Controller.instance.Tile3ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile3FX;
+            // GUI_Controller.instance.Tile4ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile4FX;
+            // GUI_Controller.instance.Tile5ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile5FX;
+            // GUI_Controller.instance.Tile6ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile6FX;
+            // GUI_Controller.instance.Tile7ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile7FX;
+            // GUI_Controller.instance.Tile8ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile8FX;
+            // GUI_Controller.instance.Tile9ActivateFX[0]=tileSkins[ApplicationModel.TILESKIN].Tile9FX;
 
             for(int i=1; i<MAX_TURN_INDICATOR;i++)
             {
-                tile1[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile1;
-                tile2[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile2;
-                tile3[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile3;
-                tile4[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile4;
-                tile5[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile5;
-                tile6[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile6;
-                tile7[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile7;
-                tile8[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile8;
-                tile9[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile9;
+                // tile1[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile1;
+                // tile2[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile2;
+                // tile3[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile3;
+                // tile4[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile4;
+                // tile5[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile5;
+                // tile6[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile6;
+                // tile7[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile7;
+                // tile8[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile8;
+                // tile9[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile9;
 
-                GUI_Controller.instance.Tile1ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile1FX;
-                GUI_Controller.instance.Tile2ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile2FX;
-                GUI_Controller.instance.Tile3ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile3FX;
-                GUI_Controller.instance.Tile4ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile4FX;
-                GUI_Controller.instance.Tile5ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile5FX;
-                GUI_Controller.instance.Tile6ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile6FX;
-                GUI_Controller.instance.Tile7ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile7FX;
-                GUI_Controller.instance.Tile8ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile8FX;
-                GUI_Controller.instance.Tile9ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile9FX;
+                // GUI_Controller.instance.Tile1ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile1FX;
+                // GUI_Controller.instance.Tile2ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile2FX;
+                // GUI_Controller.instance.Tile3ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile3FX;
+                // GUI_Controller.instance.Tile4ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile4FX;
+                // GUI_Controller.instance.Tile5ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile5FX;
+                // GUI_Controller.instance.Tile6ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile6FX;
+                // GUI_Controller.instance.Tile7ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile7FX;
+                // GUI_Controller.instance.Tile8ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile8FX;
+                // GUI_Controller.instance.Tile9ActivateFX[i]=tileSkins[ApplicationModel.TILESKIN+i].Tile9FX;
 
             }
 
@@ -431,21 +473,21 @@ public class GameMaster : MonoBehaviour{
             obj.GetComponent<Renderer>().material=currentTheme.GridOutline;
         }
         
-        tileModels.Add(tile1);
-        tileModels.Add(tile2);
-        tileModels.Add(tile3);
-        tileModels.Add(tile4);
-        tileModels.Add(tile5);
-        tileModels.Add(tile6);
-        tileModels.Add(tile7);
-        tileModels.Add(tile8);
-        tileModels.Add(tile9);
+        // tileModels.Add(tile1);
+        // tileModels.Add(tile2);
+        // tileModels.Add(tile3);
+        // tileModels.Add(tile4);
+        // tileModels.Add(tile5);
+        // tileModels.Add(tile6);
+        // tileModels.Add(tile7);
+        // tileModels.Add(tile8);
+        // tileModels.Add(tile9);
     }
 
     public void ExitToTitle()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("TitleScreen");
+        levelChanger.FadeToLevel("TitleScreen");
     }
     
     public void InitGame()
@@ -460,18 +502,15 @@ public class GameMaster : MonoBehaviour{
         staticStateBroken = false;
         totalTiles = 0;
 
-
         for(int i=0; i<MAX_TURN_INDICATOR; i++)
         {
             playerScores.Add(0);
         }
 
-
         for(int i=0; i<MAX_TURN_INDICATOR; i++)
         {
             playerBestScores.Add(0);
         }
-
 
         for(int i=0; i<MAX_TURN_INDICATOR; i++)
         {
@@ -481,6 +520,11 @@ public class GameMaster : MonoBehaviour{
         for(int i=0; i<MAX_TURN_INDICATOR; i++)
         {
             playerPlayedTiles.Add(0);
+        }
+
+        for(int i=0; i<MAX_TURN_INDICATOR; i++)
+        {
+            playerSwaps.Add(0);
         }
 
         if(soloPlay) 
@@ -502,58 +546,28 @@ public class GameMaster : MonoBehaviour{
         EvenTiles = new List<int>();
         OddTiles = new List<int>();
 
-        for(int i = 0; i<START_ONE_TILES; i++)
-        {
-            ApplicationModel.MAX_TILE=2;
-            OddTiles.Add(1);
-        }
+        Debug.Log("star ar len boy; "+START_TILE_COUNTS.Length);
 
-        for(int i = 0; i<START_TWO_TILES; i++)
+        for(int i =1; i<19; i++)
         {
-            ApplicationModel.MAX_TILE=3;
-            EvenTiles.Add(2);
-        }
+            if(ApplicationModel.START_TILE_COUNTS[i-1] != 0)
+                ApplicationModel.MAX_TILE=i+1;
 
-        for(int i = 0; i<START_THREE_TILES; i++)
-        {
-            ApplicationModel.MAX_TILE=4;
-            OddTiles.Add(3);
-        }
-
-        for(int i = 0; i<START_FOUR_TILES; i++)
-        {
-            ApplicationModel.MAX_TILE=5;
-            EvenTiles.Add(4);
-        }
-
-        for(int i = 0; i<START_FIVE_TILES; i++)
-        {
-            ApplicationModel.MAX_TILE=6;
-            OddTiles.Add(5);
-        }
-
-        for(int i = 0; i<START_SIX_TILES; i++)
-        {
-            ApplicationModel.MAX_TILE=7;
-            EvenTiles.Add(6);
-        }
-
-        for(int i = 0; i<START_SEVEN_TILES; i++)
-        {
-            ApplicationModel.MAX_TILE=8;
-            OddTiles.Add(7);
-        }
-
-        for(int i = 0; i<START_EIGHT_TILES; i++)
-        {
-            ApplicationModel.MAX_TILE=9;
-            EvenTiles.Add(8);
-        }
-
-        for(int i = 0; i<START_NINE_TILES; i++)
-        {
-            ApplicationModel.MAX_TILE=10;
-            OddTiles.Add(9);
+            if(i % 2 ==0)
+            {
+                for(int o=0; o< ApplicationModel.START_TILE_COUNTS[i-1];o++)
+                {
+                    Debug.Log("Adding Even Tile:"  + i);
+                    EvenTiles.Add(i);
+                }
+            } else 
+            {
+                for(int o=0; o< ApplicationModel.START_TILE_COUNTS[i-1]; o++)
+                {
+                    Debug.Log("Adding Odd Tile:"  + i);
+                    OddTiles.Add(i);
+                }
+            }
         }
 
         //TurnTimer.instance.gameObject.SetActive(false);
@@ -570,6 +584,18 @@ public class GameMaster : MonoBehaviour{
             else
                 if(i < GUI_Controller.instance.PlayerCards.Count-1) {GUI_Controller.instance.PlayerCards[i].UpdateName("AI " + (i+1));}
         }
+
+        if(MAX_TURN_INDICATOR == 4)
+        {
+            for(int i=0; i<4; i++)
+            {
+                if(GameMaster.instance.tileSkins.Length>ApplicationModel.TILESKIN+i)
+                    GUI_Controller.instance.PlayerCards[i].SetCol(GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+i].tileSkinCol);
+
+            }
+        }
+
+
         turnIndicator = MAX_TURN_INDICATOR; 
         GUI_Controller.instance.EnableGridBoxColliders();
         if(!TUTORIAL_MODE)
@@ -603,8 +629,6 @@ public class GameMaster : MonoBehaviour{
             }
             if(tileCount >= BoardController.instance.GRID_SIZE*BoardController.instance.GRID_SIZE)
             {
-                
-                
                 BoardController.instance.boardFull=true;
             } else {
                 //GUI_Controller.instance.SpawnTextPopup("No Moves!", Color.red, GUI_Controller.instance.gameObject.transform, 38);
@@ -639,6 +663,7 @@ public class GameMaster : MonoBehaviour{
         if(!soloPlay) {turnCounter++;}
         if(vsAi){AI_PLAYER.StopAllCoroutines();}
         BoardEvaluator.StopAllCoroutines();
+        BoardController.instance.presetLoc=0;
         if(TurnTimer!=null) {TurnTimer.enabled=true;}
         if(TurnTimer != null && !soloPlay)
         {
@@ -915,7 +940,6 @@ public class GameMaster : MonoBehaviour{
                     }
                 }
 
-                //Debug.Log("Dealing... Even tile reqiured: " + evenTileRequired);
                 //Debug.Log("current rng tile val: " + tileVal);
                 if(evenTileRequired && EvenTiles.Count> 0)
                 {
@@ -946,7 +970,7 @@ public class GameMaster : MonoBehaviour{
                     safeCount++; //this code SMELLS
                     if (safeCount > 20)
                     {
-                        //Debug.LogWarning("TILE DEALING SAFETY MEASURE REACHED");
+                        Debug.LogWarning("TILE DEALING SAFETY MEASURE REACHED");
                         if (tileVal == ApplicationModel.MAX_TILE-1)
                             tileVal = 1;
                         else
@@ -954,336 +978,139 @@ public class GameMaster : MonoBehaviour{
 
                     }
 
-                    switch (tileVal)
+                    //Debug.Log("Tile val:" + tileVal);
+
+                    // Spawn Grid Tile, Assign Materials and Value
+                    if(tileVal % 2 == 0)
                     {
-                        case 1:
-                            if (OddTiles.Count > 0)
+                        //Debug.Log("Even val:" + tileVal);
+                        if(EvenTiles.Count >0)
+                        {
+                            //Debug.Log("Enough even tiles.. val:" + tileVal);
+                            if(EvenTiles.Remove(tileVal))
                             {
-                                if(OddTiles.Remove(1))
+                                //Debug.Log("Even Tile Removed! val:" + tileVal);
+                                successFlag=true;
+                                GameObject t;
+                                t = Instantiate(tileModel3d, transform.position, Quaternion.Euler(0, 0, 0));
+                                t.AddComponent<GridTile>();
+                                GridTile tile = t.GetComponent<GridTile>();
+                                tile.value=tileVal;
+                                t.GetComponent<Renderer>().material=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+(turnIndicator-1)].defaultSkins[tileVal-1];
+                                tile.defaultSkin=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+(turnIndicator-1)].defaultSkins[tileVal-1];
+                                tile.activeSkin=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+(turnIndicator-1)].activeSkins[tileVal-1];
+                                t.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
+                                t.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                tile.AddObserver(TutorialController);
+                                tile.placedBy = turnIndicator;
+                                bool spawnFlag = false;
+                                while(spawnFlag == false)
                                 {
-                                    successFlag = true;
-                                    GridTile t;
-                                    t = Instantiate(tile1[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                    t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                    t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                    t.AddObserver(TutorialController);
-                                    t.placedBy = turnIndicator;
-                                    bool spawnFlag = false;
-                                    while(spawnFlag == false)
+                                    if(CheckSpawnLocation(spawnLocCounter) == false)
                                     {
-                                        if(CheckSpawnLocation(spawnLocCounter) == false)
-                                        {
-                                            spawnLocCounter++;
-                                            if (spawnLocCounter > 2) 
-                                                spawnLocCounter = 0;
-                                        } else
-                                        {
-                                            spawnFlag = true;
-                                        }
+                                        spawnLocCounter++;
+                                        if (spawnLocCounter > 2) 
+                                            spawnLocCounter = 0;
+                                    } else
+                                    {
+                                        spawnFlag = true;
                                     }
-                                    t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                    t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                    t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                    currentHand.Add(t);
-                                } else
-                                {
-                                    break;
                                 }
-                            }
-                            break;
+                                t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
+                                t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
+                                currentHand.Add(tile);
 
-                        case 2:
-                            if (EvenTiles.Count > 0)
+                            } 
+                            //Debug.Log("Could not remove even val:" + tileVal);
+
+                        } 
+                    } else 
+                    {
+                        //Debug.Log("Odd val:" + tileVal);
+                        if(OddTiles.Count >0)
+                        {
+                            //Debug.Log("Enough odd Tiles..:" + tileVal);
+                            if(OddTiles.Remove(tileVal))
                             {
-                                if(EvenTiles.Remove(2))
+                                //Debug.Log("Tile removed!:" + tileVal);
+                                successFlag=true;
+                                GameObject t;
+                                t = Instantiate(tileModel3d, transform.position, Quaternion.Euler(0, 0, 0));
+                                t.AddComponent<GridTile>();
+                                GridTile tile = t.GetComponent<GridTile>();
+                                tile.value=tileVal;
+                                t.GetComponent<Renderer>().material=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+(turnIndicator-1)].defaultSkins[tileVal-1];
+                                tile.defaultSkin=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+(turnIndicator-1)].defaultSkins[tileVal-1];
+                                tile.activeSkin=GameMaster.instance.tileSkins[ApplicationModel.TILESKIN+(turnIndicator-1)].activeSkins[tileVal-1];
+                                t.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
+                                t.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                                tile.AddObserver(TutorialController);
+                                tile.placedBy = turnIndicator;
+                                bool spawnFlag = false;
+                                while(spawnFlag == false)
                                 {
-                                    successFlag = true;
-                                    GridTile t;
-                                    t = Instantiate(tile2[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                    t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                    t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                    t.AddObserver(TutorialController);
-                                    t.placedBy = turnIndicator;
-                                    bool spawnFlag = false;
-                                    while(spawnFlag == false)
+                                    if(CheckSpawnLocation(spawnLocCounter) == false)
                                     {
-                                        if(CheckSpawnLocation(spawnLocCounter) == false)
-                                        {
-                                            spawnLocCounter++;
-                                            if (spawnLocCounter > 2) 
-                                                spawnLocCounter = 0;
-                                        } else
-                                        {
-                                            spawnFlag = true;
-                                        }
+                                        spawnLocCounter++;
+                                        if (spawnLocCounter > 2) 
+                                            spawnLocCounter = 0;
+                                    } else
+                                    {
+                                        spawnFlag = true;
                                     }
-                                    t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                    t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                    t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                    currentHand.Add(t);
-                                } else
-                                {
-                                    break;
                                 }
+                                t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                                t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
+                                t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
+                                currentHand.Add(tile);
+
                             }
-                            break;
-                        case 3:
-                            if (OddTiles.Count > 0)
-                            {
-                                if(OddTiles.Remove(3))
-                                {
-                                    successFlag = true;
-                                    GridTile t;
-                                    t = Instantiate(tile3[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                    t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                    t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                    t.AddObserver(TutorialController);
-                                    t.placedBy = turnIndicator;
-                                    bool spawnFlag = false;
-                                    while(spawnFlag == false)
-                                    {
-                                        if(CheckSpawnLocation(spawnLocCounter) == false)
-                                        {
-                                            spawnLocCounter++;
-                                            if (spawnLocCounter > 2)
-                                                spawnLocCounter = 0;
-                                        } else
-                                        {
-                                            spawnFlag = true;
-                                        }
-                                    }
-                                    t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                    t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                    t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                    currentHand.Add(t);
-                                } else
-                                {
-                                    break;
-                                }
-                            }
-                        break;
-
-                        case 4:
-                            if (EvenTiles.Count > 0)
-                            {
-                                if(EvenTiles.Remove(4))
-                                {
-                                    successFlag = true;
-                                    GridTile t;
-                                    t = Instantiate(tile4[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                    t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                    t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                    t.AddObserver(TutorialController);
-                                    t.placedBy = turnIndicator;
-                                    bool spawnFlag = false;
-                                    while(spawnFlag == false)
-                                    {
-                                        if(CheckSpawnLocation(spawnLocCounter) == false)
-                                        {
-                                            spawnLocCounter++;
-                                            if (spawnLocCounter > 2) 
-                                                spawnLocCounter = 0;
-                                        } else
-                                        {
-                                            spawnFlag = true;
-                                        }
-                                    }
-                                    t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                    t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                    t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                    currentHand.Add(t);
-                                } else
-                                {
-                                    break;
-                                }
-                            }
-                             break;
-
-                            case 5:
-                                if (OddTiles.Count > 0)
-                                {
-                                    if(OddTiles.Remove(5))
-                                    {
-                                        successFlag = true;
-                                        GridTile t;
-                                        t = Instantiate(tile5[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                        t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                        t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                        t.AddObserver(TutorialController);
-                                        t.placedBy = turnIndicator;
-                                        bool spawnFlag = false;
-                                        while(spawnFlag == false)
-                                        {
-                                            if(CheckSpawnLocation(spawnLocCounter) == false)
-                                            {
-                                                spawnLocCounter++;
-                                                if (spawnLocCounter > 2) 
-                                                    spawnLocCounter = 0;
-                                            } else
-                                            {
-                                                spawnFlag = true;
-                                            }
-                                        }
-                                        t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                        t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                        currentHand.Add(t);
-                                    } else
-                                    {
-                                        break;
-                                    }
-                                }
-                            break;
-
-                            case 6:
-                                if (EvenTiles.Count > 0)
-                                {
-                                    if(EvenTiles.Remove(6))
-                                    {
-                                        successFlag = true;
-                                        GridTile t;
-                                        t = Instantiate(tile6[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                        t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                        t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                        t.AddObserver(TutorialController);
-                                        t.placedBy = turnIndicator;
-                                        bool spawnFlag = false;
-                                        while(spawnFlag == false)
-                                        {
-                                            if(CheckSpawnLocation(spawnLocCounter) == false)
-                                            {
-                                                spawnLocCounter++;
-                                                if (spawnLocCounter > 2) 
-                                                    spawnLocCounter = 0;
-                                            } else
-                                            {
-                                                spawnFlag = true;
-                                            }
-                                        }
-                                        t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                        t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                        currentHand.Add(t);
-                                    } else
-                                    {
-                                        break;
-                                    }
-                                }
-                            break;
-
-                            case 7:
-                                if (OddTiles.Count > 0)
-                                {
-                                    if(OddTiles.Remove(7))
-                                    {
-                                        successFlag = true;
-                                        GridTile t;
-                                        t = Instantiate(tile7[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                        t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                        t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                        t.AddObserver(TutorialController);
-                                        t.placedBy = turnIndicator;
-                                        bool spawnFlag = false;
-                                        while(spawnFlag == false)
-                                        {
-                                            if(CheckSpawnLocation(spawnLocCounter) == false)
-                                            {
-                                                spawnLocCounter++;
-                                                if (spawnLocCounter > 2) 
-                                                    spawnLocCounter = 0;
-                                            } else
-                                            {
-                                                spawnFlag = true;
-                                            }
-                                        }
-                                        t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                        t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                        currentHand.Add(t);
-                                    } else
-                                    {
-                                        break;
-                                    }
-                                }
-                            break;
-
-                            case 8:
-                                if (EvenTiles.Count > 0)
-                                {
-                                    if(EvenTiles.Remove(8))
-                                    {
-                                        successFlag = true;
-                                        GridTile t;
-                                        t = Instantiate(tile8[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                        t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                        t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                        t.AddObserver(TutorialController);
-                                        t.placedBy = turnIndicator;
-                                        bool spawnFlag = false;
-                                        while(spawnFlag == false)
-                                        {
-                                            if(CheckSpawnLocation(spawnLocCounter) == false)
-                                            {
-                                                spawnLocCounter++;
-                                                if (spawnLocCounter > 2) 
-                                                    spawnLocCounter = 0;
-                                            } else
-                                            {
-                                                spawnFlag = true;
-                                            }
-                                        }
-                                        t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                        t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                        currentHand.Add(t);
-                                    } else
-                                    {
-                                        break;
-                                    }
-                                }
-                            break;
-
-                            case 9:
-                                if (OddTiles.Count > 0)
-                                {
-                                    if(OddTiles.Remove(9))
-                                    {
-                                        successFlag = true;
-                                        GridTile t;
-                                        t = Instantiate(tile9[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
-                                        t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
-                                        t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
-                                        t.AddObserver(TutorialController);
-                                        t.placedBy = turnIndicator;
-                                        bool spawnFlag = false;
-                                        while(spawnFlag == false)
-                                        {
-                                            if(CheckSpawnLocation(spawnLocCounter) == false)
-                                            {
-                                                spawnLocCounter++;
-                                                if (spawnLocCounter > 2) 
-                                                    spawnLocCounter = 0;
-                                            } else
-                                            {
-                                                spawnFlag = true;
-                                            }
-                                        }
-                                        t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
-                                        t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
-                                        t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
-                                        currentHand.Add(t);
-                                    } else
-                                    {
-                                        break;
-                                    }
-                                }
-                            break; 
-                                                                         
-
-                            default:
-                            Debug.Log("Default logged.");
-                            break;
+                        } 
+                        //Debug.Log("Could not remove odd val:" + tileVal);
                     }
+
+
+
+                    // switch (tileVal)
+                    // {
+                    //     case 1:
+                    //         if (OddTiles.Count > 0)
+                    //         {
+                    //             if(OddTiles.Remove(1))
+                    //             {
+                    //                 successFlag = true;
+                    //                 GridTile t;
+                    //                 t = Instantiate(tile1[turnIndicator-1], transform.position, Quaternion.Euler(0, 0, 0));
+                    //                 t.gameObject.transform.SetParent(GUI_Controller.instance.gameObject.transform); //tempppppppp?
+                    //                 t.gameObject.transform.localScale = new Vector3(TILE_SCALE, TILE_SCALE, TILE_SCALE);
+                    //                 t.AddObserver(TutorialController);
+                    //                 t.placedBy = turnIndicator;
+                    //                 bool spawnFlag = false;
+                    //                 while(spawnFlag == false)
+                    //                 {
+                    //                     if(CheckSpawnLocation(spawnLocCounter) == false)
+                    //                     {
+                    //                         spawnLocCounter++;
+                    //                         if (spawnLocCounter > 2) 
+                    //                             spawnLocCounter = 0;
+                    //                     } else
+                    //                     {
+                    //                         spawnFlag = true;
+                    //                     }
+                    //                 }
+                    //                 t.GetComponent<GUI_Object>().SetAnimationTarget(spawnLocations[spawnLocCounter].transform.position);
+                    //                 t.GetComponent<GridTile>().startPos=spawnLocations[spawnLocCounter].transform.position;
+                    //                 t.GetComponent<GUI_Object>().StartIntroAnim(Random.Range(0,1.5f));
+                    //                 currentHand.Add(t);
+                    //             } else
+                    //             {
+                    //                 break;
+                    //             }
+                    //         }
+                    //         break;
+
+                  
                 }
             }
             
@@ -1333,12 +1160,10 @@ public class GameMaster : MonoBehaviour{
             
         BoardController.instance.StopAllCoroutines();
 
-        GameMaster.instance.PlayerStatistics.PlayedMostTiles(GUI_Controller.instance.GetAllTiles());
+        //GameMaster.instance.PlayerStatistics.PlayedMostTiles(GUI_Controller.instance.GetAllTiles());
         
 
-        if(AccountInfo.Instance != null)
-            AccountInfo.Instance.PlayerEvent_CompletedGame(playerWin, ApplicationModel.GRID_SIZE, ApplicationModel.MAX_TILE, playerScores[0], ApplicationModel.SOLO_PLAY);
-
+        
 
         GUI_Controller.instance.GameOver();
         
@@ -1451,8 +1276,10 @@ public class GameMaster : MonoBehaviour{
         if(gameOver)
             return;
 
+        playerSwaps[turnIndicator-1]++;
 
-        GUI_Controller.instance.SpawnTextPopup("Exchange!", Color.blue, GUI_Controller.instance.exchangePoint.transform, 38);
+        //BoardController.instance.NotifyObservers(BoardController.instance,"Exchange");
+        GUI_Controller.instance.SpawnTextPopup("Exchange!", Color.red, GUI_Controller.instance.exchangePoint.transform, 38, GUI_Controller.instance.GetComponent<NotificationController>().fontPresets[0] );
 
         foreach(GridCell cell in playedTiles)
         {

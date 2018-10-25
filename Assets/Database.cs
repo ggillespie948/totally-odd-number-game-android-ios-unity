@@ -33,6 +33,41 @@ public class Database : MonoBehaviour {
 	}
 	//------------------------------------------
 
+	[Header("Grid Skins")]
+	[SerializeField]
+	private List<ShopItemGrid> gridSkinShopItems;
+	public List<ShopItemGrid> GridSkinShopItems
+	{
+		get { return gridSkinShopItems;}
+		set { gridSkinShopItems = value;}
+	}
+
+	[SerializeField]
+	private List<CatalogItem> catalogGridSkins;
+	public List<CatalogItem> CatalogGridSkins
+	{
+		get { return catalogGridSkins;}
+		set { catalogGridSkins = value;}
+	}
+	//------------------------------------------
+
+	[Header("Coin Bundles")]
+	[SerializeField]
+	private List<ShopItemIAP> coinBundles;
+	public List<ShopItemIAP> CoinBundles
+	{
+		get { return coinBundles;}
+		set { coinBundles = value;}
+	}
+
+	[SerializeField]
+	private List<CatalogItem> catalogCoinBundles;
+	public List<CatalogItem> CatalogCoinBundles
+	{
+		get { return catalogCoinBundles;}
+		set { catalogCoinBundles = value;}
+	}
+	//------------------------------------------
 	[Header("Energy Passes")]
 	[SerializeField]
 	private List<ShopItemIAP> energyShopPasses;
@@ -69,21 +104,22 @@ public class Database : MonoBehaviour {
 	//------------------------------------------
 
 
-	// [Header("Grid Skins")]
-	// [SerializeField]
-	// private List<ShopItemTile> tileSkinShopItems;
-	// public List<ShopItemTile> TileSkinShopItems
-	// {
-	// 	get { return tileSkinShopItems;}
-	// 	set { tileSkinShopItems = value;}
-	// }
-
-	// [SerializeField]
-	// private List<CatalogItem> catalogTileSkins;
-	// public List<CatalogItem> CatalogTileSkins
-	// {
-	// 	get { return catalogTileSkins;}
-	// 	set { catalogTileSkins = value;}
+	[Header("Full Game Level Pack")]
+	[SerializeField]
+	private ShopItemIAP fullGameLevelPack;
+	public ShopItemIAP FullGameLevelPack
+	{
+		get { return fullGameLevelPack;}
+		set { fullGameLevelPack = value;}
+	}
+	[SerializeField]
+	private CatalogItem catalogFullGameLevelPack;
+	public CatalogItem CatalogFullGameLevelPack
+	{
+		get { return catalogFullGameLevelPack;}
+		set { catalogFullGameLevelPack = value;}
+	}
+	//------------------------------------------
 	// }
 
 	/// <summary>
@@ -119,7 +155,7 @@ public class Database : MonoBehaviour {
 
 	/// <summary>
 	/// This method iterates through every catalog item returned from the catalog and creates the relevant shop item
-	/// based on the item class of each.false This filters results from BOTH the UNLCOKABLES STORES  and IN-APP PURCHASES
+	/// based on the item class of each.false This filters results from BOTH the UNLOCKABLES STORES  and IN-APP PURCHASES
 	/// </summary>
 	/// <param name="result"></param>
 	public static void UpdateDatabaseSuccess(GetCatalogItemsResult result)
@@ -129,7 +165,11 @@ public class Database : MonoBehaviour {
 			if(result.Catalog[i].ItemClass == AccountInfo.ITEM_TILESKIN)
 			{
 				Instance.catalogTileSkins.Add(result.Catalog[i]);
-				Instance.TileSkinShopItems.Add(CreateTileShopItem(result.Catalog[i], i));
+				Instance.TileSkinShopItems.Add(CreateTileShopItem(result.Catalog[i],i));
+			} else if(result.Catalog[i].ItemClass == AccountInfo.ITEM_GRIDSKIN)
+			{
+				Instance.catalogGridSkins.Add(result.Catalog[i]);
+				Instance.GridSkinShopItems.Add(CreateGridShopItem(result.Catalog[i]));
 			} else if(result.Catalog[i].ItemClass == AccountInfo.ITEM_LIFEREFILL)
 			{
 				Instance.catalogEnergyRefill = result.Catalog[i];
@@ -137,21 +177,32 @@ public class Database : MonoBehaviour {
 
 			} else if(result.Catalog[i].ItemClass == AccountInfo.ITEM_LIFEPASS)
 			{
-				Debug.LogWarning("Life pass found, backend not implemented.");
+				//Debug.LogWarning("Life pass found, backend not implemented.");
 				Instance.catalogEnergyPasses.Add(result.Catalog[i]);
 				Instance.energyShopPasses.Add(CreateIAPShopItem(result.Catalog[i], i));
+			} else if(result.Catalog[i].ItemClass == AccountInfo.ITEM_COINPACK)
+			{
+				//Debug.LogWarning("Adding coin bundle..");
+				Instance.catalogCoinBundles.Add(result.Catalog[i]);
+				Instance.coinBundles.Add(CreateIAPShopItem(result.Catalog[i], i));
+			} else if(result.Catalog[i].ItemClass == AccountInfo.ITEM_LEVELPACK)
+			{
+				//Debug.LogWarning("Adding Full game level pack");
+				Instance.catalogFullGameLevelPack = result.Catalog[i];
+				Instance.FullGameLevelPack = CreateIAPShopItem(result.Catalog[i], 0);
 			} else 
 			{
-				Debug.LogWarning("Unknown catalog item found: " + result.Catalog[i].ItemClass);
+				//Debug.LogWarning("Unknown catalog item found: " + result.Catalog[i].ItemClass);
 			}
 		}
 		MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().LoadTileStore();
+		MenuController.instance.NavBar.unlockablesPanel.GetComponent<UnlockablesController>().LoadGridStore();
 		MenuController.instance.InAppPurchasesController.LoadStore();
 	}
 
 	public static ShopItemTile CreateTileShopItem(CatalogItem item, int i)
 	{
-		Debug.Log("Creating shop tile item.. " + item.ItemId);
+		//Debug.Log("Creating shop tile item.. " + item.ItemId);
 		ShopItemTile ts = new ShopItemTile(
 			int.Parse(GetCatalogCustomData(AccountInfo.UNLOCKNO, item)),
 			item.DisplayName,
@@ -165,9 +216,25 @@ public class Database : MonoBehaviour {
 		return ts;
 	}
 
+	public static ShopItemGrid CreateGridShopItem(CatalogItem item)
+	{
+		//Debug.Log("Creating grid skin shop item.. " + item.ItemId);
+		ShopItemGrid ts = new ShopItemGrid(
+			int.Parse(GetCatalogCustomData(AccountInfo.UNLOCKNO, item)),
+			item.DisplayName,
+		 	int.Parse(GetCatalogCustomData(AccountInfo.ITEM_COST, item)),
+			int.Parse(GetCatalogCustomData(AccountInfo.ITEM_STARREQ, item)),
+		 	Resources.Load(GetCatalogCustomData(AccountInfo.ITEM_ICON, item), typeof(Image)) as Image,
+		 	Resources.Load(GetCatalogCustomData(AccountInfo.ITEM_PREFAB, item), typeof(Theme)) as Theme,
+			item.ItemId
+		);
+
+		return ts;
+	}
+
 	public static ShopItemIAP CreateIAPShopItem(CatalogItem item, int i)
 	{
-		Debug.Log("Creating shop item.. " + item.ItemId);
+		//Debug.Log("Creating shop item.. " + item.ItemId);
 		ShopItemIAP er = new ShopItemIAP(
 			i,
 			item.DisplayName,
@@ -176,12 +243,13 @@ public class Database : MonoBehaviour {
 			item.ItemId
 		);
 
+
 		return er;
 	}
 
 	public static ShopItemIAP CreateEnergyPassItem(CatalogItem item, int i)
 	{
-		Debug.Log("Creating shop energy pass item.. " + item.ItemId);
+		//Debug.Log("Creating shop energy pass item.. " + item.ItemId);
 		ShopItemIAP ep = new ShopItemIAP(
 			i,
 			item.DisplayName,
@@ -215,7 +283,7 @@ public class Database : MonoBehaviour {
 
 		}
 
-		Debug.Log("Could not find index in catalog data");
+		//Debug.Log("Could not find index in catalog data");
 		return "ERROR";
 	} 
 	

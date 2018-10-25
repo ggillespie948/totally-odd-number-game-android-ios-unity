@@ -20,6 +20,9 @@ public class IntroPanelController : MonoBehaviour {
     private TextMeshProUGUI targetText3;
 
 	[SerializeField]
+    private TextMeshProUGUI vsText;
+
+	[SerializeField]
 	private GameObject[] playerGameOverSection; // root ->score->name
 												//  	->image->border
 
@@ -43,7 +46,13 @@ public class IntroPanelController : MonoBehaviour {
 			if(i==0)
 			{
 				playerGameOverSection[i].GetComponentInChildren<TextMeshProUGUI>().enabled=false;
-				//playerGameOverSection[i].GetComponentInChildren<TextMeshProUGUI>().transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
+				if(AccountInfo.Instance!=null)
+				{
+					if(AccountInfo.Instance.Info.PlayerProfile.DisplayName!=null)
+					{
+						playerGameOverSection[i].GetComponentInChildren<TextMeshProUGUI>().transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
+					}
+				}
 			} else
 			{
 				playerGameOverSection[i].GetComponentInChildren<TextMeshProUGUI>().enabled=false;
@@ -60,6 +69,7 @@ public class IntroPanelController : MonoBehaviour {
 
 		if(ApplicationModel.AI_PLAYERS==0)
 		{
+			vsText.text="Target Mode";
 			targetText1.gameObject.SetActive(true);
 			targetText1.text="1 Star Target "+ApplicationModel.TARGET.ToString();
 			targetText2.gameObject.SetActive(true);
@@ -84,8 +94,10 @@ public class IntroPanelController : MonoBehaviour {
 	/// </summary>
 	private void HideIntroPanel()
 	{
+		GameMaster.instance.gameObject.SetActive(true);
 		GameMaster.instance.enabled=true;
 		GUI_Controller.instance.gameObject.SetActive(true);
+		StartCoroutine(GUI_Controller.instance.GridIntroAnim());
 		
 	}
 

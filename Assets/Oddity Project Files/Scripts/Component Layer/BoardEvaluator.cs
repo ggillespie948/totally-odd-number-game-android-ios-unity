@@ -56,158 +56,54 @@ public class BoardEvaluator : MonoBehaviour {
 		//Look at both players hands and add tile values to count
 		foreach(GridTile tile in GameMaster.instance.Player1Hand)
 		{
-			switch(tile.value)
-			{
-				case 1:
-				oddCount++;
-				break;
+			if(isEven(tile.value))
+            {
+                evenCount++;
 
-				case 2:
-				evenCount++;
-				break;
-
-				case 3:
-				oddCount++;
-				break;
-
-                case 4:
-				evenCount++;
-				break;
-
-				case 5:
-				oddCount++;
-				break;
-
-				case 6:
-				evenCount++;
-				break;
-
-				case 7:
-				oddCount++;
-				break;
-
-			}
+            } else
+            {
+                oddCount++;
+            }
 		}
 
 		foreach(GridTile tile in GameMaster.instance.Player2Hand)
 		{
-			switch(tile.value)
-			{
-				case 1:
-				oddCount++;
-				break;
+			if(isEven(tile.value))
+            {
+                evenCount++;
 
-				case 2:
-				evenCount++;
-				break;
-
-				case 3:
-				oddCount++;
-				break;
-
-                case 4:
-				evenCount++;
-				break;
-
-				case 5:
-				oddCount++;
-				break;
-
-                case 6:
-				evenCount++;
-				break;
-
-				case 7:
-				oddCount++;
-				break;
-
-				default:
-				break;
-
-			}
+            } else
+            {
+                oddCount++;
+            }
 		}
 
         foreach(GridTile tile in GameMaster.instance.Player3Hand)
 		{
-			switch(tile.value)
-			{
-				case 1:
-				oddCount++;
-				break;
+			if(isEven(tile.value))
+            {
+                evenCount++;
 
-				case 2:
-				evenCount++;
-				break;
-
-				case 3:
-				oddCount++;
-				break;
-
-                case 4:
-				evenCount++;
-				break;
-
-				case 5:
-				oddCount++;
-				break;
-
-                case 6:
-				evenCount++;
-				break;
-
-				case 7:
-				oddCount++;
-				break;
-
-				default:
-				break;
-
-			}
+            } else
+            {
+                oddCount++;
+            }
 		}
 
         foreach(GridTile tile in GameMaster.instance.Player4Hand)
 		{
-			switch(tile.value)
-			{
-				case 1:
-				oddCount++;
-				break;
+			if(isEven(tile.value))
+            {
+                evenCount++;
 
-				case 2:
-				evenCount++;
-				break;
-
-				case 3:
-				oddCount++;
-				break;
-
-                case 4:
-				evenCount++;
-				break;
-
-				case 5:
-				oddCount++;
-				break;
-
-                case 6:
-				evenCount++;
-				break;
-
-				case 7:
-				oddCount++;
-				break;
-
-				default:
-				break;
-
-			}
+            } else
+            {
+                oddCount++;
+            }
 		}
 
 		Debug.Log("Odd Count:" + oddCount);
 		Debug.Log("Even Count:" + evenCount);
-
-
-
 
 		if(evenCount >= 3 && oddCount>=3)
 		{
@@ -215,10 +111,14 @@ public class BoardEvaluator : MonoBehaviour {
 			int[] TileSet2 = new int[] {2,2,2};
 			int[] TileSet3 = new int[] {1,2,1};
 			int[] TileSet4 = new int[] {2,2,1};
+            int[] TileSet5 = new int[] {2,2}; //temp 12
+            int[] TileSet6 = new int[] {2,1}; //temp 12
 			allHands.Add(TileSet1);
 			allHands.Add(TileSet2);
 			allHands.Add(TileSet3);
 			allHands.Add(TileSet4);
+            allHands.Add(TileSet5);
+            allHands.Add(TileSet6);
 		} else if (evenCount >= 3 && oddCount >=2)
 		{
 			int[] TileSet2 = new int[] {2,2,2};
@@ -351,7 +251,7 @@ public class BoardEvaluator : MonoBehaviour {
                     Hand[0],
                     Hand[1],
                     Hand[2],
-                    isEven(Hand[1] + Hand[1] + Hand[2]));
+                    isEven(Hand[0] + Hand[1] + Hand[2]));
 
 
                 moveCombinations.Add(T1);
@@ -379,7 +279,7 @@ public class BoardEvaluator : MonoBehaviour {
                 //stop searching for new moves!!!!
 				if(Player)
                 {
-                    Debug.Log("EmptyHand");
+                    //Debug.Log("EmptyHand");
                 	Player.noValidMoves = true;
                 }
                 break;
@@ -435,7 +335,7 @@ public class BoardEvaluator : MonoBehaviour {
                     currentHand[0].value,
                     currentHand[1].value,
                     currentHand[2].value,
-                    isEven(currentHand[1].value + currentHand[1].value + currentHand[2].value));
+                    isEven(currentHand[0].value + currentHand[1].value + currentHand[2].value));
 
 
                 moveCombinations.Add(T1);
@@ -446,7 +346,7 @@ public class BoardEvaluator : MonoBehaviour {
                 moveCombinations.Add(T23);
                 moveCombinations.Add(T123);
 
-                Debug.Log("AI:  Number of move combinations.. " + moveCombinations.Count);
+                ////Debug.Log("AI:  Number of move combinations.. " + moveCombinations.Count);
                 break;
         }
 
@@ -499,8 +399,8 @@ public class BoardEvaluator : MonoBehaviour {
 				Debug.Log("VALID MOVES FOUND::::::::::: count below");
 				Debug.Log(validMove.Count);
 			} else {
-				Debug.Log("No moves!!!");
-				noValidMoves= true;
+                Debug.Log("No moves: E.G.D!!!");
+                noValidMoves= true;
 			}
 		}
     }
@@ -625,7 +525,7 @@ public class BoardEvaluator : MonoBehaviour {
                         //         //traverse down from neighbour to first space, adding total
                         //         for (int yi = tileY-2; yi >= 0; yi--)
                         //         {
-                        //             //Debug.LogWarning("Traversing down from surround!!!!!");
+                        //             ////Debug.LogWarning("Traversing down from surround!!!!!");
                         //             if(gameGrid[tileX,yi] != 0)
                         //             {
                         //                 prevtTotal += gameGrid[tileX,yi];
@@ -940,23 +840,23 @@ public class BoardEvaluator : MonoBehaviour {
     {
         //for each MATCH CRITERIA, compare with EACH of the AI moves,
         //if a match is found, then add to VALID MOVE list
-        Debug.Log("Evaluating Match Criteria");
-        Debug.Log("Moves: " + moveCombinations.Count);
-        Debug.Log("Criteria: " + matchCriteria.Count);
+        //Debug.Log("Evaluating Match Criteria");
+        //Debug.Log("Moves: " + moveCombinations.Count);
+        //Debug.Log("Criteria: " + matchCriteria.Count);
 
         foreach(AI_MatchCriteria Criteria in matchCriteria)
         {
             foreach(AI_Move Move in moveCombinations)
             {
-                if(Criteria.isEven != Move.isEven)
-                {
+                //if(Criteria.isEven != Move.isEven)
+                //{
                     if(Move.tileCount <= Criteria.spaces)
                     {
                         //Debug.Log("Potential Move Found");
                         TestMove(Move, Criteria);
 
                     }
-                }
+                //}
             }
 
         }
@@ -978,23 +878,23 @@ public class BoardEvaluator : MonoBehaviour {
                     if(i %2 != 0) 
                     {
                         oddTileFound=true; 
-                        Debug.Log("ODD TILE FOUND IN VALID MOVES");
+                        //Debug.Log("ODD TILE FOUND IN VALID MOVES");
                     }
                 }
             } else 
             {
-                Debug.Log("Odd tile break!");
+                //Debug.Log("Odd tile break!");
                 break;
             }
         }
 
         if(oddTileFound)
         {
-            Debug.Log("Even tile not required.");
+            //Debug.Log("Even tile not required.");
             GameMaster.instance.evenTileRequired=false;
         } else 
         {
-            Debug.Log("Even Tile Required");
+            //Debug.Log("Even Tile Required");
             GameMaster.instance.evenTileRequired=true;
         }
 
@@ -1275,7 +1175,7 @@ public class BoardEvaluator : MonoBehaviour {
                         //ValidMove.Add(NewMove);  
                         if(NewMove.total > 0)
                         {
-                            Debug.Log("Adding value more than 0 move..");
+                            //Debug.Log("Adding value more than 0 move..");
                             validMove.Add(NewMove);                 
                         } else {
                             Debug.Log("Denied..");
@@ -1306,7 +1206,7 @@ public class BoardEvaluator : MonoBehaviour {
         {
             if (gameGrid[ix, y] == 0)
             {
-                //Debug.Log("Attempted correction: Place " + tileVal + " at x:" + x + " y:" + iy);
+                //Debug.Log("Attempted correction: Place " + tileVal + " at x:" + ix + " y:" + y);
 				gameGrid[ix, y] = tileVal;
 				valid1= BoardController.instance.CheckAITileValidity(ix,y);
 
@@ -1438,13 +1338,21 @@ public class BoardEvaluator : MonoBehaviour {
         if(Move.tile3 == 0)
 			if(currentHand[2] != null) { return currentHand [2].value;}
 
-        Debug.Log("Returning 0 as unused tile value..");
+        //Debug.Log("Returning 0 as unused tile value..");
         return 0;
     }
 
     void TestMoveVertical(AI_Move Move, AI_MatchCriteria Criteria)
     {
         //try and place tiles
+        if(Criteria.startDirection== 'X')
+        {
+            // Debug.LogWarning("TESTING VERTICAL SURROUND");
+            // Debug.LogWarning("MOVE TILE 1: " + Move.tile1);
+            // Debug.LogWarning("MOVE TILE 2: " + Move.tile2);
+            // Debug.LogWarning("MOVE TILE 3: " + Move.tile3);
+        }
+
         int x = Criteria.rowcolNo;
         
         int[] tempTileValues = new int[Move.tileValues.Count];
@@ -1474,7 +1382,7 @@ public class BoardEvaluator : MonoBehaviour {
                 {
                     currentTileVal = tempTileValues[tileCount];
                 } else {
-                    //Debug.LogWarning("Safety guard in place"); //TEMP?
+                    Debug.LogWarning("Safety guard in place"); //TEMP?
                     break;
                 }
             }
@@ -1483,6 +1391,14 @@ public class BoardEvaluator : MonoBehaviour {
             tempTileValues[tileCount]=0;
             currentTileVal=0;
             tilesPlayed++;
+        }
+
+
+        if(Criteria.startDirection== 'X')
+        {
+            // Debug.LogWarning("VERTICAL TILE TEST COMPLETE");
+            // Debug.LogWarning("[1,2]=" + BoardController.instance.gameGrid[1, 2] );
+            // Debug.LogWarning("[1,4]=" + BoardController.instance.gameGrid[1, 4] );
         }
 
         //All tiles played....
@@ -1512,23 +1428,26 @@ public class BoardEvaluator : MonoBehaviour {
 
         if (isValid)
         {
-
             if (Move.Criteria != null)
             {
                 AI_Move NewMove = new AI_Move(Move.total, Move.tileCount, Move.tile1, Move.tile2, Move.tile3, Move.isEven);
                 NewMove.Criteria = Criteria;
                 NewMove.moveValue = Criteria.total + Move.total;
 
-
                 if(isEven(NewMove.moveValue))
                 {
+                    if(Criteria.startDirection== 'X')
+                    {
+                        Debug.LogWarning("Vertical surround valid but even move value???");
+                    }
+
                     if(NewMove.moveValue != 0)
                     {
-                        Debug.Log("Move with 0 value..");
+                        //Debug.Log("Move with 0 value..");
                     } else {
-                        Debug.Log("Move with even move value..");
+                        //Debug.Log("Move with even move value..");
 
-                        }
+                    }
                 } else
                 {
                     validMove.Add(NewMove);
@@ -1543,13 +1462,16 @@ public class BoardEvaluator : MonoBehaviour {
 
                 if(isEven(Move.moveValue))
                 {
+                    if(Criteria.startDirection== 'X')
+                    {
+                        Debug.LogWarning("Vertical surround valid but even move value???");
+                    }
+
                     if(Move.moveValue != 0)
                     {
-                        Debug.Log("Move with 0 value..");
-                    } else {
-                        Debug.Log("Move with even move value..");
+                        validMove.Add(Move);    
+                    } 
 
-                        }
                 } else
                 {
                     validMove.Add(Move);

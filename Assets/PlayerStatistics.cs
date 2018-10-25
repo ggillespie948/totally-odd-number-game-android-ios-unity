@@ -85,10 +85,10 @@ public class PlayerStatistics : MonoBehaviour {
 				return "Finish with " + ret[1] + " errors or less";
 
 			case "ErrorsWin":
-				return "Win with  " + ret[1] + "errors or less";
+				return "Win with  " + ret[1] + " errors or less";
 
 			case "ErrorsMore":
-				return "Win with  " + ret[1] + "errors or more";
+				return "Win with  " + ret[1] + " errors or more";
 
 			case "Odd":
 				return "Win the game with an odd score";
@@ -97,10 +97,16 @@ public class PlayerStatistics : MonoBehaviour {
 				return "Win the game with an even score";
 
 			case "Activate":
-				return "Activate " + ret[0] + " tiles in a single turn";
+				return "Activate " + ret[1] + " tiles in a single turn"; //not implemented 
 
 			case "RunnerUp":
 				return "Finish 2nd or better in the game";
+
+			case "Swaps":
+				return "Finish with " + ret[1] + " tile swaps or less";
+
+			case "SwapsWin":
+				return "Win the game with " + ret[1] + " tile swaps or less";
 
 			default:
 				return "404: Object code unrecognised";
@@ -148,7 +154,7 @@ public class PlayerStatistics : MonoBehaviour {
 				return turnScoreExactMet;
 
 			case "MostTiles":
-				return PlayedMostTiles(GUI_Controller.instance.GetAllTiles());
+				return PlayedMostTiles(GameMaster.instance.playerPlayedTiles);
 
 			case "PlayTiles":
 				if(GameMaster.instance.playerPlayedTiles[0] >= int.Parse(ret[1])) {return true;} 
@@ -185,6 +191,14 @@ public class PlayerStatistics : MonoBehaviour {
 			case "RunnerUp":
 				return RunnerUp(GameMaster.instance.playerScores);
 
+			case "Swaps":
+				 if(GameMaster.instance.playerSwaps[0] <= int.Parse(ret[1])) {return true;} 
+			break;
+
+			case "SwapsWin":
+				if(GameMaster.instance.playerWin && GameMaster.instance.playerSwaps[0] <= int.Parse(ret[1])) {return true;} 
+			break;
+
 		}
 
 		return false;
@@ -203,56 +217,22 @@ public class PlayerStatistics : MonoBehaviour {
 		return bestScore;		
 	}
 
-	public bool PlayedMostTiles(GridTile[] playerTilesPlayed)
+	public bool PlayedMostTiles(List<int> playerPlayedTiles)
 	{
-		p1Tiles = 0;
-		p2Tiles = 0;
-		p3Tiles = 0;
-		p4Tiles = 0;
-
-		foreach(GridTile tile in playerTilesPlayed)
+		bool mostTiles = true;
+		foreach(int val in playerPlayedTiles)
 		{
-			switch(tile.placedBy)
-			{
-				case 1:
-				p1Tiles++;
-				break;
-
-				case 2:
-				p2Tiles++;
-				break;
-
-				case 3:
-				p3Tiles++;
-				break;
-
-				case 4:
-				p4Tiles++;
-				break;
-			}
+			if(val> playerPlayedTiles[0])
+				mostTiles = false;
 		}
 
-		playedTiles = new List<int>();
-		playedTiles.Clear();
-
-		playedTiles.Add(p1Tiles);
-		playedTiles.Add(p2Tiles);
-		playedTiles.Add(p3Tiles);
-		playedTiles.Add(p4Tiles);
-
-		if((p1Tiles > p2Tiles)&&(p1Tiles > p3Tiles)&&(p1Tiles > p4Tiles))
-		{
-			return true;
-		} else 
-		{
-			return false;
-		}
+		return mostTiles; 
 		
 	}
 
 	public bool RunnerUp(List<int> playerScores)
 	{
-		if(!GameMaster.instance.playerWin)
+		if(GameMaster.instance.playerWin)
 		{
 			return true;
 		} else 
