@@ -1,2 +1,1 @@
-# Oddity
-
+# Totally Odd - Number Game
