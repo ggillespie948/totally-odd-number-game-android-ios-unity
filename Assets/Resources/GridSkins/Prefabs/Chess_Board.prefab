@@ -52,16 +52,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   themeID: 0
-  GridCell: {fileID: 2100000, guid: 0052bf995ef261e499c94d67698ccc61, type: 2}
-  GirdCellAlt: {fileID: 2100000, guid: 00f8783fe02bd1840bb1ac16d8f320dc, type: 2}
+  GridCell: {fileID: 2100000, guid: eb832a94dc2056c4bb8c511f78f262bd, type: 2}
+  GirdCellAlt: {fileID: 2100000, guid: 822c0d631aac7064fa3a6323cf3da8c9, type: 2}
   GridOutline: {fileID: 2100000, guid: 9649657a945a30444a0680dac00de6b9, type: 2}
   GridDivider: {fileID: 2100000, guid: 9649657a945a30444a0680dac00de6b9, type: 2}
   Skybox: {fileID: 2100000, guid: 493bfb50af5d9424da505ba945c86600, type: 2}
   SunLightIntensity: 0.25
   TileLightIntensity: 0
   Background: {fileID: 0}
-  GradientVertext1: {r: 0.31963894, g: 0.1468611, b: 0.622, a: 1}
-  GradientVertext2: {r: 0, g: 0.41745767, b: 0.472, a: 0.7607843}
-  gradientBgEnabled: 1
+  GradientVertext1: {r: 1, g: 1, b: 1, a: 1}
+  GradientVertext2: {r: 1, g: 1, b: 1, a: 1}
+  gradientBgEnabled: 0
   gridDividerEnabled: 1
   skyBoxRotationEnabled: 0

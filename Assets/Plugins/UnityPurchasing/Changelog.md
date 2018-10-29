@@ -1,4 +1,8 @@
-# [1.20.0] - 2018-06-29
+## [1.21.0] - 2018-08-14
+### Added
+- UDP module. Developers can refer to https://unitytech.github.io/udp/technical-integration-IAP/ for more details.
+
+## [1.20.0] - 2018-06-29
 ### Added
 - API for developers to check SkuDetails for all GooglePlay store products, including those that have not been purchased.
 - Error Code Support for Amazon.
@@ -16,7 +20,7 @@
 ## [1.19.0] - 2018-04-17
 ### Added
 - For GooglePlay store, `developerPayload` has been encoded to base64 string and formatted to a JSON string with two other information of the product. When extract `developerPayload` from the product receipt, firstly decode the json string and get the `developerPayload` field base64 string, secondly decode the base64 string to the original `developerPayload`.
-- `SubscriptionManager` - This new class allows developer to query the purchased subscription product's infomation. (available for AppleStore and GooglePlay store) 
+- `SubscriptionManager` - This new class allows developer to query the purchased subscription product's information. (available for AppleStore and GooglePlay store) 
     - For GooglePlay store, this class can only be used on products purchased using IAP 1.19.0 SDK. Products purchased on previous SDKs do not have the fields in the "developerPayload" that are needed to parse the subscription information.
         - If the "Payload" json string field in the product's json string receipt has a "skuDetails" filed, then this product can use `SubscriptionManager` to get its subscription information.
 - Added the `StoreSpecificPurchaseErrorCode` enum. Currently contains values for all Apple and Google Play error codes that are returned directly from the store.

@@ -65,9 +65,12 @@ public class ButtonLogic : MonoBehaviour {
 	}
 	public void ButtonNoLongerPressed()
 	{
-		if(buttonMeshObject != null)
+		if(buttonMeshObject != null && this.gameObject.activeInHierarchy)
 		{
 			StartCoroutine("AnimateButtonUp");
+		} else if(buttonMeshObject != null)
+		{
+			buttonMeshObject.transform.localPosition = startPos;
 		}
 	}
 

@@ -11,7 +11,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: MGMComputing
-  productName: Oddity
+  productName: Totally Odd
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -123,7 +123,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 2.8
+  bundleVersion: 3.57
   preloadedAssets: []
   metroInputSource: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -145,8 +145,8 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.ApexStudios.OddityAlpha
   buildNumber: {}
-  AndroidBundleVersionCode: 7
-  AndroidMinSdkVersion: 18
+  AndroidBundleVersionCode: 27
+  AndroidMinSdkVersion: 19
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
   aotOptions: 
@@ -219,7 +219,7 @@ PlayerSettings:
   AndroidTargetDevice: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: C:/Users/gary-/Documents/GitHub/Oddity/Key/user.keystore
+  AndroidKeystoreName: C:/Users/gary-/Documents/GitHub/ODDITY BACKUP 04-09-2018/Key/user.keystore
   AndroidKeyaliasName: apex
   AndroidTVCompatibility: 1
   AndroidIsGame: 1
@@ -234,7 +234,7 @@ PlayerSettings:
   - m_BuildTarget: Android
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: bd46b22e2de7149488e09611437ce34e, type: 3}
+      m_Icon: {fileID: 2800000, guid: 666516b2cbcc143ee9b6e53873dde8cf, type: 3}
       m_Width: 192
       m_Height: 192
       m_Kind: 0

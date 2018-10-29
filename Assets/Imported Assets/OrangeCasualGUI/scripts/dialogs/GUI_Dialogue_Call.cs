@@ -6,6 +6,7 @@ using TMPro;
 public class GUI_Dialogue_Call : MonoBehaviour {
 
     [Header("General Attributes (optional)")]
+	public TextMeshProUGUI panelTitleText;
 	public TextMeshProUGUI playerNameTxt;
 	public TextMeshProUGUI playerScoreTxt;
 	public TextMeshProUGUI playerErrorsTxt;
@@ -43,6 +44,11 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 	public GameObject objectiveStar1;
 	public GameObject objectiveStar2;
 	public GameObject objectiveStar3;
+
+	public GameObject slimLeftButton;
+	public GameObject slimRightButton;
+	public GameObject leftButton;
+	public GameObject rightButton;
 	
 
 
@@ -63,12 +69,14 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		GUI_Controller.instance.StopAllCoroutines();
 
 		playerCounter++;
+		panelTitleText.text="Player Scores";
 		Debug.LogWarning("PC: " + playerCounter);
 		if(playerCounter==1)
 		{
 			playerPanel.SetActive(true);
 			InitDialogue(playerScores, playerBestScores, playerErrors,targetScore,1);
 			objectivePanel.SetActive(false);
+			
 			return;
 		} else if(playerCounter==0)
 		{
@@ -83,9 +91,15 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 			playerCounter=0;
 			playerPanel.SetActive(false);
 			objectivePanel.SetActive(true);
+			panelTitleText.text="Missions";
+
+			
+			 
 			return;
 
 		}
+
+		
 
 		
 
@@ -165,7 +179,7 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 
 		playerNameTxt.text = "Player " + playerCounter;
 
-		if(playerCounter==1 && AccountInfo.Instance!= null)
+		if(playerCounter==1 && AccountInfo.Instance.Info.PlayerProfile.DisplayName!= null)
 			playerNameTxt.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
 
 		if(bestScore)
@@ -185,11 +199,13 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		if(GameMaster.instance.soloPlay)
 			return;
 		GUI_Controller.instance.StopAllCoroutines();
+		panelTitleText.text="Player Scores";
 		playerCounter--;
 		if(playerCounter == 0)
 		{
 			playerPanel.SetActive(false);
 			//InitObjectivePanel();
+			panelTitleText.text="Missions";
 			objectivePanel.SetActive(true);
 			playerCounter=playerScores.Count;
 		} else if (playerCounter < 0)
@@ -276,7 +292,7 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 
 		playerNameTxt.text = "Player " + playerCounter;
 
-		if(playerCounter==1 && AccountInfo.Instance!= null)
+		if(playerCounter==1 && AccountInfo.Instance.Info.PlayerProfile.DisplayName!= null)
 			playerNameTxt.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
 
 		if(bestScore)
@@ -288,7 +304,7 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 	public void InitObjectivePanel()
 	{
 		
-
+		panelTitleText.text="Missions";
 		objective1Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective1Code);
 		objective2Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective2Code);
 		objective3Txt.text = GameMaster.instance.PlayerStatistics.GenerateObjectiveText(ApplicationModel.Objective3Code);
@@ -335,6 +351,7 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		}
 
 
+		
 		//Update player STAR UI
 		GUI_Controller.instance.StarRewardAnim(starString);
 
@@ -356,7 +373,7 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 		playerCounter=pc;
 		//playerCounter=1;
 
-		if(playerCounter==1 && AccountInfo.Instance!= null)
+		if(playerCounter==1 && AccountInfo.Instance.Info.PlayerProfile.DisplayName!= null)
 			playerNameTxt.text=AccountInfo.Instance.Info.PlayerProfile.DisplayName;
 
 		
@@ -444,6 +461,31 @@ public class GUI_Dialogue_Call : MonoBehaviour {
 
 		
 
+	}
+
+	public void ShowLeftRightButtons()
+	{
+		if(Screen.height > 2400)
+			{
+				if(Screen.width < 1130)
+				{
+					leftButton.SetActive(false);
+					rightButton.SetActive(false);
+					slimLeftButton.SetActive(true);
+					slimRightButton.SetActive(true);
+					
+
+				} else if(Screen.height > 2600)
+				{
+					leftButton.SetActive(false);
+					rightButton.SetActive(false);
+					slimLeftButton.SetActive(true);
+					slimRightButton.SetActive(true);
+					
+					
+				} 
+
+			}
 	}
 
 

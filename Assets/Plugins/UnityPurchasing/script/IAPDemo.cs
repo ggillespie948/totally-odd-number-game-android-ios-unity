@@ -38,6 +38,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
     private ISamsungAppsExtensions m_SamsungExtensions;
     private IMicrosoftExtensions m_MicrosoftExtensions;
     private IUnityChannelExtensions m_UnityChannelExtensions;
+    private IUDPExtensions m_UDPExtensions;
     private ITransactionHistoryExtensions m_TransactionHistoryExtensions;
 #if SUBSCRIPTION_MANAGER
     private IGooglePlayStoreExtensions m_GooglePlayStoreExtensions;
@@ -83,6 +84,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
         m_MoolahExtensions = extensions.GetExtension<IMoolahExtension>();
         m_MicrosoftExtensions = extensions.GetExtension<IMicrosoftExtensions>();
         m_UnityChannelExtensions = extensions.GetExtension<IUnityChannelExtensions>();
+        m_UDPExtensions = extensions.GetExtension<IUDPExtensions>();
         m_TransactionHistoryExtensions = extensions.GetExtension<ITransactionHistoryExtensions>();
 #if SUBSCRIPTION_MANAGER
         m_GooglePlayStoreExtensions = extensions.GetExtension<IGooglePlayStoreExtensions>();
